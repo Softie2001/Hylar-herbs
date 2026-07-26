@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hylar Herbs & Body Wellness — Shop Natural Herbal Remedies</title>
+<meta name="description" content="Shop 100% natural herbal remedies from Hylar Herbs & Body Wellness — fertility, infection care, men's vitality, weight goals and more. Order via WhatsApp.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --brand:#1E8E3E;
+    --brand-dark:#0F5C24;
+    --brand-deep:#0A3D18;
+    --accent:#FF6B35;
+    --accent-dark:#E5501C;
+    --sale:#D91C4E;
+    --ink:#12180F;
+    --sub:#5B6559;
+    --line:#E4E8E1;
+    --surface:#FFFFFF;
+    --bg:#F5F7F3;
+    --chip:#EEF3EA;
+    --shadow-sm:0 2px 8px rgba(15,30,10,0.06);
+    --shadow-md:0 8px 24px rgba(15,30,10,0.10);
+    --shadow-lg:0 20px 48px rgba(15,30,10,0.18);
+    --radius:12px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:'Manrope', sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    *{animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important;}
+  }
+  img{max-width:100%; display:block;}
+  a{color:inherit; text-decoration:none;}
+  ul{list-style:none;}
+  .wrap{max-width:1280px; margin:0 auto; padding:0 20px;}
+  h1,h2,h3,h4{font-family:'Sora', sans-serif; font-weight:700; letter-spacing:-0.01em; color:var(--ink);}
+  button{font-family:inherit; cursor:pointer;}
+  :focus-visible{outline:3px solid var(--accent); outline-offset:2px;}
+
+  /* ---------- TOP UTILITY BAR ---------- */
+  .utility-bar{background:var(--brand-deep); color:#D9EAD8; font-size:12.5px; font-weight:600;}
+  .utility-inner{
+    max-width:1280px; margin:0 auto; padding:8px 20px; display:flex; justify-content:space-between;
+    align-items:center; flex-wrap:wrap; gap:8px;
+  }
+  .utility-inner span{display:flex; align-items:center; gap:6px;}
+  .utility-links{display:flex; gap:18px;}
+  .utility-links a:hover{color:#fff;}
+
+  /* ---------- NAV ---------- */
+  .nav{
+    position:sticky; top:0; z-index:100; background:var(--surface);
+    border-bottom:1px solid var(--line); box-shadow:var(--shadow-sm);
+  }
+  .nav-inner{
+    display:flex; align-items:center; gap:24px; padding:12px 20px; max-width:1280px; margin:0 auto;
+  }
+  .nav-brand{display:flex; align-items:center; gap:10px; flex-shrink:0;}
+  .nav-brand img{height:42px; width:42px; border-radius:9px; object-fit:cover;}
+  .nav-brand .brand-text{line-height:1.15;}
+  .nav-brand .brand-text strong{display:block; font-family:'Sora',sans-serif; font-weight:800; font-size:17px; color:var(--brand-deep);}
+  .nav-brand .brand-text small{display:block; font-size:10px; letter-spacing:0.08em; text-transform:uppercase; color:var(--brand); font-weight:700;}
+
+  .nav-search{
+    flex:1; display:flex; align-items:center; background:var(--chip); border:1.5px solid transparent;
+    border-radius:100px; padding:9px 16px; gap:10px; max-width:520px; transition:border-color .2s ease;
+  }
+  .nav-search:focus-within{border-color:var(--brand);}
+  .nav-search input{flex:1; border:none; background:none; outline:none; font-size:14px; color:var(--ink); font-family:inherit;}
+  .nav-search svg{flex-shrink:0; opacity:0.55;}
+
+  .nav-links{display:flex; gap:22px; align-items:center; flex-shrink:0;}
+  .nav-links a{font-size:14px; font-weight:700; color:var(--ink);}
+  .nav-links a:hover{color:var(--brand);}
+  .nav-order-icon{
+    position:relative; display:flex; align-items:center; justify-content:center; width:42px; height:42px;
+    background:var(--chip); border-radius:10px; font-size:18px; transition:background .2s ease;
+  }
+  .nav-order-icon:hover{background:var(--brand); color:#fff;}
+  .nav-order-badge{
+    position:absolute; top:-6px; right:-6px; background:var(--accent); color:#fff; font-size:10.5px;
+    font-weight:800; min-width:19px; height:19px; border-radius:50%; display:flex; align-items:center;
+    justify-content:center; border:2px solid var(--surface); padding:0 3px;
+  }
+  .nav-cta{
+    background:var(--brand); color:#fff; padding:11px 20px; border-radius:9px; font-weight:800; font-size:13.5px;
+    display:flex; align-items:center; gap:8px; flex-shrink:0; transition:background .2s ease, transform .15s ease;
+  }
+  .nav-cta:hover{background:var(--brand-dark); transform:translateY(-1px);}
+  .nav-toggle{display:none; background:none; border:none; padding:8px;}
+  .nav-toggle span{display:block; width:22px; height:2px; background:var(--ink); margin:5px 0; border-radius:2px;}
+
+  /* category strip under nav */
+  .cat-strip{background:var(--brand-deep); overflow-x:auto; scrollbar-width:none;}
+  .cat-strip::-webkit-scrollbar{display:none;}
+  .cat-strip-inner{display:flex; gap:2px; max-width:1280px; margin:0 auto; padding:0 20px;}
+  .cat-strip a{
+    padding:11px 16px; font-size:13px; font-weight:700; color:#CFE3CE; white-space:nowrap;
+    border-bottom:3px solid transparent; transition:all .2s ease;
+  }
+  .cat-strip a:hover{color:#fff; border-color:var(--accent);}
+
+  /* ---------- HERO / PROMO BANNER ---------- */
+  .hero{background:linear-gradient(120deg, var(--brand-deep) 0%, var(--brand-dark) 55%, var(--brand) 100%); position:relative; overflow:hidden;}
+  .hero::after{
+    content:''; position:absolute; inset:0;
+    background:radial-gradient(circle at 82% 30%, rgba(255,107,53,0.28), transparent 50%);
+    pointer-events:none;
+  }
+  .hero-inner{
+    max-width:1280px; margin:0 auto; padding:52px 20px 44px; display:grid; grid-template-columns:1.15fr 0.85fr;
+    gap:40px; align-items:center; position:relative; z-index:1;
+  }
+  .hero-badge-row{display:flex; gap:10px; margin-bottom:18px; flex-wrap:wrap;}
+  .hero-badge-row span{
+    background:rgba(255,255,255,0.14); color:#fff; font-size:11.5px; font-weight:800; letter-spacing:0.03em;
+    padding:6px 12px; border-radius:100px; border:1px solid rgba(255,255,255,0.25);
+  }
+  .hero h1{color:#fff; font-size:clamp(30px,4.2vw,46px); line-height:1.08; margin-bottom:16px;}
+  .hero h1 span{color:var(--accent); display:inline-block;}
+  .hero p{color:rgba(255,255,255,0.85); font-size:15.5px; max-width:460px; margin-bottom:26px;}
+  .hero-actions{display:flex; gap:12px; flex-wrap:wrap;}
+  .btn{
+    display:inline-flex; align-items:center; gap:9px; padding:14px 24px; border-radius:9px;
+    font-weight:800; font-size:14.5px; border:none; transition:transform .15s ease, box-shadow .15s ease, background .15s ease;
+  }
+  .btn-accent{background:var(--accent); color:#fff; box-shadow:0 10px 26px rgba(255,107,53,0.4);}
+  .btn-accent:hover{background:var(--accent-dark); transform:translateY(-2px);}
+  .btn-outline-light{background:transparent; color:#fff; border:1.5px solid rgba(255,255,255,0.5);}
+  .btn-outline-light:hover{background:rgba(255,255,255,0.12);}
+  .btn-brand{background:var(--brand); color:#fff; box-shadow:0 8px 20px rgba(30,142,62,0.35);}
+  .btn-brand:hover{background:var(--brand-dark); transform:translateY(-2px);}
+
+  .hero-visual{position:relative;}
+  .hero-card{
+    background:var(--surface); border-radius:18px; padding:14px; box-shadow:var(--shadow-lg);
+    transform:rotate(-2deg);
+  }
+  .hero-card img{border-radius:12px; height:340px; object-fit:cover; width:100%;}
+  .hero-price-tag{
+    position:absolute; bottom:-18px; left:-14px; background:var(--accent); color:#fff; padding:14px 18px;
+    border-radius:14px; box-shadow:var(--shadow-md); transform:rotate(-4deg);
+  }
+  .hero-price-tag strong{display:block; font-family:'Sora',sans-serif; font-size:20px; font-weight:800; line-height:1;}
+  .hero-price-tag span{font-size:11px; font-weight:700; opacity:0.9;}
+
+  /* ---------- TRUST STRIP ---------- */
+  .trust-strip{background:var(--surface); border-bottom:1px solid var(--line);}
+  .trust-inner{
+    max-width:1280px; margin:0 auto; padding:20px; display:grid; grid-template-columns:repeat(4,1fr); gap:16px;
+  }
+  .trust-item{display:flex; align-items:center; gap:12px;}
+  .trust-item .ic{
+    width:40px; height:40px; border-radius:10px; background:var(--chip); display:flex; align-items:center;
+    justify-content:center; font-size:18px; flex-shrink:0;
+  }
+  .trust-item strong{display:block; font-size:13px; color:var(--ink); font-weight:800;}
+  .trust-item span{font-size:11.5px; color:var(--sub);}
+
+  /* ---------- SECTIONS ---------- */
+  .section{padding:56px 0;}
+  .section-head{
+    display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:28px; gap:20px; flex-wrap:wrap;
+  }
+  .section-head .eyebrow{font-size:12px; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; color:var(--brand); margin-bottom:6px; display:block;}
+  .section-head h2{font-size:clamp(22px,2.6vw,30px);}
+  .section-head p{color:var(--sub); font-size:14px; margin-top:6px; max-width:460px;}
+  .see-all{font-size:13.5px; font-weight:800; color:var(--brand); display:flex; align-items:center; gap:6px; white-space:nowrap;}
+  .see-all:hover{color:var(--brand-dark);}
+
+  /* ---------- CATEGORY TILES ---------- */
+  .cat-tiles{display:grid; grid-template-columns:repeat(5,1fr); gap:16px;}
+  .cat-tile{
+    background:var(--surface); border:1.5px solid var(--line); border-radius:var(--radius); padding:20px 16px;
+    text-align:center; transition:all .2s ease; cursor:pointer;
+  }
+  .cat-tile:hover, .cat-tile.active{border-color:var(--brand); background:var(--chip); transform:translateY(-3px); box-shadow:var(--shadow-sm);}
+  .cat-tile .emoji{font-size:28px; margin-bottom:10px;}
+  .cat-tile strong{display:block; font-size:13px; font-weight:800; color:var(--ink);}
+  .cat-tile span{font-size:11px; color:var(--sub);}
+
+  /* ---------- FILTER BAR ---------- */
+  .filter-bar{
+    display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:24px; padding-bottom:20px;
+    border-bottom:1px solid var(--line);
+  }
+  .filter-btn{
+    padding:9px 16px; border-radius:8px; border:1.5px solid var(--line); background:var(--surface);
+    font-weight:700; font-size:13px; color:var(--ink); transition:all 0.2s ease;
+  }
+  .filter-btn:hover{border-color:var(--brand);}
+  .filter-btn.active{background:var(--brand); border-color:var(--brand); color:#fff;}
+  .result-count{margin-left:auto; font-size:12.5px; color:var(--sub); font-weight:600;}
+
+  /* ---------- PRODUCT GRID ---------- */
+  .grid{display:grid; grid-template-columns:repeat(4, 1fr); gap:18px;}
+  .card{
+    background:var(--surface); border-radius:var(--radius); overflow:hidden; border:1px solid var(--line);
+    transition:transform 0.2s ease, box-shadow 0.2s ease; display:flex; flex-direction:column; position:relative;
+  }
+  .card:hover{transform:translateY(-4px); box-shadow:var(--shadow-md); border-color:transparent;}
+  .card-media{position:relative; aspect-ratio:1/1; background:#EFEFE9; overflow:hidden;}
+  .card-media img{width:100%; height:100%; object-fit:cover; transition:transform .35s ease;}
+  .card:hover .card-media img{transform:scale(1.05);}
+  .badge-row{position:absolute; top:10px; left:10px; right:10px; display:flex; justify-content:space-between; align-items:flex-start;}
+  .badge{
+    font-size:10px; font-weight:800; letter-spacing:0.03em; text-transform:uppercase; padding:5px 9px;
+    border-radius:5px; color:#fff;
+  }
+  .badge-cat{background:rgba(10,61,24,0.82); backdrop-filter:blur(2px);}
+  .badge-kit{background:var(--sale);}
+  .badge-best{background:var(--accent);}
+  .wish-btn{
+    width:30px; height:30px; border-radius:50%; background:rgba(255,255,255,0.92); display:flex; align-items:center;
+    justify-content:center; font-size:14px; box-shadow:var(--shadow-sm); border:none; flex-shrink:0;
+  }
+  .card-body{padding:14px 15px 16px; display:flex; flex-direction:column; gap:6px; flex:1;}
+  .card-body .cat-label{font-size:10.5px; font-weight:800; color:var(--brand); text-transform:uppercase; letter-spacing:0.04em;}
+  .card-body h3{font-size:14.5px; font-weight:700; line-height:1.3; min-height:38px;}
+  .card-body .desc{font-size:12px; color:var(--sub); line-height:1.45; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; flex:1;}
+  .card-foot{display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:8px; padding-top:12px; border-top:1px dashed var(--line);}
+  .price-block strong{font-family:'Sora',sans-serif; font-weight:800; font-size:17px; color:var(--ink); display:block;}
+  .price-block small{font-size:10px; color:var(--sub); font-weight:600;}
+  .add-btn{
+    background:var(--brand); color:#fff; border:none; width:38px; height:38px; border-radius:9px; font-size:18px;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:all .15s ease; font-weight:800;
+  }
+  .add-btn:hover{background:var(--brand-dark); transform:scale(1.06);}
+  .add-btn.added{background:var(--accent);}
+
+  /* ---------- KIT BAND ---------- */
+  .kit-band{
+    background:linear-gradient(120deg, var(--brand-deep), var(--brand-dark));
+    border-radius:20px; padding:40px; display:grid; grid-template-columns:1fr 1fr; gap:36px; align-items:center;
+    position:relative; overflow:hidden; margin-top:44px;
+  }
+  .kit-band::before{content:''; position:absolute; top:-100px; right:-100px; width:320px; height:320px; border-radius:50%; background:radial-gradient(circle, rgba(255,107,53,0.28), transparent 65%);}
+  .kit-band > *{position:relative; z-index:1;}
+  .kit-band .eyebrow{color:#FFB199; font-size:12px; font-weight:800; letter-spacing:0.08em; text-transform:uppercase;}
+  .kit-band h3{color:#fff; font-size:24px; margin:8px 0 12px;}
+  .kit-band p{color:rgba(255,255,255,0.75); font-size:14px; margin-bottom:20px;}
+  .kit-list{display:flex; flex-direction:column; gap:10px;}
+  .kit-list li{
+    display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.08);
+    padding:13px 16px; border-radius:10px; border:1px solid rgba(255,255,255,0.14);
+  }
+  .kit-list span{color:#fff; font-weight:700; font-size:13.5px;}
+  .kit-list strong{color:#FFB199; font-family:'Sora',sans-serif; font-size:16px; font-weight:800;}
+
+  /* ---------- ABOUT (compact for shop context) ---------- */
+  .about-band{background:var(--surface); border-top:1px solid var(--line); border-bottom:1px solid var(--line);}
+  .about-grid{display:grid; grid-template-columns:0.9fr 1.1fr; gap:48px; align-items:center;}
+  .about-photo{border-radius:16px; overflow:hidden; box-shadow:var(--shadow-md);}
+  .about-photo img{height:360px; object-fit:cover; width:100%;}
+  .about-stats{display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:24px;}
+  .stat-box{background:var(--chip); border-radius:10px; padding:16px;}
+  .stat-box strong{display:block; font-family:'Sora',sans-serif; font-size:22px; font-weight:800; color:var(--brand-deep);}
+  .stat-box span{font-size:11.5px; color:var(--sub); font-weight:600;}
+
+  /* ---------- HOW IT WORKS ---------- */
+  .steps{display:grid; grid-template-columns:repeat(3,1fr); gap:20px;}
+  .step{background:var(--surface); border:1.5px solid var(--line); border-radius:14px; padding:26px 22px; position:relative;}
+  .step .step-num{
+    width:34px; height:34px; border-radius:9px; background:var(--brand); color:#fff; font-family:'Sora',sans-serif;
+    font-weight:800; font-size:15px; display:flex; align-items:center; justify-content:center; margin-bottom:14px;
+  }
+  .step h4{font-size:16px; margin-bottom:8px;}
+  .step p{font-size:13.5px; color:var(--sub);}
+
+  /* ---------- REVIEWS ---------- */
+  .review-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:18px;}
+  .review{background:var(--surface); border:1.5px solid var(--line); border-radius:14px; padding:22px;}
+  .review .stars{color:var(--accent); font-size:14px; margin-bottom:12px; letter-spacing:2px;}
+  .review p{font-size:14px; color:#333; margin-bottom:18px; line-height:1.6;}
+  .review-who{display:flex; align-items:center; gap:11px;}
+  .avatar{width:36px; height:36px; border-radius:50%; background:var(--brand-deep); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-family:'Sora',sans-serif; font-size:14px;}
+  .review-who strong{display:block; font-size:13px;}
+  .review-who span{font-size:11.5px; color:var(--sub);}
+  .verified{font-size:10.5px; color:var(--brand); font-weight:800; display:flex; align-items:center; gap:4px; margin-top:2px;}
+
+  /* ---------- FAQ ---------- */
+  .faq-list{max-width:760px;}
+  .faq-item{border-bottom:1px solid var(--line);}
+  .faq-q{
+    width:100%; text-align:left; background:none; border:none; padding:18px 0;
+    display:flex; justify-content:space-between; align-items:center; gap:20px;
+    font-family:'Sora',serif; font-size:15.5px; font-weight:700; color:var(--ink);
+  }
+  .faq-q .icon{
+    width:26px; height:26px; border-radius:7px; background:var(--chip); flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; color:var(--brand); font-size:15px;
+    transition:transform 0.3s ease;
+  }
+  .faq-item.open .faq-q .icon{transform:rotate(45deg); background:var(--brand); color:#fff;}
+  .faq-a{max-height:0; overflow:hidden; transition:max-height 0.35s ease;}
+  .faq-a p{padding-bottom:18px; font-size:14px; color:var(--sub); max-width:640px;}
+
+  /* ---------- CONTACT ---------- */
+  .contact-band{background:linear-gradient(120deg, var(--brand-deep), var(--brand-dark)); color:#fff; padding:56px 0; position:relative; overflow:hidden;}
+  .contact-band::before{content:''; position:absolute; top:-120px; right:-120px; width:360px; height:360px; border-radius:50%; background:radial-gradient(circle, rgba(255,107,53,0.25), transparent 70%);}
+  .contact-inner{position:relative; z-index:1; display:grid; grid-template-columns:1.1fr 0.9fr; gap:44px; align-items:center;}
+  .contact-band .eyebrow{color:#FFB199; font-size:12px; font-weight:800; letter-spacing:0.08em; text-transform:uppercase;}
+  .contact-band h2{color:#fff; font-size:clamp(24px,3vw,32px); margin:10px 0 14px;}
+  .contact-band p.lede{color:rgba(255,255,255,0.8); font-size:15px; max-width:440px; margin-bottom:24px;}
+  .contact-methods{display:flex; flex-direction:column; gap:12px;}
+  .contact-method{
+    display:flex; align-items:center; gap:14px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.16);
+    padding:15px 17px; border-radius:12px; transition:background 0.2s ease;
+  }
+  .contact-method:hover{background:rgba(255,255,255,0.14);}
+  .contact-method .ic{width:38px; height:38px; border-radius:9px; background:var(--accent); display:flex; align-items:center; justify-content:center; font-size:17px; flex-shrink:0;}
+  .contact-method strong{display:block; font-size:14px; color:#fff;}
+  .contact-method span{font-size:12px; color:rgba(255,255,255,0.65);}
+  .contact-card{background:var(--surface); border-radius:16px; padding:28px; color:var(--ink); box-shadow:var(--shadow-lg);}
+  .contact-card h3{font-size:19px; margin-bottom:5px;}
+  .contact-card > p{font-size:13px; color:var(--sub); margin-bottom:20px;}
+  .form-row{margin-bottom:14px;}
+  .form-row label{display:block; font-size:11.5px; font-weight:800; text-transform:uppercase; letter-spacing:0.04em; color:var(--brand-deep); margin-bottom:6px;}
+  .form-row select, .form-row textarea, .form-row input{
+    width:100%; border:1.5px solid var(--line); border-radius:9px; padding:11px 13px; font-family:inherit;
+    font-size:14px; background:var(--surface); color:var(--ink); resize:none;
+  }
+  .form-row select:focus, .form-row textarea:focus, .form-row input:focus{border-color:var(--brand);}
+  .contact-card .btn{width:100%; justify-content:center; margin-top:4px;}
+
+  /* ---------- FOOTER ---------- */
+  footer{background:var(--brand-deep); color:rgba(255,255,255,0.65); padding:44px 0 22px;}
+  .footer-grid{display:grid; grid-template-columns:1.4fr 1fr 1fr 1fr; gap:36px; margin-bottom:32px;}
+  .footer-brand{display:flex; align-items:center; gap:10px; margin-bottom:12px;}
+  .footer-brand img{height:34px; width:34px; border-radius:7px; object-fit:cover;}
+  .footer-brand span{font-family:'Sora',sans-serif; color:#fff; font-weight:800; font-size:15.5px;}
+  footer p.desc{font-size:13px; max-width:280px; line-height:1.6;}
+  footer h5{color:#fff; font-family:'Manrope',sans-serif; font-size:12px; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:14px; font-weight:800;}
+  footer ul{display:flex; flex-direction:column; gap:9px;}
+  footer ul a{font-size:13px; transition:color 0.2s ease;}
+  footer ul a:hover{color:#fff;}
+  .footer-bottom{border-top:1px solid rgba(255,255,255,0.12); padding-top:20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; font-size:12px;}
+  .social-row{display:flex; gap:9px;}
+  .social-row a{width:33px; height:33px; border-radius:8px; border:1px solid rgba(255,255,255,0.25); display:flex; align-items:center; justify-content:center; font-size:13px; transition:all 0.2s ease;}
+  .social-row a:hover{background:var(--accent); border-color:var(--accent);}
+
+  /* ---------- ORDER TRAY (cart-style) ---------- */
+  .order-tray{
+    position:fixed; bottom:0; right:0; z-index:300; width:360px; max-width:calc(100vw - 24px);
+    background:var(--surface); border-radius:16px 16px 0 0; box-shadow:0 -8px 40px rgba(0,0,0,0.25);
+    transform:translateY(calc(100% - 58px)); transition:transform .3s ease; margin-right:24px;
+    border:1px solid var(--line); border-bottom:none;
+  }
+  .order-tray.open{transform:translateY(0);}
+  .tray-head{
+    display:flex; align-items:center; justify-content:space-between; padding:16px 18px; cursor:pointer;
+    background:var(--brand); color:#fff; border-radius:16px 16px 0 0;
+  }
+  .tray-head strong{font-size:14px; font-family:'Sora',sans-serif; display:flex; align-items:center; gap:8px;}
+  .tray-head .chev{transition:transform .3s ease;}
+  .order-tray.open .tray-head .chev{transform:rotate(180deg);}
+  .tray-count{background:var(--accent); font-size:11px; font-weight:800; padding:2px 8px; border-radius:100px;}
+  .tray-body{max-height:320px; overflow-y:auto; padding:10px 18px;}
+  .tray-empty{padding:24px 0; text-align:center; color:var(--sub); font-size:13px;}
+  .tray-item{display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--line);}
+  .tray-item img{width:44px; height:44px; border-radius:8px; object-fit:cover; flex-shrink:0;}
+  .tray-item .ti-name{font-size:12.5px; font-weight:700; flex:1; line-height:1.3;}
+  .tray-item .ti-price{font-size:12px; color:var(--sub); font-weight:700;}
+  .tray-remove{background:none; border:none; color:#c0392b; font-size:16px; padding:4px;}
+  .tray-foot{padding:14px 18px 18px;}
+  .tray-foot .btn{width:100%; justify-content:center;}
+
+  .no-photo{
+    width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:6px; color:var(--sub); font-size:26px; background:#EFEFE9;
+  }
+  .no-photo span{font-size:11px; font-weight:700;}
+  .tray-total-row{display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; font-size:13.5px; font-weight:700; color:var(--ink);}
+  .tray-total-row strong{font-family:'Sora',sans-serif; font-size:18px; color:var(--brand-deep);}
+  .ti-info{flex:1; display:flex; flex-direction:column; gap:4px;}
+  .ti-qty{display:flex; align-items:center; gap:8px;}
+  .qty-btn{width:22px; height:22px; border-radius:6px; border:1px solid var(--line); background:var(--surface); font-weight:800; font-size:13px; display:flex; align-items:center; justify-content:center;}
+  .ti-noimg{width:44px; height:44px; border-radius:8px; background:#EFEFE9; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0;}
+
+  /* ---------- CHECKOUT MODAL ---------- */
+  .co-modal-wrap{position:fixed; inset:0; z-index:400; display:flex; align-items:center; justify-content:center; padding:20px; opacity:0; pointer-events:none; transition:opacity .2s ease;}
+  .co-modal-wrap.open{opacity:1; pointer-events:auto;}
+  .co-backdrop{position:absolute; inset:0; background:rgba(10,30,15,.55);}
+  .co-modal{position:relative; background:var(--surface); border-radius:16px; width:min(440px,100%); max-height:88vh; overflow-y:auto; box-shadow:var(--shadow-lg); transform:translateY(14px); transition:transform .2s ease;}
+  .co-modal-wrap.open .co-modal{transform:translateY(0);}
+  .co-head{padding:18px 20px; border-bottom:1px solid var(--line); display:flex; align-items:center; justify-content:space-between;}
+  .co-head h3{font-size:18px;}
+  .co-close{background:none; border:none; font-size:18px; padding:4px;}
+  .co-body{padding:18px 20px;}
+  .co-summary{background:var(--chip); border-radius:10px; padding:11px 13px; margin-bottom:16px; font-size:12.5px; color:var(--sub);}
+  .co-field{margin-bottom:14px;}
+  .co-field label{display:block; font-size:12px; font-weight:800; color:var(--brand-deep); margin-bottom:5px;}
+  .co-field input, .co-field textarea{width:100%; border:1.5px solid var(--line); border-radius:9px; padding:10px 12px; font-family:inherit; font-size:13.5px; background:var(--bg); color:var(--ink);}
+  .co-field textarea{resize:vertical;}
+  .co-field .co-error{display:none; font-size:11px; color:var(--sale); margin-top:4px;}
+  .co-field.invalid input, .co-field.invalid textarea{border-color:var(--sale);}
+  .co-field.invalid .co-error{display:block;}
+  .co-foot{padding:4px 20px 20px;}
+
+  .wa-float{
+    position:fixed; bottom:24px; left:24px; z-index:200; background:var(--brand); color:#fff;
+    width:56px; height:56px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    font-size:25px; box-shadow:0 12px 28px rgba(30,142,62,0.5); transition:transform 0.2s ease;
+  }
+  .wa-float:hover{transform:scale(1.08);}
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width:1080px){
+    .grid{grid-template-columns:repeat(3,1fr);}
+    .cat-tiles{grid-template-columns:repeat(3,1fr);}
+    .hero-inner{grid-template-columns:1fr;}
+    .hero-visual{order:-1; max-width:360px;}
+    .about-grid{grid-template-columns:1fr;}
+    .trust-inner{grid-template-columns:repeat(2,1fr);}
+  }
+  @media (max-width:760px){
+    .nav-search{display:none;}
+    .nav-links{
+      position:fixed; top:0; right:0; bottom:0; width:78%; max-width:320px; background:var(--surface); flex-direction:column;
+      align-items:flex-start; padding:80px 24px 24px; gap:20px; transform:translateX(100%); transition:transform 0.3s ease;
+      box-shadow:var(--shadow-lg); z-index:150;
+    }
+    .nav-links.open{transform:translateX(0);}
+    .nav-toggle{display:block;}
+    .nav-cta{display:none;}
+    .nav-links .nav-cta{display:flex; margin-top:8px;}
+    .grid{grid-template-columns:repeat(2,1fr);}
+    .cat-tiles{grid-template-columns:repeat(3,1fr);}
+    .kit-band{grid-template-columns:1fr; padding:28px;}
+    .steps{grid-template-columns:1fr;}
+    .review-grid{grid-template-columns:1fr;}
+    .contact-inner{grid-template-columns:1fr;}
+    .footer-grid{grid-template-columns:1fr 1fr;}
+    .section{padding:40px 0;}
+    .order-tray{right:0; margin-right:12px; width:calc(100vw - 24px);}
+    .utility-links{display:none;}
+  }
+  @media (max-width:480px){
+    .grid{grid-template-columns:repeat(2,1fr); gap:12px;}
+    .cat-tiles{grid-template-columns:repeat(2,1fr);}
+    .footer-grid{grid-template-columns:1fr;}
+    .card-body h3{min-height:auto;}
+  }
+</style>
+</head>
+<body>
+
+<!-- UTILITY BAR -->
+<div class="utility-bar">
+  <div class="utility-inner">
+    <span>🚚 Nationwide delivery, based in Ede (Osun) &amp; Lagos</span>
+    <div class="utility-links">
+      <a href="tel:+2348116695637">📞 08116695637</a>
+      <a href="https://wa.me/2349090416306">💬 09090416306</a>
+    </div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="#top" class="nav-brand">
+      <img src="image%2077.png%20%28logo%29" alt="Hylar Herbs logo">
+      <div class="brand-text"><strong>Hylar Herbs</strong><small>Body Wellness</small></div>
+    </a>
+    <div class="nav-search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <input type="text" id="searchInput" placeholder="Search products — e.g. detox, fertility, infection...">
+    </div>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="nav-links" id="navLinks">
+      <a href="#shop">Shop</a>
+      <a href="#kits">Kits</a>
+      <a href="#about">Our Story</a>
+      <a href="#faq">FAQ</a>
+      <a href="#" class="nav-order-icon" id="trayToggleIcon">🛒<span class="nav-order-badge" id="navBadge">0</span></a>
+      <a href="https://wa.me/2349090416306" class="nav-cta">Order Now</a>
+    </div>
+  </div>
+  <div class="cat-strip">
+    <div class="cat-strip-inner">
+      <a href="#shop" data-scroll-filter="feminine">Feminine Wellness</a>
+      <a href="#shop" data-scroll-filter="ttc">Fertility &amp; TTC</a>
+      <a href="#shop" data-scroll-filter="infection">Infection Care</a>
+      <a href="#shop" data-scroll-filter="men">Men's Vitality</a>
+      <a href="#shop" data-scroll-filter="body">Body &amp; Weight</a>
+      <a href="#kits">Kit Bundles</a>
+      <a href="#about">Our Story</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero" id="top">
+  <div class="hero-inner">
+    <div>
+      <div class="hero-badge-row">
+        <span>🌿 100% Natural</span>
+        <span>🏭 Prepared to Order</span>
+        <span>🚚 Nationwide Delivery</span>
+      </div>
+      <h1>Natural herbal remedies, <span>shopped the easy way.</span></h1>
+      <p>76 herbal formulas and kits for fertility, infection care, men's vitality, feminine wellness and body care — order in seconds, straight to WhatsApp.</p>
+      <div class="hero-actions">
+        <a href="#shop" class="btn btn-accent">🛍️ Shop All Products</a>
+        <a href="https://wa.me/2349090416306" class="btn btn-outline-light">💬 Chat to Order</a>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="hero-card">
+        <img src="image%2077.png%20%28hero%20banner%29" alt="Hylar Herbs & Body Wellness">
+      </div>
+      <div class="hero-price-tag">
+        <strong>From ₦2,000</strong>
+        <span>Per herbal product</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- TRUST STRIP -->
+<div class="trust-strip">
+  <div class="wrap trust-inner">
+    <div class="trust-item"><div class="ic">🌿</div><div><strong>100% Natural</strong><span>No fillers or additives</span></div></div>
+    <div class="trust-item"><div class="ic">📦</div><div><strong>Made to Order</strong><span>Freshly prepared batches</span></div></div>
+    <div class="trust-item"><div class="ic">🚚</div><div><strong>Nationwide Delivery</strong><span>Shipped from Ede &amp; Lagos</span></div></div>
+    <div class="trust-item"><div class="ic">💬</div><div><strong>Real Support</strong><span>Talk to us on WhatsApp</span></div></div>
+  </div>
+</div>
+
+<!-- CATEGORY TILES -->
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <div><span class="eyebrow">Shop by Category</span><h2>What are you looking for today?</h2></div>
+    </div>
+    <div class="cat-tiles">
+      <div class="cat-tile" data-cat="feminine"><div class="emoji">🌸</div><strong>Feminine</strong><span>Wellness</span></div>
+      <div class="cat-tile" data-cat="ttc"><div class="emoji">👶</div><strong>Fertility</strong><span>&amp; TTC</span></div>
+      <div class="cat-tile" data-cat="infection"><div class="emoji">🛡️</div><strong>Infection</strong><span>Care</span></div>
+      <div class="cat-tile" data-cat="men"><div class="emoji">💪</div><strong>Men's</strong><span>Vitality</span></div>
+      <div class="cat-tile" data-cat="body"><div class="emoji">⚖️</div><strong>Body &amp;</strong><span>Weight</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- SHOP GRID -->
+<section class="section" id="shop">
+  <div class="wrap">
+    <div class="section-head">
+      <div><span class="eyebrow">Full Catalog</span><h2>All Products</h2><p>Prices shown in Naira. Tap the cart icon to add, then send your list straight to WhatsApp.</p></div>
+    </div>
+
+    <div class="filter-bar" id="filterRow">
+      <button class="filter-btn active" data-filter="all">All Products</button>
+      <button class="filter-btn" data-filter="feminine">Feminine Wellness</button>
+      <button class="filter-btn" data-filter="ttc">Fertility &amp; TTC</button>
+      <button class="filter-btn" data-filter="infection">Infection Care</button>
+      <button class="filter-btn" data-filter="men">Men's Vitality</button>
+      <button class="filter-btn" data-filter="body">Body &amp; Weight</button>
+      <span class="result-count" id="resultCount"></span>
+    </div>
+
+    <div class="grid" id="productGrid"></div>
+
+    <div class="kit-band" id="kits">
+      <div>
+        <span class="eyebrow">Bundle &amp; Save</span>
+        <h3>Complete kits for focused care.</h3>
+        <p>Some conditions need more than one product working together. Our kits combine the full routine — cleanser, flusher and support formula — into one order.</p>
+        <a href="https://wa.me/2349090416306?text=Hi%20Hylar%20Herbs%2C%20I%27d%20like%20to%20ask%20about%20your%20kits." class="btn btn-accent">Ask About Kits</a>
+      </div>
+      <ul class="kit-list">
+        <li><span>Infection Full Kit</span><strong>₦20,000</strong></li>
+        <li><span>Gonorrhea Kit</span><strong>₦20,000</strong></li>
+        <li><span>Staphylococcus Full Kit</span><strong>₦18,000</strong></li>
+        <li><span>TTC Kit — Husband &amp; Wife</span><strong>₦50,000</strong></li>
+        <li><span>Low Sperm Count Kit</span><strong>₦35,000</strong></li>
+        <li><span>High Prolactin Kit</span><strong>₦30,000</strong></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about-band" id="about">
+  <div class="wrap section about-grid">
+    <div class="about-photo">
+      <img src="image_9.png" alt="Hylar Herbs & Body Wellness products">
+    </div>
+    <div>
+      <span class="eyebrow" style="color:var(--brand); font-size:12px; font-weight:800; letter-spacing:0.08em; text-transform:uppercase;">Our Story</span>
+      <h2 style="margin-top:8px; font-size:clamp(22px,2.8vw,30px);">From root and leaf to your doorstep.</h2>
+      <p style="color:var(--sub); font-size:14.5px; margin-top:14px; max-width:480px; line-height:1.65;">Every product starts as raw herbs, barks and roots — soaked, prepared and bottled by hand in Ede, Osun State, with a second base in Lagos. We built Hylar Herbs to make trusted natural remedies easy to order online, without losing the care that goes into traditional preparation.</p>
+      <div class="about-stats">
+        <div class="stat-box"><strong>76</strong><span>Herbal formulas</span></div>
+        <div class="stat-box"><strong>100%</strong><span>Natural ingredients</span></div>
+        <div class="stat-box"><strong>5</strong><span>Product categories</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW TO ORDER -->
+<section class="section">
+  <div class="wrap">
+    <div class="section-head"><div><span class="eyebrow">How To Order</span><h2>Three steps from browsing to your doorstep.</h2></div></div>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><h4>Pick your products</h4><p>Browse the shop, filter by category, and add what you need to your order tray.</p></div>
+      <div class="step"><div class="step-num">2</div><h4>Send to WhatsApp</h4><p>Tap "Send Order" — your full list opens in WhatsApp, ready to confirm.</p></div>
+      <div class="step"><div class="step-num">3</div><h4>Receive &amp; start your routine</h4><p>Your order is freshly prepared, dispatched, and comes with clear usage instructions.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- REVIEWS -->
+<section class="section" style="background:var(--surface); border-top:1px solid var(--line); border-bottom:1px solid var(--line);">
+  <div class="wrap">
+    <div class="section-head"><div><span class="eyebrow">Customer Reviews</span><h2>Trusted by everyday families.</h2></div></div>
+    <div class="review-grid">
+      <div class="review">
+        <div class="stars">★★★★★</div>
+        <p>"I ordered the Lady's Cleanser after a friend recommended it — the usage instructions made it so easy to follow. Will be reordering."</p>
+        <div class="review-who"><div class="avatar">A</div><div><strong>Adaeze O.</strong><span>Ibadan</span><div class="verified">✓ Verified order</div></div></div>
+      </div>
+      <div class="review">
+        <div class="stars">★★★★★</div>
+        <p>"Fast response on WhatsApp and my package was well packed. The Mokole drink is now part of my husband's weekly routine."</p>
+        <div class="review-who"><div class="avatar">F</div><div><strong>Funmi B.</strong><span>Lagos</span><div class="verified">✓ Verified order</div></div></div>
+      </div>
+      <div class="review">
+        <div class="stars">★★★★★</div>
+        <p>"We got the TTC kit for my husband and I. The team was patient answering all our questions before we ordered."</p>
+        <div class="review-who"><div class="avatar">K</div><div><strong>Kemi A.</strong><span>Osogbo</span><div class="verified">✓ Verified order</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="section" id="faq">
+  <div class="wrap">
+    <div class="section-head"><div><span class="eyebrow">Questions</span><h2>Good to know before you order.</h2></div></div>
+    <div class="faq-list" id="faqList">
+      <div class="faq-item open">
+        <button class="faq-q"><span>How do I place an order?</span><span class="icon">+</span></button>
+        <div class="faq-a"><p>Add products to your order tray using the cart button on each card, then tap "Send Order" — this opens WhatsApp with your full list ready to send to 09090416306.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q"><span>Are your products 100% natural?</span><span class="icon">+</span></button>
+        <div class="faq-a"><p>Yes. All our formulas are prepared from natural roots, barks and leaves with no artificial fillers. Each product label includes the benefits and exact usage instructions.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q"><span>Do you deliver outside Ede &amp; Lagos?</span><span class="icon">+</span></button>
+        <div class="faq-a"><p>Yes, we deliver nationwide. Delivery fees vary by location — send us your address on WhatsApp for an exact quote.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q"><span>Can I get product recommendations for my symptoms?</span><span class="icon">+</span></button>
+        <div class="faq-a"><p>Absolutely — describe what you're experiencing on WhatsApp or by call, and we'll recommend the right product or kit for your needs.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q"><span>How should I store my herbal products?</span><span class="icon">+</span></button>
+        <div class="faq-a"><p>Keep bottles tightly closed in a cool, dry place away from direct sunlight. Refrigeration is not required unless stated on the label.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact-band" id="contact">
+  <div class="wrap contact-inner">
+    <div>
+      <span class="eyebrow">Get In Touch</span>
+      <h2>Ready to start your wellness routine?</h2>
+      <p class="lede">Reach us on WhatsApp for the fastest response, or call directly. Follow @HylarHerbs on socials for tips and restock alerts.</p>
+      <div class="contact-methods">
+        <a href="https://wa.me/2349090416306" class="contact-method"><div class="ic">💬</div><div><strong>WhatsApp Orders</strong><span>09090416306</span></div></a>
+        <a href="tel:+2348116695637" class="contact-method"><div class="ic">📞</div><div><strong>Call Us</strong><span>08116695637</span></div></a>
+        <a href="#" class="contact-method"><div class="ic">📍</div><div><strong>Social Handle</strong><span>@HylarHerbs — Facebook, Instagram, X, TikTok</span></div></a>
+      </div>
+    </div>
+    <div class="contact-card">
+      <h3>Send an order enquiry</h3>
+      <p>Fill this in and we'll open WhatsApp with your details pre-filled — just hit send.</p>
+      <form id="orderForm">
+        <div class="form-row"><label for="name">Your name</label><input type="text" id="name" placeholder="e.g. Bisi Adeyemi" required></div>
+        <div class="form-row">
+          <label for="product">Product / kit interested in</label>
+          <select id="product">
+            <option>Feminine Wellness Product</option>
+            <option>TTC / Fertility Kit</option>
+            <option>Infection Care Product</option>
+            <option>Men's Vitality Product</option>
+            <option>Body Detox / Weight Product</option>
+            <option>Not sure — please recommend</option>
+          </select>
+        </div>
+        <div class="form-row"><label for="msg">Message</label><textarea id="msg" rows="3" placeholder="Tell us a bit about what you need..."></textarea></div>
+        <button type="submit" class="btn btn-accent">💬 Continue on WhatsApp</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand"><img src="image%2077.png%20%28logo%29" alt="Hylar Herbs logo"><span>Hylar Herbs & Body Wellness</span></div>
+        <p class="desc">Find a way to be healed through natural herbs. 100% natural remedies, prepared and shipped with care.</p>
+      </div>
+      <div><h5>Shop</h5><ul>
+        <li><a href="#shop">All Products</a></li>
+        <li><a href="#kits">Kit Bundles</a></li>
+        <li><a href="#about">Our Story</a></li>
+        <li><a href="#faq">FAQ</a></li>
+      </ul></div>
+      <div><h5>Categories</h5><ul>
+        <li><a href="#shop" data-scroll-filter="feminine">Feminine Wellness</a></li>
+        <li><a href="#shop" data-scroll-filter="ttc">Fertility &amp; TTC</a></li>
+        <li><a href="#shop" data-scroll-filter="infection">Infection Care</a></li>
+        <li><a href="#shop" data-scroll-filter="men">Men's Vitality</a></li>
+      </ul></div>
+      <div><h5>Contact</h5><ul>
+        <li><a href="https://wa.me/2349090416306">WhatsApp: 09090416306</a></li>
+        <li><a href="tel:+2348116695637">Call: 08116695637</a></li>
+        <li><a href="#">@HylarHerbs</a></li>
+      </ul></div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Hylar Herbs & Body Wellness. All rights reserved.</span>
+      <div class="social-row">
+        <a href="#" aria-label="Facebook">f</a>
+        <a href="#" aria-label="Instagram">ig</a>
+        <a href="#" aria-label="X">x</a>
+        <a href="#" aria-label="TikTok">tt</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<a href="https://wa.me/2349090416306" class="wa-float" aria-label="Chat on WhatsApp">💬</a>
+
+<!-- ORDER TRAY -->
+<div class="order-tray" id="orderTray">
+  <div class="tray-head" id="trayHead">
+    <strong>🛒 Your Order <span class="tray-count" id="trayCount">0</span></strong>
+    <span class="chev">▲</span>
+  </div>
+  <div class="tray-body" id="trayBody">
+    <div class="tray-empty">Your order tray is empty. Add products to get started.</div>
+  </div>
+  <div class="tray-foot" id="trayFoot" style="display:none;">
+    <div class="tray-total-row"><span>Estimated Total</span><strong id="trayTotal">₦0</strong></div>
+    <a href="#" class="btn btn-accent" id="sendOrderBtn">Proceed to Checkout →</a>
+  </div>
+</div>
+
+<!-- CHECKOUT MODAL -->
+<div class="co-modal-wrap" id="checkoutModal">
+  <div class="co-backdrop" id="coBackdrop"></div>
+  <div class="co-modal">
+    <div class="co-head">
+      <h3>Delivery Details</h3>
+      <button class="co-close" id="coClose" aria-label="Close">✕</button>
+    </div>
+    <form id="checkoutForm">
+      <div class="co-body">
+        <div class="co-summary" id="coSummary"></div>
+        <div class="co-field">
+          <label for="coName">Full Name</label>
+          <input type="text" id="coName" placeholder="e.g. Bisi Adeyemi">
+          <p class="co-error">Please enter your name.</p>
+        </div>
+        <div class="co-field">
+          <label for="coPhone">Phone Number</label>
+          <input type="tel" id="coPhone" placeholder="e.g. 0803 123 4567">
+          <p class="co-error">Please enter a valid phone number.</p>
+        </div>
+        <div class="co-field">
+          <label for="coAddress">Delivery Address</label>
+          <textarea id="coAddress" rows="2" placeholder="House number, street, area, city"></textarea>
+          <p class="co-error">Please enter your delivery address.</p>
+        </div>
+        <div class="co-field">
+          <label for="coLoc">Preferred Delivery Location</label>
+          <input type="text" id="coLoc" placeholder="e.g. Nearest bus stop / landmark">
+          <p class="co-error">Please tell us a delivery location.</p>
+        </div>
+      </div>
+      <div class="co-foot">
+        <button type="submit" class="btn btn-accent" style="width:100%; justify-content:center;">📲 Send Order on WhatsApp</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  const IMAGES = {"image_1.png": "image_1.png", "image_2.png": "image_2.png", "image_3.png": "image_3.png", "image_4.png": "image_4.png", "image_5.png": "image_5.png", "image_6.png": "image_6.png", "image_7.png": "image_7.png", "image_8.png": "image_8.png", "image_9.png": "image_9.png", "image_10.png": "image_10.png", "image_11.png": "image_11.png", "image_12.png": "image_12.png", "image_13.png": "image_13.png", "image_14.png": "image_14.png", "image_15.png": "image_15.png", "image_16.png": "image_16.png", "image_17.png": "image_17.png", "image_18.png": "image_18.png", "image_19.png": "image_19.png", "image_20.png": "image_20.png", "image_21.png": "image_21.png", "image_22.png": "image_22.png", "image_23.png": "image_23.png", "image_24.png": "image_24.png", "image_25.png": "image_25.png", "image_26.png": "image_26.png", "image_27.png": "image_27.png", "image_28.png": "image_28.png", "image_29.png": "image_29.png", "image_30.png": "image_30.png", "image_31.png": "image_31.png", "image_32.png": "image_32.png", "image_33.png": "image_33.png", "image_34.png": "image_34.png", "image_35.png": "image_35.png", "image_36.png": "image_36.png", "image_37.png": "image_37.png", "image_38.png": "image_38.png", "image_39.png": "image_39.png", "image_40.png": "image_40.png", "image_41.png": "image_41.png", "image_42.png": "image_42.png", "image_43.png": "image_43.png", "image_44.png": "image_44.png", "image_45.png": "image_45.png", "image_46.png": "image_46.png", "image_47.png": "image_47.png", "image_48.png": "image_48.png", "image_49.png": "image_49.png", "image_50.png": "image_50.png", "image_51.png": "image_51.png", "image_52.png": "image_52.png", "image_53.png": "image_53.png", "image_54.png": "image_54.png", "image_55.png": "image_55.png", "image_56.png": "image_56.png", "image_57.png": "image_57.png", "image_58.png": "image_58.png", "image_59.png": "image_59.png", "image_60.png": "image_60.png", "image_61.png": "image_61.png", "image_62.png": "image_62.png", "image_63.png": "image_63.png", "image_64.png": "image_64.png", "image_65.png": "image_65.png", "image_66.png": "image_66.png", "image_67.png": "image_67.png", "image_68.png": "image_68.png", "image_69.png": "image_69.png", "image_70.png": "image_70.png", "image_71.png": "image_71.png", "image_72.png": "image_72.png", "image_73.png": "image_73.png", "image_74.png": "image_74.png", "image_75.png": "image_75.png", "image%2077.png%20%28logo%29": "image%2077.png%20%28logo%29", "image%2077.png%20%28hero%20banner%29": "image%2077.png%20%28hero%20banner%29"};
+
+  const products = [
+    { id:"p01", name:"Blood Tonic", price:3500, cat:"body", tag:"", img:"image_1.png", desc:"Blood Tonic — Hylar Herbs & Body Wellness.", num:1 },
+    { id:"p02", name:"Body Detox 500ml", price:5000, cat:"body", tag:"", img:"image_2.png", desc:"Body Detox 500ml — Hylar Herbs & Body Wellness.", num:2 },
+    { id:"p03", name:"Mokole 300ml", price:3000, cat:"men", tag:"", img:"image_3.png", desc:"Mokole 300ml — Hylar Herbs & Body Wellness.", num:3 },
+    { id:"p04", name:"Body Detox 300ml", price:3000, cat:"body", tag:"", img:"image_4.png", desc:"Body Detox 300ml — Hylar Herbs & Body Wellness.", num:4 },
+    { id:"p05", name:"Mokole 500ml", price:5000, cat:"men", tag:"", img:"image_5.png", desc:"Mokole 500ml — Hylar Herbs & Body Wellness.", num:5 },
+    { id:"p06", name:"Flat Tummy 500ml", price:5000, cat:"body", tag:"", img:"image_6.png", desc:"Flat Tummy 500ml — Hylar Herbs & Body Wellness.", num:6 },
+    { id:"p07", name:"Skin Disease Soap (Big)", price:5000, cat:"body", tag:"", img:"image_7.png", desc:"Skin Disease Soap (Big) — Hylar Herbs & Body Wellness.", num:7 },
+    { id:"p08", name:"Skin Disease Soap (Medium)", price:4000, cat:"body", tag:"", img:"image_8.png", desc:"Skin Disease Soap (Medium) — Hylar Herbs & Body Wellness.", num:8 },
+    { id:"p09", name:"Jedi & Detox", price:9000, cat:"infection", tag:"Kit", img:"image_9.png", desc:"Jedi & Detox — Hylar Herbs & Body Wellness.", num:9 },
+    { id:"p10", name:"Body Itching Combo", price:10000, cat:"body", tag:"Kit", img:"image_10.png", desc:"Body Itching Combo — Hylar Herbs & Body Wellness.", num:10 },
+    { id:"p11", name:"Acne Cure", price:11000, cat:"body", tag:"Kit", img:"image_11.png", desc:"Acne Cure — Hylar Herbs & Body Wellness.", num:11 },
+    { id:"p12", name:"Sperm Booster Combo", price:12000, cat:"men", tag:"Kit", img:"image_12.png", desc:"Sperm Booster Combo — Hylar Herbs & Body Wellness.", num:12 },
+    { id:"p13", name:"Infection", price:9000, cat:"infection", tag:"Kit", img:"image_13.png", desc:"Infection — Hylar Herbs & Body Wellness.", num:13 },
+    { id:"p14", name:"PID & Flusher", price:12000, cat:"infection", tag:"Kit", img:"image_14.png", desc:"PID & Flusher — Hylar Herbs & Body Wellness.", num:14 },
+    { id:"p15", name:"Infection 2.5 Litre", price:15000, cat:"infection", tag:"Kit", img:"image_15.png", desc:"Infection 2.5 Litre — Hylar Herbs & Body Wellness.", num:15 },
+    { id:"p16", name:"Manpower Combo", price:8000, cat:"men", tag:"Kit", img:"image_16.png", desc:"Manpower Combo — Hylar Herbs & Body Wellness.", num:16 },
+    { id:"p17", name:"Infection", price:10000, cat:"infection", tag:"Kit", img:"image_17.png", desc:"Infection — Hylar Herbs & Body Wellness.", num:17 },
+    { id:"p18", name:"Fertility Package", price:50000, cat:"ttc", tag:"Kit", img:"image_18.png", desc:"Fertility Package — Hylar Herbs & Body Wellness.", num:18 },
+    { id:"p19", name:"PID Kit", price:18000, cat:"infection", tag:"Kit", img:"image_19.png", desc:"PID Kit — Hylar Herbs & Body Wellness.", num:19 },
+    { id:"p20", name:"Flusher 1L", price:10000, cat:"body", tag:"Kit", img:"image_20.png", desc:"Flusher 1L — Hylar Herbs & Body Wellness.", num:20 },
+    { id:"p21", name:"Small Skin Disease Soap", price:3000, cat:"body", tag:"Kit", img:"image_21.png", desc:"Small Skin Disease Soap — Hylar Herbs & Body Wellness.", num:21 },
+    { id:"p22", name:"Jedi & Opa Eyin 300ml", price:3000, cat:"infection", tag:"Kit", img:"image_22.png", desc:"Jedi & Opa Eyin 300ml — Hylar Herbs & Body Wellness.", num:22 },
+    { id:"p23", name:"Jedi & Opa Eyin 500ml", price:4000, cat:"infection", tag:"Kit", img:"image_23.png", desc:"Jedi & Opa Eyin 500ml — Hylar Herbs & Body Wellness.", num:23 },
+    { id:"p24", name:"Jedi Herbal 400ml", price:3500, cat:"infection", tag:"Kit", img:"image_24.png", desc:"Jedi Herbal 400ml — Hylar Herbs & Body Wellness.", num:24 },
+    { id:"p25", name:"Weight Loss & Flat Tummy Combo", price:10000, cat:"body", tag:"Kit", img:"image_25.png", desc:"Weight Loss & Flat Tummy Combo — Hylar Herbs & Body Wellness.", num:25 },
+    { id:"p26", name:"Lady's Care", price:10000, cat:"feminine", tag:"Kit", img:"image_26.png", desc:"Lady's Care — Hylar Herbs & Body Wellness.", num:26 },
+    { id:"p27", name:"Weight Loss / Flat Tummy", price:20000, cat:"body", tag:"Kit", img:"image_27.png", desc:"Weight Loss / Flat Tummy — Hylar Herbs & Body Wellness.", num:27 },
+    { id:"p28", name:"Hormone Reset", price:13000, cat:"ttc", tag:"Kit", img:"image_28.png", desc:"Hormone Reset — Hylar Herbs & Body Wellness.", num:28 },
+    { id:"p29", name:"Period Restore", price:10000, cat:"ttc", tag:"Kit", img:"image_29.png", desc:"Period Restore — Hylar Herbs & Body Wellness.", num:29 },
+    { id:"p30", name:"Flusher 1L & Feminine Wash", price:13000, cat:"feminine", tag:"Kit", img:"image_30.png", desc:"Flusher 1L & Feminine Wash — Hylar Herbs & Body Wellness.", num:30 },
+    { id:"p31", name:"Sex Sweetener", price:7000, cat:"feminine", tag:"Kit", img:"image_31.png", desc:"Sex Sweetener — Hylar Herbs & Body Wellness.", num:31 },
+    { id:"p32", name:"Infection killer", price:9000, cat:"infection", tag:"Kit", img:"image_32.png", desc:"Infection killer — Hylar Herbs & Body Wellness.", num:32 },
+    { id:"p33", name:"Infection & Detox", price:13000, cat:"infection", tag:"Kit", img:"image_33.png", desc:"Infection & Detox — Hylar Herbs & Body Wellness.", num:33 },
+    { id:"p34", name:"Lady's Deal", price:9500, cat:"feminine", tag:"Kit", img:"image_34.png", desc:"Lady's Deal — Hylar Herbs & Body Wellness.", num:34 },
+    { id:"p35", name:"Men's Package", price:15000, cat:"men", tag:"Kit", img:"image_35.png", desc:"Men's Package — Hylar Herbs & Body Wellness.", num:35 },
+    { id:"p36", name:"Flat Tummy Combo", price:10000, cat:"body", tag:"Kit", img:"image_36.png", desc:"Flat Tummy Combo — Hylar Herbs & Body Wellness.", num:36 },
+    { id:"p37", name:"Skin Irritation Cream", price:4000, cat:"body", tag:"Kit", img:"image_37.png", desc:"Skin Irritation Cream — Hylar Herbs & Body Wellness.", num:37 },
+    { id:"p38", name:"After Shave Care", price:11000, cat:"men", tag:"Kit", img:"image_38.png", desc:"After Shave Care — Hylar Herbs & Body Wellness.", num:38 },
+    { id:"p39", name:"Hormonal Imbalance", price:13000, cat:"feminine", tag:"Kit", img:"image_39.png", desc:"Hormonal Imbalance — Hylar Herbs & Body Wellness.", num:39 },
+    { id:"p40", name:"Men's Care", price:6000, cat:"men", tag:"Kit", img:"image_40.png", desc:"Men's Care — Hylar Herbs & Body Wellness.", num:40 },
+    { id:"p41", name:"Jedi (Pile)", price:7000, cat:"infection", tag:"", img:"image_41.png", desc:"Jedi (Pile) — Hylar Herbs & Body Wellness.", num:41 },
+    { id:"p42", name:"Contraceptive Herb", price:8000, cat:"feminine", tag:"", img:"image_42.png", desc:"Contraceptive Herb — Hylar Herbs & Body Wellness.", num:42 },
+    { id:"p43", name:"Hormonal Imbalance Kit", price:17000, cat:"feminine", tag:"Kit", img:"image_43.png", desc:"Hormonal Imbalance Kit — Hylar Herbs & Body Wellness.", num:43 },
+    { id:"p44", name:"Half Infection Kit", price:12000, cat:"infection", tag:"Kit", img:"image_44.png", desc:"Half Infection Kit — Hylar Herbs & Body Wellness.", num:44 },
+    { id:"p45", name:"BBL Cream", price:3500, cat:"feminine", tag:"", img:"image_45.png", desc:"BBL Cream — Hylar Herbs & Body Wellness.", num:45 },
+    { id:"p46", name:"Hips Enlargement Oil", price:5000, cat:"feminine", tag:"", img:"image_46.png", desc:"Hips Enlargement Oil — Hylar Herbs & Body Wellness.", num:46 },
+    { id:"p47", name:"5 in 1 / Jedi Flusher", price:13000, cat:"infection", tag:"Kit", img:"image_47.png", desc:"5 in 1 / Jedi Flusher — Hylar Herbs & Body Wellness.", num:47 },
+    { id:"p48", name:"General Body Weight Gain", price:20000, cat:"body", tag:"Kit", img:"image_48.png", desc:"General Body Weight Gain — Hylar Herbs & Body Wellness.", num:48 },
+    { id:"p49", name:"Hips & Bumbum", price:12500, cat:"feminine", tag:"Kit", img:"image_49.png", desc:"Hips & Bumbum — Hylar Herbs & Body Wellness.", num:49 },
+    { id:"p50", name:"Weight Gain Combo", price:13000, cat:"body", tag:"Kit", img:"image_50.png", desc:"Weight Gain Combo — Hylar Herbs & Body Wellness.", num:50 },
+    { id:"p51", name:"Hips Oils & Pills", price:11000, cat:"feminine", tag:"Kit", img:"image_51.png", desc:"Hips Oils & Pills — Hylar Herbs & Body Wellness.", num:51 },
+    { id:"p52", name:"Girlie's Essential", price:9000, cat:"feminine", tag:"Kit", img:"image_52.png", desc:"Girlie's Essential — Hylar Herbs & Body Wellness.", num:52 },
+    { id:"p53", name:"Feminine Hygiene", price:6000, cat:"feminine", tag:"Kit", img:"image_53.png", desc:"Feminine Hygiene — Hylar Herbs & Body Wellness.", num:53 },
+    { id:"p54", name:"Detox (Powder & Liquid)", price:8000, cat:"body", tag:"Kit", img:"image_54.png", desc:"Detox (Powder & Liquid) — Hylar Herbs & Body Wellness.", num:54 },
+    { id:"p55", name:"Detox & Jedi", price:6000, cat:"infection", tag:"Kit", img:"image_55.png", desc:"Detox & Jedi — Hylar Herbs & Body Wellness.", num:55 },
+    { id:"p56", name:"Staphylococcus Cure", price:18000, cat:"infection", tag:"Kit", img:"image_56.png", desc:"Staphylococcus Cure — Hylar Herbs & Body Wellness.", num:56 },
+    { id:"p57", name:"Feminine Care", price:6000, cat:"feminine", tag:"Kit", img:"image_57.png", desc:"Feminine Care — Hylar Herbs & Body Wellness.", num:57 },
+    { id:"p58", name:"Mokole (Small Bottle)", price:1500, cat:"men", tag:"", img:"image_58.png", desc:"Mokole (Small Bottle) — Hylar Herbs & Body Wellness.", num:58 },
+    { id:"p59", name:"Flat Tummy 1L", price:8000, cat:"body", tag:"Kit", img:"image_59.png", desc:"Flat Tummy 1L — Hylar Herbs & Body Wellness.", num:59 },
+    { id:"p60", name:"Weight Gain Syrup & Pills", price:15000, cat:"body", tag:"Kit", img:"image_60.png", desc:"Weight Gain Syrup & Pills — Hylar Herbs & Body Wellness.", num:60 },
+    { id:"p61", name:"Weight Gain Syrup", price:8000, cat:"body", tag:"", img:"image_61.png", desc:"Weight Gain Syrup — Hylar Herbs & Body Wellness.", num:61 },
+    { id:"p62", name:"Men's Kit", price:20000, cat:"men", tag:"Kit", img:"image_62.png", desc:"Men's Kit — Hylar Herbs & Body Wellness.", num:62 },
+    { id:"p63", name:"Smoker's Detox", price:5000, cat:"body", tag:"Kit", img:"image_63.png", desc:"Smoker's Detox — Hylar Herbs & Body Wellness.", num:63 },
+    { id:"p64", name:"Sex Drop", price:1500, cat:"feminine", tag:"", img:"image_64.png", desc:"Sex Drop — Hylar Herbs & Body Wellness.", num:64 },
+    { id:"p65", name:"Women's Sweetener Kit", price:8000, cat:"men", tag:"Kit", img:"image_65.png", desc:"Women's Sweetener Kit — Hylar Herbs & Body Wellness.", num:65 },
+    { id:"p66", name:"Sex Honey", price:1500, cat:"feminine", tag:"", img:"image_66.png", desc:"Sex Honey — Hylar Herbs & Body Wellness.", num:66 },
+    { id:"p67", name:"Flat Tummy Package", price:15000, cat:"body", tag:"Kit", img:"image_67.png", desc:"Flat Tummy Package — Hylar Herbs & Body Wellness.", num:67 },
+    { id:"p68", name:"Men's Mini Kit", price:13000, cat:"men", tag:"Kit", img:"image_68.png", desc:"Men's Mini Kit — Hylar Herbs & Body Wellness.", num:68 },
+    { id:"p69", name:"Infection Flusher 500ml", price:5000, cat:"infection", tag:"", img:"image_69.png", desc:"Infection Flusher 500ml — Hylar Herbs & Body Wellness.", num:69 },
+    { id:"p70", name:"TTC Kit - Husband", price:50000, cat:"ttc", tag:"Kit", img:"image_70.png", desc:"TTC Kit - Husband — Hylar Herbs & Body Wellness.", num:70 },
+    { id:"p71", name:"Infection Care Kit", price:15000, cat:"infection", tag:"Kit", img:"image_71.png", desc:"Infection Care Kit — Hylar Herbs & Body Wellness.", num:71 },
+    { id:"p72", name:"Hormonal Imbalance (Big)", price:8000, cat:"feminine", tag:"", img:"image_72.png", desc:"Hormonal Imbalance (Big) — Hylar Herbs & Body Wellness.", num:72 },
+    { id:"p73", name:"Sperm Booster", price:25000, cat:"men", tag:"", img:"image_73.png", desc:"Sperm Booster — Hylar Herbs & Body Wellness.", num:73 },
+    { id:"p74", name:"Erectile Dysfunction (Idakole)", price:20000, cat:"men", tag:"", img:"image_74.png", desc:"Erectile Dysfunction (Idakole) — Hylar Herbs & Body Wellness.", num:74 },
+    { id:"p75", name:"Flat Tummy Herbal Powder", price:5000, cat:"body", tag:"", img:"image_75.png", desc:"Flat Tummy Herbal Powder — Hylar Herbs & Body Wellness.", num:75 },
+    { id:"p76", name:"5 in 1 Blend", price:10000, cat:"men", tag:"", img:null, desc:"5 in 1 Blend — Hylar Herbs & Body Wellness.", num:76 },
+  ];
+
+  const catLabels = {feminine:"Feminine", ttc:"TTC / Fertility", infection:"Infection Care", men:"Men's Vitality", body:"Body & Weight"};
+  function primaryCat(catStr){
+    const order = ["feminine","ttc","infection","men","body"];
+    const cats = catStr.split(" ");
+    for(const c of order){ if(cats.includes(c)) return c; }
+    return cats[0];
+  }
+
+  // ---------- Order tray state (cart with quantities + running total) ----------
+  const WA_NUMBER = "2349090416306";
+  let order = []; // {id, name, price, img, qty}
+  const money = n => '₦' + Number(n).toLocaleString('en-NG');
+
+  function cartTotal(){ return order.reduce((s,o) => s + (o.price||0) * o.qty, 0); }
+  function cartCount(){ return order.reduce((s,o) => s + o.qty, 0); }
+
+  function updateTray(){
+    const body = document.getElementById('trayBody');
+    const count = document.getElementById('trayCount');
+    const badge = document.getElementById('navBadge');
+    const foot = document.getElementById('trayFoot');
+    count.textContent = cartCount();
+    badge.textContent = cartCount();
+    if(order.length === 0){
+      body.innerHTML = '<div class="tray-empty">Your order tray is empty. Add products to get started.</div>';
+      foot.style.display = 'none';
+      return;
+    }
+    foot.style.display = 'block';
+    body.innerHTML = order.map((p, i) => `
+      <div class="tray-item">
+        ${p.img ? `<img src="${IMAGES[p.img]}" alt="${p.name}">` : `<div class="ti-noimg">📷</div>`}
+        <div class="ti-info">
+          <div class="ti-name">${p.name}</div>
+          <div class="ti-qty">
+            <button class="qty-btn" data-idx="${i}" data-d="-1" aria-label="Decrease">−</button>
+            <span>${p.qty}</span>
+            <button class="qty-btn" data-idx="${i}" data-d="1" aria-label="Increase">+</button>
+          </div>
+        </div>
+        <div style="text-align:right;">
+          <div class="ti-price">${p.price ? money(p.price * p.qty) : 'POA'}</div>
+          <button class="tray-remove" data-idx="${i}" aria-label="Remove">Remove</button>
+        </div>
+      </div>`).join('');
+    document.getElementById('trayTotal').textContent = money(cartTotal());
+  }
+
+  function addToOrder(p, btnEl){
+    const existing = order.find(o => o.id === p.id);
+    if(existing){ existing.qty += 1; }
+    else{ order.push({ id:p.id, name:p.name, price:p.price, img:p.img, qty:1 }); }
+    updateTray();
+    document.getElementById('orderTray').classList.add('open');
+    if(btnEl){
+      btnEl.classList.add('added'); btnEl.textContent = '✓';
+      setTimeout(()=>{ btnEl.classList.remove('added'); btnEl.textContent='+'; }, 1200);
+    }
+  }
+
+  document.getElementById('trayBody').addEventListener('click', (e) => {
+    const qtyBtn = e.target.closest('.qty-btn');
+    if(qtyBtn){
+      const idx = Number(qtyBtn.dataset.idx);
+      order[idx].qty += Number(qtyBtn.dataset.d);
+      if(order[idx].qty <= 0) order.splice(idx, 1);
+      updateTray();
+      return;
+    }
+    const rmBtn = e.target.closest('.tray-remove');
+    if(rmBtn){
+      order.splice(Number(rmBtn.dataset.idx), 1);
+      updateTray();
+    }
+  });
+  document.getElementById('trayHead').addEventListener('click', () => {
+    document.getElementById('orderTray').classList.toggle('open');
+  });
+  document.getElementById('trayToggleIcon').addEventListener('click', (e) => {
+    e.preventDefault();
+    document.getElementById('orderTray').classList.toggle('open');
+  });
+
+  // ---------- Checkout modal ----------
+  function openCheckoutModal(){
+    if(order.length === 0) return;
+    document.getElementById('coSummary').innerHTML =
+      `<strong>${cartCount()} item${cartCount()===1?'':'s'}</strong> in your order &middot; Estimated total: <strong>${money(cartTotal())}</strong>`;
+    document.getElementById('checkoutModal').classList.add('open');
+  }
+  function closeCheckoutModal(){
+    document.getElementById('checkoutModal').classList.remove('open');
+  }
+  document.getElementById('sendOrderBtn').addEventListener('click', (e) => {
+    e.preventDefault();
+    if(order.length === 0){
+      window.open(`https://wa.me/${WA_NUMBER}`, '_blank');
+      return;
+    }
+    openCheckoutModal();
+  });
+  document.getElementById('coClose').addEventListener('click', closeCheckoutModal);
+  document.getElementById('coBackdrop').addEventListener('click', closeCheckoutModal);
+
+  document.getElementById('checkoutForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const name = document.getElementById('coName');
+    const phone = document.getElementById('coPhone');
+    const address = document.getElementById('coAddress');
+    const loc = document.getElementById('coLoc');
+    let ok = true;
+    [[name,2],[phone,7],[address,5],[loc,2]].forEach(([el,min]) => {
+      const valid = el.value.trim().length >= min;
+      el.closest('.co-field').classList.toggle('invalid', !valid);
+      if(!valid) ok = false;
+    });
+    if(!ok) return;
+
+    const lines = order.map((p,i) => `${i+1}. ${p.name} x${p.qty} — ${p.price ? money(p.price*p.qty) : 'Price to confirm'}`).join('\n');
+    const text = `Hello Hylar Herbs & Body Wellness! I'd like to place an order:\n\n${lines}\n\nEstimated Total: ${money(cartTotal())}\n\nDelivery Details:\nName: ${name.value.trim()}\nPhone: ${phone.value.trim()}\nAddress: ${address.value.trim()}\nPreferred Delivery Location: ${loc.value.trim()}\n\nPlease confirm availability and total cost including delivery. Thank you!`;
+    window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(text)}`, '_blank');
+    closeCheckoutModal();
+  });
+
+  // ---------- Render products ----------
+  let currentFilter = 'all';
+  let currentSearch = '';
+  function renderProducts(){
+    const grid = document.getElementById('productGrid');
+    const filtered = products.filter(p => {
+      const matchesFilter = currentFilter === 'all' || p.cat.split(" ").includes(currentFilter);
+      const matchesSearch = !currentSearch || p.name.toLowerCase().includes(currentSearch) || p.desc.toLowerCase().includes(currentSearch);
+      return matchesFilter && matchesSearch;
+    });
+    document.getElementById('resultCount').textContent = `${filtered.length} product${filtered.length !== 1 ? 's' : ''}`;
+    grid.innerHTML = "";
+    if(filtered.length === 0){
+      grid.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:var(--sub); padding:40px 0;">No products match your search. Try a different term or category.</p>';
+      return;
+    }
+    filtered.forEach((p) => {
+      const label = catLabels[primaryCat(p.cat)] || "Wellness";
+      const priceDisplay = p.price ? `₦${p.price.toLocaleString('en-NG')}` : "Contact for price";
+      const imgSrc = p.img ? IMAGES[p.img] : null;
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <div class="card-media">
+          ${imgSrc ? `<img src="${imgSrc}" alt="${p.name} — Hylar Herbs" loading="lazy">` : `<div class="no-photo">📷<span>Photo coming soon</span></div>`}
+          <div class="badge-row">
+            <span class="badge ${p.tag === 'Kit' ? 'badge-kit' : (p.best ? 'badge-best' : 'badge-cat')}">${p.tag === 'Kit' ? 'Kit Deal' : (p.best ? 'Best Seller' : label)}</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <span class="cat-label">${label}</span>
+          <h3>${p.name}</h3>
+          <p class="desc">${p.desc}</p>
+          <div class="card-foot">
+            <div class="price-block"><strong>${priceDisplay}</strong>${p.price ? '<small>Naira</small>' : ''}</div>
+            <button class="add-btn" aria-label="Add ${p.name} to order">+</button>
+          </div>
+        </div>`;
+      card.querySelector('.add-btn').addEventListener('click', (e) => addToOrder(p, e.currentTarget));
+      grid.appendChild(card);
+    });
+  }
+  renderProducts();
+
+  document.getElementById('filterRow').addEventListener('click', (e) => {
+    const btn = e.target.closest('.filter-btn');
+    if(!btn) return;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentFilter = btn.dataset.filter;
+    renderProducts();
+  });
+
+  document.querySelectorAll('.cat-tile').forEach(tile => {
+    tile.addEventListener('click', () => {
+      const cat = tile.dataset.cat;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.filter === cat));
+      currentFilter = cat;
+      renderProducts();
+      document.getElementById('shop').scrollIntoView({behavior:'smooth', block:'start'});
+    });
+  });
+
+  document.querySelectorAll('[data-scroll-filter]').forEach(link => {
+    link.addEventListener('click', (e) => {
+      const cat = link.dataset.scrollFilter;
+      currentFilter = cat;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.filter === cat));
+      setTimeout(renderProducts, 0);
+    });
+  });
+
+  document.getElementById('searchInput').addEventListener('input', (e) => {
+    currentSearch = e.target.value.trim().toLowerCase();
+    renderProducts();
+  });
+
+  // ---------- Mobile nav ----------
+  const navToggle = document.getElementById('navToggle');
+  const navLinks = document.getElementById('navLinks');
+  navToggle.addEventListener('click', () => {
+    const isOpen = navLinks.classList.toggle('open');
+    navToggle.setAttribute('aria-expanded', isOpen);
+  });
+  navLinks.querySelectorAll('a:not(.nav-order-icon)').forEach(a => a.addEventListener('click', () => navLinks.classList.remove('open')));
+
+  // ---------- FAQ accordion ----------
+  document.querySelectorAll('.faq-item').forEach(item => {
+    const q = item.querySelector('.faq-q');
+    const a = item.querySelector('.faq-a');
+    if(item.classList.contains('open')) a.style.maxHeight = a.scrollHeight + 'px';
+    q.addEventListener('click', () => {
+      const isOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item').forEach(i => { i.classList.remove('open'); i.querySelector('.faq-a').style.maxHeight = 0; });
+      if(!isOpen){ item.classList.add('open'); a.style.maxHeight = a.scrollHeight + 'px'; }
+    });
+  });
+
+  // ---------- Contact form -> WhatsApp ----------
+  document.getElementById('orderForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const name = document.getElementById('name').value.trim();
+    const product = document.getElementById('product').value;
+    const msg = document.getElementById('msg').value.trim();
+    const text = `Hi Hylar Herbs, my name is ${name}. I'm interested in: ${product}.${msg ? " " + msg : ""}`;
+    window.open(`https://wa.me/2349090416306?text=${encodeURIComponent(text)}`, '_blank');
+  });
+</script>
+</body>
+</html>
