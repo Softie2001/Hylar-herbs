@@ -1050,7 +1050,7 @@
     filtered.forEach((p) => {
       const label = catLabels[primaryCat(p.cat)] || "Wellness";
       const priceDisplay = p.price ? `₦${p.price.toLocaleString('en-NG')}` : "Contact for price";
-      const imgSrc = p.img ? `images/${p.img}` : null;
+      const imgSrc = p.img ? p.img : null;
       const card = document.createElement('div');
       card.className = 'card';
       card.innerHTML = `
