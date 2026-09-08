@@ -166,8 +166,9 @@
   .trust-item{display:flex; align-items:center; gap:12px;}
   .trust-item .ic{
     width:40px; height:40px; border-radius:10px; background:var(--chip); display:flex; align-items:center;
-    justify-content:center; font-size:18px; flex-shrink:0;
+    justify-content:center; flex-shrink:0;
   }
+  .trust-item .ic svg{width:20px;height:20px;}
   .trust-item strong{display:block; font-size:13px; color:var(--ink); font-weight:800;}
   .trust-item span{font-size:11.5px; color:var(--sub);}
 
@@ -189,7 +190,7 @@
     text-align:center; transition:all .2s ease; cursor:pointer;
   }
   .cat-tile:hover, .cat-tile.active{border-color:var(--brand); background:var(--chip); transform:translateY(-3px); box-shadow:var(--shadow-sm);}
-  .cat-tile .emoji{font-size:28px; margin-bottom:10px;}
+  .cat-tile .emoji{width:48px; height:48px; margin:0 auto 10px; border-radius:12px; background:var(--chip); color:var(--brand); display:flex; align-items:center; justify-content:center;} .cat-tile .emoji svg{width:26px; height:26px;}
   .cat-tile strong{display:block; font-size:13px; font-weight:800; color:var(--ink);}
   .cat-tile span{font-size:11px; color:var(--sub);}
 
@@ -417,6 +418,15 @@
     font-size:25px; box-shadow:0 12px 28px rgba(30,142,62,0.5); transition:transform 0.2s ease;
   }
   .wa-float:hover{transform:scale(1.08);}
+  .wa-float svg{width:24px;height:24px;}
+  .btn svg,.nav-cta svg,.nav-order-icon svg,.tray-head svg,.contact-method .ic svg,.verified svg,.faq-q .icon svg{width:17px;height:17px;flex-shrink:0;}
+  .hero-badge-row svg{width:14px;height:14px;vertical-align:middle;}
+  .stars{display:flex;gap:2px;color:var(--accent);}
+  .stars svg{width:15px;height:15px;fill:currentColor;}
+  .no-photo svg,.ti-noimg svg{width:24px;height:24px;}
+  .chev svg{width:18px;height:18px;}
+  .cat-tile{user-select:none;}
+  .nav-links.open::before{content:"";position:fixed;inset:0;background:rgba(10,30,15,.32);z-index:-1;}
 
   /* ---------- RESPONSIVE ---------- */
   @media (max-width:1080px){
@@ -462,10 +472,10 @@
 <!-- UTILITY BAR -->
 <div class="utility-bar">
   <div class="utility-inner">
-    <span>🚚 Nationwide delivery, based in Ede (Osun) &amp; Lagos</span>
+    <span><i data-lucide="truck" aria-hidden="true"></i>Nationwide delivery, based in Ede (Osun) &amp; Lagos</span>
     <div class="utility-links">
-      <a href="tel:+2348116695637">📞 08116695637</a>
-      <a href="https://wa.me/2349090416306">💬 09090416306</a>
+      <a href="tel:+2348116695637"><i data-lucide="phone" aria-hidden="true"></i>08116695637</a>
+      <a href="https://wa.me/2349090416306"><i data-lucide="message-circle" aria-hidden="true"></i>09090416306</a>
     </div>
   </div>
 </div>
@@ -488,7 +498,7 @@
       </svg>
       <input type="text" id="searchInput" placeholder="Search products — e.g. detox, fertility, infection...">
     </div>
-    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+    <button class="nav-toggle" id="navToggle" type="button" aria-label="Toggle menu" aria-expanded="false">
       <span></span><span></span><span></span>
     </button>
     <div class="nav-links" id="navLinks">
@@ -496,8 +506,8 @@
       <a href="#kits">Kits</a>
       <a href="#about">Our Story</a>
       <a href="#faq">FAQ</a>
-      <a href="#" class="nav-order-icon" id="trayToggleIcon">🛒<span class="nav-order-badge" id="navBadge">0</span></a>
-      <a href="https://wa.me/2349090416306" class="nav-cta">Order Now</a>
+      <a href="#" class="nav-order-icon" id="trayToggleIcon" aria-label="Open order tray"><i data-lucide="shopping-cart" aria-hidden="true"></i><span class="nav-order-badge" id="navBadge">0</span></a>
+      <a href="https://wa.me/2349090416306" class="nav-cta" target="_blank" rel="noopener noreferrer">Order Now</a>
     </div>
   </div>
   <div class="cat-strip">
@@ -518,15 +528,15 @@
   <div class="hero-inner">
     <div>
       <div class="hero-badge-row">
-        <span>🌿 100% Natural</span>
-        <span>🏭 Prepared to Order</span>
-        <span>🚚 Nationwide Delivery</span>
+        <span><i data-lucide="leaf" aria-hidden="true"></i>100% Natural</span>
+        <span><i data-lucide="package-check" aria-hidden="true"></i>Prepared to Order</span>
+        <span><i data-lucide="truck" aria-hidden="true"></i>Nationwide Delivery</span>
       </div>
       <h1>Natural herbal remedies, <span>shopped the easy way.</span></h1>
       <p>80 herbal formulas and kits for fertility, infection care, men's vitality, feminine wellness and body care — order in seconds, straight to WhatsApp.</p>
       <div class="hero-actions">
-        <a href="#shop" class="btn btn-accent">🛍️ Shop All Products</a>
-        <a href="https://wa.me/2349090416306" class="btn btn-outline-light">💬 Chat to Order</a>
+        <a href="#shop" class="btn btn-accent"><i data-lucide="shopping-bag" aria-hidden="true"></i>Shop All Products</a>
+        <a href="https://wa.me/2349090416306" class="btn btn-outline-light" target="_blank" rel="noopener noreferrer"><i data-lucide="message-circle" aria-hidden="true"></i>Chat to Order</a>
       </div>
     </div>
     <div class="hero-visual">
@@ -544,10 +554,10 @@
 <!-- TRUST STRIP -->
 <div class="trust-strip">
   <div class="wrap trust-inner">
-    <div class="trust-item"><div class="ic">🌿</div><div><strong>100% Natural</strong><span>No fillers or additives</span></div></div>
-    <div class="trust-item"><div class="ic">📦</div><div><strong>Made to Order</strong><span>Freshly prepared batches</span></div></div>
-    <div class="trust-item"><div class="ic">🚚</div><div><strong>Nationwide Delivery</strong><span>Shipped from Ede &amp; Lagos</span></div></div>
-    <div class="trust-item"><div class="ic">💬</div><div><strong>Real Support</strong><span>Talk to us on WhatsApp</span></div></div>
+    <div class="trust-item"><div class="ic"><i data-lucide="leaf" aria-hidden="true"></i></div><div><strong>100% Natural</strong><span>No fillers or additives</span></div></div>
+    <div class="trust-item"><div class="ic"><i data-lucide="package" aria-hidden="true"></i></div><div><strong>Made to Order</strong><span>Freshly prepared batches</span></div></div>
+    <div class="trust-item"><div class="ic"><i data-lucide="truck" aria-hidden="true"></i></div><div><strong>Nationwide Delivery</strong><span>Shipped from Ede &amp; Lagos</span></div></div>
+    <div class="trust-item"><div class="ic"><i data-lucide="message-circle" aria-hidden="true"></i></div><div><strong>Real Support</strong><span>Talk to us on WhatsApp</span></div></div>
   </div>
 </div>
 
@@ -558,11 +568,11 @@
       <div><span class="eyebrow">Shop by Category</span><h2>What are you looking for today?</h2></div>
     </div>
     <div class="cat-tiles">
-      <div class="cat-tile" data-cat="feminine"><div class="emoji">🌸</div><strong>Feminine</strong><span>Wellness</span></div>
-      <div class="cat-tile" data-cat="ttc"><div class="emoji">👶</div><strong>Fertility</strong><span>&amp; TTC</span></div>
-      <div class="cat-tile" data-cat="infection"><div class="emoji">🛡️</div><strong>Infection</strong><span>Care</span></div>
-      <div class="cat-tile" data-cat="men"><div class="emoji">💪</div><strong>Men's</strong><span>Vitality</span></div>
-      <div class="cat-tile" data-cat="body"><div class="emoji">⚖️</div><strong>Body &amp;</strong><span>Weight</span></div>
+      <div class="cat-tile" data-cat="feminine"><div class="emoji"><i data-lucide="flower-2" aria-hidden="true"></i></div><strong>Feminine</strong><span>Wellness</span></div>
+      <div class="cat-tile" data-cat="ttc"><div class="emoji"><i data-lucide="baby" aria-hidden="true"></i></div><strong>Fertility</strong><span>&amp; TTC</span></div>
+      <div class="cat-tile" data-cat="infection"><div class="emoji"><i data-lucide="shield-check" aria-hidden="true"></i></div><strong>Infection</strong><span>Care</span></div>
+      <div class="cat-tile" data-cat="men"><div class="emoji"><i data-lucide="dumbbell" aria-hidden="true"></i></div><strong>Men's</strong><span>Vitality</span></div>
+      <div class="cat-tile" data-cat="body"><div class="emoji"><i data-lucide="scale" aria-hidden="true"></i></div><strong>Body &amp;</strong><span>Weight</span></div>
     </div>
   </div>
 </section>
@@ -642,19 +652,19 @@
     <div class="section-head"><div><span class="eyebrow">Customer Reviews</span><h2>Trusted by everyday families.</h2></div></div>
     <div class="review-grid">
       <div class="review">
-        <div class="stars">★★★★★</div>
+        <div class="stars" aria-label="5 out of 5 stars"><i data-lucide="star" aria-hidden="true"></i><i data-lucide="star" aria-hidden="true"></i><i data-lucide="star" aria-hidden="true"></i><i data-lucide="star" aria-hidden="true"></i><i data-lucide="star" aria-hidden="true"></i></div>
         <p>"I ordered the Lady's Cleanser after a friend recommended it — the usage instructions made it so easy to follow. Will be reordering."</p>
-        <div class="review-who"><div class="avatar">A</div><div><strong>Adaeze O.</strong><span>Ibadan</span><div class="verified">✓ Verified order</div></div></div>
+        <div class="review-who"><div class="avatar">A</div><div><strong>Adaeze O.</strong><span>Ibadan</span><div class="verified"><i data-lucide="badge-check" aria-hidden="true"></i>Verified order</div></div></div>
       </div>
       <div class="review">
-        <div class="stars">★★★★★</div>
+        <div class="stars" aria-label="5 out of 5 stars"><i data-lucide="star" aria-hidden="true"></i><i data-lucide="star" aria-hidden="true"></i><i data-lucide="star" aria-hidden="true"></i><i data-lucide="star" aria-hidden="true"></i><i data-lucide="star" aria-hidden="true"></i></div>
         <p>"Fast response on WhatsApp and my package was well packed. The Mokole drink is now part of my husband's weekly routine."</p>
-        <div class="review-who"><div class="avatar">F</div><div><strong>Funmi B.</strong><span>Lagos</span><div class="verified">✓ Verified order</div></div></div>
+        <div class="review-who"><div class="avatar">F</div><div><strong>Funmi B.</strong><span>Lagos</span><div class="verified"><i data-lucide="badge-check" aria-hidden="true"></i>Verified order</div></div></div>
       </div>
       <div class="review">
-        <div class="stars">★★★★★</div>
+        <div class="stars" aria-label="5 out of 5 stars"><i data-lucide="star" aria-hidden="true"></i><i data-lucide="star" aria-hidden="true"></i><i data-lucide="star" aria-hidden="true"></i><i data-lucide="star" aria-hidden="true"></i><i data-lucide="star" aria-hidden="true"></i></div>
         <p>"We got the TTC kit for my husband and I. The team was patient answering all our questions before we ordered."</p>
-        <div class="review-who"><div class="avatar">K</div><div><strong>Kemi A.</strong><span>Osogbo</span><div class="verified">✓ Verified order</div></div></div>
+        <div class="review-who"><div class="avatar">K</div><div><strong>Kemi A.</strong><span>Osogbo</span><div class="verified"><i data-lucide="badge-check" aria-hidden="true"></i>Verified order</div></div></div>
       </div>
     </div>
   </div>
@@ -666,23 +676,23 @@
     <div class="section-head"><div><span class="eyebrow">Questions</span><h2>Good to know before you order.</h2></div></div>
     <div class="faq-list" id="faqList">
       <div class="faq-item open">
-        <button class="faq-q"><span>How do I place an order?</span><span class="icon">+</span></button>
+        <button class="faq-q" type="button" aria-expanded="true"><span>How do I place an order?</span><span class="icon"><i data-lucide="plus" aria-hidden="true"></i></span></button>
         <div class="faq-a"><p>Add products to your order tray using the cart button on each card, then tap "Send Order" — this opens WhatsApp with your full list ready to send to 09090416306.</p></div>
       </div>
       <div class="faq-item">
-        <button class="faq-q"><span>Are your products 100% natural?</span><span class="icon">+</span></button>
+        <button class="faq-q" type="button" aria-expanded="false"><span>Are your products 100% natural?</span><span class="icon"><i data-lucide="plus" aria-hidden="true"></i></span></button>
         <div class="faq-a"><p>Yes. All our formulas are prepared from natural roots, barks and leaves with no artificial fillers. Each product label includes the benefits and exact usage instructions.</p></div>
       </div>
       <div class="faq-item">
-        <button class="faq-q"><span>Do you deliver outside Ede &amp; Lagos?</span><span class="icon">+</span></button>
+        <button class="faq-q" type="button" aria-expanded="false"><span>Do you deliver outside Ede &amp; Lagos?</span><span class="icon"><i data-lucide="plus" aria-hidden="true"></i></span></button>
         <div class="faq-a"><p>Yes, we deliver nationwide. Delivery fees vary by location — send us your address on WhatsApp for an exact quote.</p></div>
       </div>
       <div class="faq-item">
-        <button class="faq-q"><span>Can I get product recommendations for my symptoms?</span><span class="icon">+</span></button>
+        <button class="faq-q" type="button" aria-expanded="false"><span>Can I get product recommendations for my symptoms?</span><span class="icon"><i data-lucide="plus" aria-hidden="true"></i></span></button>
         <div class="faq-a"><p>Absolutely — describe what you're experiencing on WhatsApp or by call, and we'll recommend the right product or kit for your needs.</p></div>
       </div>
       <div class="faq-item">
-        <button class="faq-q"><span>How should I store my herbal products?</span><span class="icon">+</span></button>
+        <button class="faq-q" type="button" aria-expanded="false"><span>How should I store my herbal products?</span><span class="icon"><i data-lucide="plus" aria-hidden="true"></i></span></button>
         <div class="faq-a"><p>Keep bottles tightly closed in a cool, dry place away from direct sunlight. Refrigeration is not required unless stated on the label.</p></div>
       </div>
     </div>
@@ -697,9 +707,9 @@
       <h2>Ready to start your wellness routine?</h2>
       <p class="lede">Reach us on WhatsApp for the fastest response, or call directly. Follow @HylarHerbs on socials for tips and restock alerts.</p>
       <div class="contact-methods">
-        <a href="https://wa.me/2349090416306" class="contact-method"><div class="ic">💬</div><div><strong>WhatsApp Orders</strong><span>09090416306</span></div></a>
-        <a href="tel:+2348116695637" class="contact-method"><div class="ic">📞</div><div><strong>Call Us</strong><span>08116695637</span></div></a>
-        <a href="#" class="contact-method"><div class="ic">📍</div><div><strong>Social Handle</strong><span>@HylarHerbs — Facebook, Instagram, X, TikTok</span></div></a>
+        <a href="https://wa.me/2349090416306" class="contact-method"><div class="ic"></div><div><strong>WhatsApp Orders</strong><span>09090416306</span></div></a>
+        <a href="tel:+2348116695637" class="contact-method"><div class="ic"></div><div><strong>Call Us</strong><span>08116695637</span></div></a>
+        <a href="#" class="contact-method"><div class="ic"></div><div><strong>Social Handle</strong><span>@HylarHerbs — Facebook, Instagram, X, TikTok</span></div></a>
       </div>
     </div>
     <div class="contact-card">
@@ -719,7 +729,7 @@
           </select>
         </div>
         <div class="form-row"><label for="msg">Message</label><textarea id="msg" rows="3" placeholder="Tell us a bit about what you need..."></textarea></div>
-        <button type="submit" class="btn btn-accent">💬 Continue on WhatsApp</button>
+        <button type="submit" class="btn btn-accent"><i data-lucide="message-circle" aria-hidden="true"></i>Continue on WhatsApp</button>
       </form>
     </div>
   </div>
@@ -768,20 +778,20 @@
   </div>
 </footer>
 
-<a href="https://wa.me/2349090416306" class="wa-float" aria-label="Chat on WhatsApp">💬</a>
+<a href="https://wa.me/2349090416306" class="wa-float" target="_blank" rel="noopener noreferrer" aria-label="Chat on WhatsApp"><i data-lucide="message-circle" aria-hidden="true"></i></a>
 
 <!-- ORDER TRAY -->
 <div class="order-tray" id="orderTray">
   <div class="tray-head" id="trayHead">
-    <strong>🛒 Your Order <span class="tray-count" id="trayCount">0</span></strong>
-    <span class="chev">▲</span>
+    <strong><i data-lucide="shopping-cart" aria-hidden="true"></i>Your Order <span class="tray-count" id="trayCount">0</span></strong>
+    <span class="chev"><i data-lucide="chevron-up" aria-hidden="true"></i></span>
   </div>
   <div class="tray-body" id="trayBody">
     <div class="tray-empty">Your order tray is empty. Add products to get started.</div>
   </div>
   <div class="tray-foot" id="trayFoot" style="display:none;">
     <div class="tray-total-row"><span>Estimated Total</span><strong id="trayTotal">₦0</strong></div>
-    <a href="#" class="btn btn-accent" id="sendOrderBtn">Proceed to Checkout →</a>
+    <a href="#" class="btn btn-accent" id="sendOrderBtn">Proceed to Checkout <i data-lucide="arrow-right" aria-hidden="true"></i></a>
   </div>
 </div>
 
@@ -791,7 +801,7 @@
   <div class="co-modal">
     <div class="co-head">
       <h3>Delivery Details</h3>
-      <button class="co-close" id="coClose" aria-label="Close">✕</button>
+      <button class="co-close" id="coClose" type="button" aria-label="Close"><i data-lucide="x" aria-hidden="true"></i></button>
     </div>
     <form id="checkoutForm">
       <div class="co-body">
@@ -818,7 +828,7 @@
         </div>
       </div>
       <div class="co-foot">
-        <button type="submit" class="btn btn-accent" style="width:100%; justify-content:center;">📲 Send Order on WhatsApp</button>
+        <button type="submit" class="btn btn-accent" style="width:100%; justify-content:center;"><i data-lucide="send" aria-hidden="true"></i>Send Order on WhatsApp</button>
       </div>
     </form>
   </div>
@@ -926,6 +936,8 @@
   function cartTotal(){ return order.reduce((s,o) => s + (o.price||0) * o.qty, 0); }
   function cartCount(){ return order.reduce((s,o) => s + o.qty, 0); }
 
+  function resolveImage(src){ return src && IMAGES[src] ? IMAGES[src] : src || ''; }
+
   function updateTray(){
     const body = document.getElementById('trayBody');
     const count = document.getElementById('trayCount');
@@ -936,18 +948,19 @@
     if(order.length === 0){
       body.innerHTML = '<div class="tray-empty">Your order tray is empty. Add products to get started.</div>';
       foot.style.display = 'none';
+      lucide.createIcons();
       return;
     }
     foot.style.display = 'block';
     body.innerHTML = order.map((p, i) => `
       <div class="tray-item">
-        ${p.img ? `<img src="${IMAGES[p.img]}" alt="${p.name}">` : `<div class="ti-noimg">📷</div>`}
+        ${p.img ? `<img src="${resolveImage(p.img)}" alt="${p.name}">` : `<div class="ti-noimg"><i data-lucide="image-off" aria-hidden="true"></i></div>`}
         <div class="ti-info">
           <div class="ti-name">${p.name}</div>
           <div class="ti-qty">
-            <button class="qty-btn" data-idx="${i}" data-d="-1" aria-label="Decrease">−</button>
+            <button class="qty-btn" type="button" data-idx="${i}" data-d="-1" aria-label="Decrease quantity"><i data-lucide="minus" aria-hidden="true"></i></button>
             <span>${p.qty}</span>
-            <button class="qty-btn" data-idx="${i}" data-d="1" aria-label="Increase">+</button>
+            <button class="qty-btn" type="button" data-idx="${i}" data-d="1" aria-label="Increase quantity"><i data-lucide="plus" aria-hidden="true"></i></button>
           </div>
         </div>
         <div style="text-align:right;">
@@ -956,6 +969,7 @@
         </div>
       </div>`).join('');
     document.getElementById('trayTotal').textContent = money(cartTotal());
+    lucide.createIcons();
   }
 
   function addToOrder(p, btnEl){
@@ -965,8 +979,8 @@
     updateTray();
     document.getElementById('orderTray').classList.add('open');
     if(btnEl){
-      btnEl.classList.add('added'); btnEl.textContent = '✓';
-      setTimeout(()=>{ btnEl.classList.remove('added'); btnEl.textContent='+'; }, 1200);
+      btnEl.classList.add('added'); btnEl.innerHTML = '<i data-lucide="check" aria-hidden="true"></i>'; lucide.createIcons();
+      setTimeout(()=>{ btnEl.classList.remove('added'); btnEl.innerHTML='<i data-lucide="plus" aria-hidden="true"></i>'; lucide.createIcons(); }, 1200);
     }
   }
 
@@ -1053,12 +1067,12 @@
     filtered.forEach((p) => {
       const label = catLabels[primaryCat(p.cat)] || "Wellness";
       const priceDisplay = p.price ? `₦${p.price.toLocaleString('en-NG')}` : "Contact for price";
-      const imgSrc = p.img ? p.img : null;
+      const imgSrc = p.img ? resolveImage(p.img) : null;
       const card = document.createElement('div');
       card.className = 'card';
       card.innerHTML = `
         <div class="card-media">
-          ${imgSrc ? `<img src="${imgSrc}" alt="${p.name} — Hylar Herbs" loading="lazy">` : `<div class="no-photo">📷<span>Photo coming soon</span></div>`}
+          ${imgSrc ? `<img src="${imgSrc}" alt="${p.name} — Hylar Herbs" loading="lazy">` : `<div class="no-photo"><i data-lucide="image-off" aria-hidden="true"></i><span>Photo coming soon</span></div>`}
           <div class="badge-row">
             <span class="badge ${p.tag === 'Kit' ? 'badge-kit' : (p.best ? 'badge-best' : 'badge-cat')}">${p.tag === 'Kit' ? 'Kit Deal' : (p.best ? 'Best Seller' : label)}</span>
           </div>
@@ -1069,7 +1083,7 @@
           <p class="desc">${p.desc}</p>
           <div class="card-foot">
             <div class="price-block"><strong>${priceDisplay}</strong>${p.price ? '<small>Naira</small>' : ''}</div>
-            <button class="add-btn" aria-label="Add ${p.name} to order">+</button>
+            <button class="add-btn" type="button" aria-label="Add ${p.name} to order"><i data-lucide="plus" aria-hidden="true"></i></button>
           </div>
         </div>`;
       card.querySelector('.add-btn').addEventListener('click', (e) => addToOrder(p, e.currentTarget));
@@ -1077,6 +1091,7 @@
     });
   }
   renderProducts();
+  lucide.createIcons();
 
   document.getElementById('filterRow').addEventListener('click', (e) => {
     const btn = e.target.closest('.filter-btn');
@@ -1120,15 +1135,25 @@
   });
   navLinks.querySelectorAll('a:not(.nav-order-icon)').forEach(a => a.addEventListener('click', () => navLinks.classList.remove('open')));
 
+
+  document.addEventListener('keydown', (e) => {
+    if(e.key === 'Escape'){
+      closeCheckoutModal();
+      navLinks.classList.remove('open');
+      navToggle.setAttribute('aria-expanded', 'false');
+    }
+  });
+
   // ---------- FAQ accordion ----------
   document.querySelectorAll('.faq-item').forEach(item => {
     const q = item.querySelector('.faq-q');
     const a = item.querySelector('.faq-a');
+    q.setAttribute('aria-expanded', item.classList.contains('open') ? 'true' : 'false');
     if(item.classList.contains('open')) a.style.maxHeight = a.scrollHeight + 'px';
     q.addEventListener('click', () => {
       const isOpen = item.classList.contains('open');
-      document.querySelectorAll('.faq-item').forEach(i => { i.classList.remove('open'); i.querySelector('.faq-a').style.maxHeight = 0; });
-      if(!isOpen){ item.classList.add('open'); a.style.maxHeight = a.scrollHeight + 'px'; }
+      document.querySelectorAll('.faq-item').forEach(i => { i.classList.remove('open'); i.querySelector('.faq-a').style.maxHeight = 0; i.querySelector('.faq-q').setAttribute('aria-expanded','false'); });
+      if(!isOpen){ item.classList.add('open'); q.setAttribute('aria-expanded','true'); a.style.maxHeight = a.scrollHeight + 'px'; }
     });
   });
 
