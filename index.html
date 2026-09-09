@@ -82,6 +82,9 @@
   .nav-search:focus-within{border-color:var(--brand);}
   .nav-search input{flex:1; border:none; background:none; outline:none; font-size:14px; color:var(--ink); font-family:inherit;}
   .nav-search svg{flex-shrink:0; opacity:0.55;}
+  .search-submit{border:0;background:none;padding:0;display:flex;align-items:center;justify-content:center;color:var(--brand-deep);cursor:pointer;flex:0 0 18px;}
+  .search-submit svg{width:18px;height:18px;opacity:.75;}
+  .search-submit:focus-visible{outline:2px solid var(--brand);outline-offset:3px;border-radius:4px;}
 
   .nav-links{display:flex; gap:22px; align-items:center; flex-shrink:0;}
   .nav-links a{font-size:14px; font-weight:700; color:var(--ink);}
@@ -719,10 +722,12 @@
 </a>
 
     <div class="nav-search">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="11" cy="11" r="8"/>
-        <path d="m21 21-4.3-4.3"/>
-      </svg>
+      <button class="search-submit" id="searchSubmit" type="button" aria-label="Search products">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/>
+          <path d="m21 21-4.3-4.3"/>
+        </svg>
+      </button>
       <input type="text" id="searchInput" placeholder="Search products — e.g. detox, fertility, infection...">
     </div>
     <button class="nav-toggle" id="navToggle" type="button" aria-label="Toggle menu" aria-expanded="false">
@@ -1351,9 +1356,55 @@
     });
   });
 
-  document.getElementById('searchInput').addEventListener('input', (e) => {
-    currentSearch = e.target.value.trim().toLowerCase();
+  // ---------- Product search ----------
+  const searchInput = document.getElementById('searchInput');
+  const searchSubmit = document.getElementById('searchSubmit');
+  let searchScrollTimer = null;
+
+  function runProductSearch(scrollToResults = true){
+    currentSearch = searchInput.value.trim().toLowerCase();
     renderProducts();
+
+    if(scrollToResults){
+      clearTimeout(searchScrollTimer);
+      searchScrollTimer = setTimeout(() => {
+        const shop = document.getElementById('shop');
+        if(shop){
+          shop.scrollIntoView({behavior:'smooth', block:'start'});
+        }
+        // Put the first matching product into view so the result is what the customer sees.
+        const firstCard = document.querySelector('#productGrid .card');
+        if(firstCard){
+          setTimeout(() => {
+            firstCard.scrollIntoView({behavior:'smooth', block:'center'});
+          }, 350);
+        }
+      }, 180);
+    }
+  }
+
+  searchSubmit.addEventListener('click', () => {
+    runProductSearch(true);
+    searchInput.focus();
+  });
+
+  searchInput.addEventListener('input', () => {
+    currentSearch = searchInput.value.trim().toLowerCase();
+    renderProducts();
+  });
+
+  // Press Enter to search and automatically take the customer to the matching products.
+  searchInput.addEventListener('keydown', (e) => {
+    if(e.key === 'Enter'){
+      e.preventDefault();
+      runProductSearch(true);
+      searchInput.blur();
+    }
+  });
+
+  // When the customer leaves the search field after typing, take them to the results too.
+  searchInput.addEventListener('change', () => {
+    if(searchInput.value.trim()) runProductSearch(true);
   });
 
   // ---------- Mobile nav ----------
