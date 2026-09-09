@@ -101,8 +101,12 @@
     display:flex; align-items:center; gap:8px; flex-shrink:0; transition:background .2s ease, transform .15s ease;
   }
   .nav-cta:hover{background:var(--brand-dark); transform:translateY(-1px);}
-  .nav-toggle{display:none; background:none; border:none; padding:8px;}
+  .nav-toggle{display:none; background:none; border:none; padding:8px; flex-shrink:0;}
   .nav-toggle span{display:block; width:22px; height:2px; background:var(--ink); margin:5px 0; border-radius:2px;}
+  .mobile-search-btn{display:none; width:42px; height:42px; border:1px solid var(--line); border-radius:10px; background:var(--chip); color:var(--ink); align-items:center; justify-content:center; flex-shrink:0;}
+  .mobile-search-btn svg{width:19px;height:19px;}
+  .mobile-menu-close{display:none; position:absolute; top:18px; right:18px; width:40px; height:40px; border:1px solid var(--line); border-radius:10px; background:var(--chip); color:var(--ink); align-items:center; justify-content:center;}
+  .mobile-menu-close svg{width:19px;height:19px;}
 
   /* category strip under nav */
   .cat-strip{background:var(--brand-deep); overflow-x:auto; scrollbar-width:none;}
@@ -427,7 +431,6 @@
   .no-photo svg,.ti-noimg svg{width:24px;height:24px;}
   .chev svg{width:18px;height:18px;}
   .cat-tile{user-select:none;}
-  .nav-links.open::before{content:"";position:fixed;inset:0;background:rgba(10,30,15,.32);z-index:-1;}
 
   /* ---------- RESPONSIVE ---------- */
   @media (max-width:1080px){
@@ -439,13 +442,21 @@
     .trust-inner{grid-template-columns:repeat(2,1fr);}
   }
   @media (max-width:760px){
+    .nav-inner{gap:8px; padding:10px 14px;}
+    .nav-brand{margin-right:auto; gap:8px;}
+    .nav-brand img{height:38px; width:38px;}
+    .nav-brand .brand-text strong{font-size:15px;}
+    .nav-brand .brand-text small{font-size:8.5px;}
     .nav-search{display:none;}
+    .mobile-search-btn{display:flex;}
     .nav-links{
       position:fixed; top:0; right:0; bottom:0; width:78%; max-width:320px; background:var(--surface); flex-direction:column;
       align-items:flex-start; padding:80px 24px 24px; gap:20px; transform:translateX(100%); transition:transform 0.3s ease;
       box-shadow:var(--shadow-lg); z-index:150;
     }
     .nav-links.open{transform:translateX(0);}
+    .nav-links.open::before{content:""; position:fixed; top:0; right:100%; width:calc(100vw - 100%); height:100vh; background:rgba(10,30,15,.32); z-index:-1;}
+    .mobile-menu-close{display:flex;}
     .nav-toggle{display:block;}
     .nav-cta{display:none;}
     .nav-links .nav-cta{display:flex; margin-top:8px;}
@@ -500,10 +511,14 @@
       </svg>
       <input type="text" id="searchInput" placeholder="Search products — e.g. detox, fertility, infection...">
     </div>
-    <button class="nav-toggle" id="navToggle" type="button" aria-label="Toggle menu" aria-expanded="false">
+    <button class="mobile-search-btn" id="mobileSearchBtn" type="button" aria-label="Search products" aria-expanded="false">
+      <i data-lucide="search" aria-hidden="true"></i>
+    </button>
+    <button class="nav-toggle" id="navToggle" type="button" aria-label="Open menu" aria-expanded="false">
       <span></span><span></span><span></span>
     </button>
     <div class="nav-links" id="navLinks">
+      <button class="mobile-menu-close" id="mobileMenuClose" type="button" aria-label="Close menu"><i data-lucide="x" aria-hidden="true"></i></button>
       <a href="#shop">Shop</a>
       <a href="#kits">Kits</a>
       <a href="#about">Our Story</a>
@@ -1208,21 +1223,50 @@
     }
   });
 
-  // ---------- Mobile nav ----------
+  // ---------- Mobile nav + mobile search ----------
   const navToggle = document.getElementById('navToggle');
   const navLinks = document.getElementById('navLinks');
+  const mobileMenuClose = document.getElementById('mobileMenuClose');
+  const mobileSearchBtn = document.getElementById('mobileSearchBtn');
+  const searchInput = document.getElementById('searchInput');
+
+  function closeMobileMenu(){
+    navLinks.classList.remove('open');
+    navToggle.setAttribute('aria-expanded', 'false');
+    navToggle.setAttribute('aria-label', 'Open menu');
+  }
+
   navToggle.addEventListener('click', () => {
-    const isOpen = navLinks.classList.toggle('open');
-    navToggle.setAttribute('aria-expanded', isOpen);
+    const isOpen = !navLinks.classList.contains('open');
+    if(isOpen){
+      navLinks.classList.add('open');
+      navToggle.setAttribute('aria-expanded', 'true');
+      navToggle.setAttribute('aria-label', 'Close menu');
+    }else{
+      closeMobileMenu();
+    }
   });
-  navLinks.querySelectorAll('a:not(.nav-order-icon)').forEach(a => a.addEventListener('click', () => navLinks.classList.remove('open')));
+
+  mobileMenuClose.addEventListener('click', closeMobileMenu);
+  navLinks.addEventListener('click', (e) => {
+    if(e.target === navLinks) closeMobileMenu();
+  });
+  navLinks.querySelectorAll('a:not(.nav-order-icon)').forEach(a => a.addEventListener('click', closeMobileMenu));
+
+  mobileSearchBtn.addEventListener('click', () => {
+    closeMobileMenu();
+    const shop = document.getElementById('shop');
+    shop.scrollIntoView({behavior:'smooth', block:'start'});
+    setTimeout(() => {
+      searchInput.focus();
+    }, 450);
+  });
 
 
   document.addEventListener('keydown', (e) => {
     if(e.key === 'Escape'){
       closeCheckoutModal();
-      navLinks.classList.remove('open');
-      navToggle.setAttribute('aria-expanded', 'false');
+      closeMobileMenu();
     }
   });
 
