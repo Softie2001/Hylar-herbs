@@ -440,16 +440,26 @@
 
   /* ---------- TABLET / MOBILE ---------- */
   @media (max-width:760px){
+    .nav{
+      position:sticky;
+      top:0;
+      z-index:100;
+    }
+
     .nav-inner{
-      padding:10px 16px;
+      display:grid;
+      grid-template-columns:1fr auto;
+      grid-template-areas:
+        "brand toggle"
+        "search search";
       gap:10px;
-      min-height:64px;
-      position:relative;
+      padding:10px 14px 12px;
+      min-height:0;
     }
 
     .nav-brand{
+      grid-area:brand;
       gap:8px;
-      flex:1;
       min-width:0;
     }
 
@@ -462,35 +472,58 @@
     .nav-brand .brand-text strong{font-size:15px;}
     .nav-brand .brand-text small{font-size:8.5px;}
 
-    /* Keep search visible on mobile, directly below the main nav row. */
+    /* Visible mobile search field with a clear search icon */
     .nav-search{
-      display:flex;
-      position:absolute;
-      left:12px;
-      right:12px;
-      top:100%;
-      width:auto;
+      grid-area:search;
+      display:flex !important;
+      position:relative;
+      left:auto;
+      right:auto;
+      top:auto;
+      width:100%;
       max-width:none;
       height:44px;
+      box-sizing:border-box;
       padding:8px 14px;
+      gap:10px;
       background:var(--chip);
-      border:1px solid var(--line);
+      border:1.5px solid var(--line);
       border-radius:10px;
-      z-index:110;
-      box-shadow:var(--shadow-sm);
+      z-index:1;
+      box-shadow:none;
     }
 
-    .nav-search input{font-size:13px;}
-    .nav-search svg{width:17px;height:17px;}
+    .nav-search svg{
+      display:block !important;
+      width:18px;
+      height:18px;
+      flex:0 0 18px;
+      opacity:.75;
+      color:var(--brand-deep);
+    }
 
+    .nav-search input{
+      min-width:0;
+      width:100%;
+      font-size:13px;
+    }
+
+    /* Hamburger */
     .nav-toggle{
-      display:block;
-      background:none;
-      border:none;
+      grid-area:toggle;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      background:var(--chip);
+      border:1px solid var(--line);
+      border-radius:9px;
       padding:7px;
-      width:40px;
-      height:40px;
+      width:42px;
+      height:42px;
       flex-shrink:0;
+      cursor:pointer;
+      z-index:201;
     }
 
     .nav-toggle span{
@@ -498,39 +531,85 @@
       width:22px;
       height:2px;
       background:var(--ink);
-      margin:5px auto;
+      margin:3px auto;
       border-radius:2px;
     }
 
+    /* Dark backdrop: tapping outside closes the menu */
+    .nav-menu-overlay{
+      display:block;
+      position:fixed;
+      inset:0;
+      background:rgba(10,30,15,.38);
+      opacity:0;
+      visibility:hidden;
+      pointer-events:none;
+      transition:opacity .25s ease, visibility .25s ease;
+      z-index:180;
+    }
+
+    .nav-menu-overlay.open{
+      opacity:1;
+      visibility:visible;
+      pointer-events:auto;
+    }
+
+    /* Mobile side menu */
     .nav-links{
       position:fixed;
       top:0;
       right:0;
       bottom:0;
-      width:78%;
-      max-width:320px;
+      width:min(82vw,320px);
+      height:100dvh;
+      box-sizing:border-box;
       background:var(--surface);
+      display:flex;
       flex-direction:column;
       align-items:flex-start;
-      padding:80px 24px 24px;
+      padding:76px 22px 24px;
       gap:20px;
-      transform:translateX(100%);
-      transition:transform .3s ease;
+      transform:translateX(105%);
+      transition:transform .28s ease;
       box-shadow:var(--shadow-lg);
-      z-index:150;
+      z-index:200;
+      overflow-y:auto;
     }
 
     .nav-links.open{transform:translateX(0);}
-    .nav-links a{font-size:15px;}
+
+    .nav-menu-close{
+      position:absolute;
+      top:16px;
+      right:16px;
+      width:40px;
+      height:40px;
+      border:1px solid var(--line);
+      border-radius:9px;
+      background:var(--chip);
+      color:var(--ink);
+      font-size:28px;
+      line-height:1;
+      cursor:pointer;
+    }
+
+    .nav-links a{
+      font-size:15px;
+    }
+
+    .nav-links .nav-order-icon{
+      display:flex;
+    }
+
     .nav-cta{display:none;}
     .nav-links .nav-cta{display:flex;margin-top:8px;}
 
-    /* Catalogue row stays visible and scrolls horizontally on small screens. */
+    /* Catalogue remains immediately below the header/search */
     .cat-strip{
       display:block;
       position:relative;
-      z-index:105;
-      margin-top:56px;
+      z-index:101;
+      margin-top:0;
       overflow-x:auto;
       overflow-y:hidden;
       -webkit-overflow-scrolling:touch;
@@ -544,7 +623,7 @@
       gap:0;
       width:max-content;
       max-width:none;
-      padding:0 8px;
+      padding:0 6px;
     }
 
     .cat-strip a{
@@ -584,11 +663,7 @@
       justify-content:center;
     }
 
-    .grid{
-      grid-template-columns:repeat(2,1fr);
-      gap:14px;
-    }
-
+    .grid{grid-template-columns:repeat(2,1fr);gap:14px;}
     .cat-tiles{grid-template-columns:repeat(3,1fr);}
     .kit-band{grid-template-columns:1fr;padding:28px 20px;}
     .steps{grid-template-columns:1fr;}
@@ -598,51 +673,20 @@
     .section{padding:40px 0;}
     .order-tray{right:0;margin-right:12px;width:calc(100vw - 24px);}
     .utility-links{display:none;}
-
-    .utility-inner{
-      padding:7px 14px;
-      font-size:11px;
-    }
+    .utility-inner{padding:7px 14px;font-size:11px;}
   }
 
   /* ---------- SMALL PHONES ---------- */
   @media (max-width:480px){
-    .nav-inner{
-      padding:9px 12px;
-      gap:7px;
-    }
-
-    .nav-brand img{
-      width:36px;
-      height:36px;
-    }
-
+    .nav-inner{padding:9px 11px 11px;gap:8px;}
+    .nav-brand img{width:36px;height:36px;}
     .nav-brand .brand-text strong{font-size:14px;}
     .nav-brand .brand-text small{font-size:8px;}
-
-    .nav-search{
-      left:10px;
-      right:10px;
-      height:42px;
-      padding:7px 12px;
-    }
-
+    .nav-search{height:42px;padding:7px 12px;}
+    .nav-search svg{width:17px;height:17px;flex-basis:17px;}
     .nav-search input{font-size:12px;}
-
-    .cat-strip{margin-top:52px;}
-    .cat-strip-inner{padding:0 5px;}
-
-    .cat-strip a{
-      min-height:42px;
-      padding:9px 11px;
-      font-size:11px;
-    }
-
-    .grid{
-      grid-template-columns:repeat(2,1fr);
-      gap:12px;
-    }
-
+    .cat-strip a{min-height:42px;padding:9px 11px;font-size:11px;}
+    .grid{grid-template-columns:repeat(2,1fr);gap:12px;}
     .cat-tiles{grid-template-columns:repeat(2,1fr);}
     .footer-grid{grid-template-columns:1fr;}
     .card-body h3{min-height:auto;}
@@ -684,7 +728,9 @@
     <button class="nav-toggle" id="navToggle" type="button" aria-label="Toggle menu" aria-expanded="false">
       <span></span><span></span><span></span>
     </button>
+    <div class="nav-menu-overlay" id="navMenuOverlay" aria-hidden="true"></div>
     <div class="nav-links" id="navLinks">
+      <button class="nav-menu-close" id="navMenuClose" type="button" aria-label="Close menu">&times;</button>
       <a href="#shop">Shop</a>
       <a href="#kits">Kits</a>
       <a href="#about">Our Story</a>
@@ -1313,18 +1359,42 @@
   // ---------- Mobile nav ----------
   const navToggle = document.getElementById('navToggle');
   const navLinks = document.getElementById('navLinks');
+  const navMenuClose = document.getElementById('navMenuClose');
+  const navMenuOverlay = document.getElementById('navMenuOverlay');
+
+  function closeMobileNav(){
+    navLinks.classList.remove('open');
+    navMenuOverlay.classList.remove('open');
+    navToggle.setAttribute('aria-expanded', 'false');
+    navMenuOverlay.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+
+  function openMobileNav(){
+    navLinks.classList.add('open');
+    navMenuOverlay.classList.add('open');
+    navToggle.setAttribute('aria-expanded', 'true');
+    navMenuOverlay.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+
   navToggle.addEventListener('click', () => {
-    const isOpen = navLinks.classList.toggle('open');
-    navToggle.setAttribute('aria-expanded', isOpen);
+    if(navLinks.classList.contains('open')) closeMobileNav();
+    else openMobileNav();
   });
-  navLinks.querySelectorAll('a:not(.nav-order-icon)').forEach(a => a.addEventListener('click', () => navLinks.classList.remove('open')));
+
+  navMenuClose.addEventListener('click', closeMobileNav);
+  navMenuOverlay.addEventListener('click', closeMobileNav);
+
+  navLinks.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => closeMobileNav());
+  });
 
 
   document.addEventListener('keydown', (e) => {
     if(e.key === 'Escape'){
       closeCheckoutModal();
-      navLinks.classList.remove('open');
-      navToggle.setAttribute('aria-expanded', 'false');
+      closeMobileNav();
     }
   });
 
