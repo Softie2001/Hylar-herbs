@@ -21,48 +21,54 @@
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <!-- Organization Schema -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    "@id": "https://hylarherbs.com.ng/#organization",
-    "name": "Hylar Herbs & Body Wellness",
-    "alternateName": "Hylar Herbs",
-    "url": "https://hylarherbs.com.ng/",
-    "logo": "https://hylarherbs.com.ng/hylar-herbs-logo.jpg",
-    "description": "Hylar Herbs & Body Wellness is a Nigerian wellness brand providing natural and herbal wellness products designed to support healthier lifestyles and everyday wellbeing.",
-    "founder": {
-      "@type": "Person",
-      "name": "Olumade Ruqoyyah Ajoke"
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "@id": "https://hylarherbs.com.ng/#organization",
+  "name": "Hylar Herbs & Body Wellness",
+  "alternateName": "Hylar Herbs",
+  "url": "https://hylarherbs.com.ng/",
+  "logo": {
+    "@type": "ImageObject",
+    "url": "https://hylarherbs.com.ng/hylar-herbs-logo.jpg"
+  },
+  "description": "Hylar Herbs & Body Wellness is a Nigerian wellness brand providing natural and herbal wellness products designed to support healthier lifestyles and everyday wellbeing.",
+  "founder": {
+    "@type": "Person",
+    "name": "Olumade Ruqoyyah Ajoke"
+  },
+  "telephone": "+2348116695637",
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "telephone": "+2349090416306",
+    "contactType": "customer service",
+    "areaServed": "NG",
+    "availableLanguage": "en"
+  },
+  "address": [
+    {
+      "@type": "PostalAddress",
+      "addressLocality": "Lagos",
+      "addressCountry": "NG"
     },
-    "telephone": "+2348116695637",
-    "contactPoint": {
-      "@type": "ContactPoint",
-      "telephone": "+2349090416306",
-      "contactType": "customer service",
-      "areaServed": "NG",
-      "availableLanguage": "en"
-    },
-    "address": [
-      {
-        "@type": "PostalAddress",
-        "addressLocality": "Lagos",
-        "addressCountry": "NG"
-      },
-      {
-        "@type": "PostalAddress",
-        "addressLocality": "Ede",
-        "addressRegion": "Osun State",
-        "addressCountry": "NG"
-      }
-    ],
-    "areaServed": {
-      "@type": "Country",
-      "name": "Nigeria"
+    {
+      "@type": "PostalAddress",
+      "addressLocality": "Ede",
+      "addressRegion": "Osun State",
+      "addressCountry": "NG"
     }
-  }
-  </script>
-
+  ],
+  "areaServed": {
+    "@type": "Country",
+    "name": "Nigeria"
+  },
+  "sameAs": [
+    "https://www.instagram.com/hylarherbs/",
+    "https://www.tiktok.com/@hylar_alagbo/"
+  ]
+}
+</script>
   <style>
     * {
       box-sizing: border-box;
