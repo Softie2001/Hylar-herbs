@@ -19,8 +19,52 @@
 .toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:14px}.toolbar-left,.toolbar-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.toolbar input,.toolbar select{border:1px solid var(--line);border-radius:9px;padding:10px 11px;background:#fff;min-width:170px}.table-wrap{overflow:auto}.table{width:100%;border-collapse:collapse;min-width:820px}.table th,.table td{text-align:left;padding:12px 9px;border-bottom:1px solid var(--line);vertical-align:middle}.table th{font-size:10px;color:var(--sub);text-transform:uppercase;letter-spacing:.03em}.table td{font-size:12px}.table tbody tr:hover{background:#FAFBF9}.actions{display:flex;gap:6px;flex-wrap:wrap}.actions .btn{font-size:11px;padding:7px 9px}.empty{text-align:center;padding:45px 15px;color:var(--sub)}
 .analytics-controls{display:flex;align-items:end;gap:9px;flex-wrap:wrap;margin-bottom:18px}.analytics-controls .field{margin:0}.analytics-controls label{font-size:10px}.range-buttons{display:flex;gap:6px;flex-wrap:wrap}.range-buttons button.active{background:var(--deep);color:#fff}.chart{height:260px;display:flex;align-items:flex-end;gap:10px;padding:20px 6px 8px;border-top:1px solid var(--line);overflow-x:auto}.bar-wrap{height:100%;min-width:38px;flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:7px}.bar{width:100%;max-width:46px;min-height:3px;background:var(--brand);border-radius:7px 7px 2px 2px}.bar-label{font-size:9px;color:var(--sub);white-space:nowrap}.bar-value{font-size:9px;font-weight:800;color:var(--deep);white-space:nowrap}.product-rank{display:grid;grid-template-columns:40px 1fr auto;gap:11px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line)}.product-rank:last-child{border-bottom:0}.product-rank img{width:40px;height:40px;border-radius:9px;object-fit:cover;background:#eee}.rank-name{font-size:12px;font-weight:800}.rank-meta{font-size:10px;color:var(--sub);margin-top:3px}.rank-revenue{font-size:12px;font-weight:800;color:var(--deep)}
 .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.detail{background:#F7F9F6;border-radius:10px;padding:11px}.detail.full{grid-column:1/-1}.detail small{display:block;color:var(--sub);font-size:10px;margin-bottom:4px}.detail strong{font-size:12px;line-height:1.45;word-break:break-word}.items{margin-top:16px;border-top:1px solid var(--line);padding-top:14px}.item-row{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);font-size:12px}.proof{margin-top:15px}.proof img{max-width:100%;max-height:360px;border:1px solid var(--line);border-radius:10px;display:block}.modal{position:fixed;inset:0;z-index:80;background:rgba(4,20,14,.48);display:flex;align-items:center;justify-content:center;padding:15px}.modal-card{background:#fff;width:min(720px,100%);max-height:92vh;overflow:auto;border-radius:16px;padding:20px}.modal-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:16px}.modal-head h2{margin:0;font-size:18px}.modal-head button{width:36px;height:36px;border:0;border-radius:9px;background:#EEF2EE;cursor:pointer;font-size:20px}.setting-note{font-size:11px;color:var(--sub);line-height:1.5;margin-top:4px}.notice{padding:11px 12px;border-radius:9px;background:#EEF5EF;color:var(--deep);font-size:12px;margin-bottom:14px}.error{background:#FDECEC;color:#9B1C1C}
+img{max-width:100%}.grid2dash>*,.cards>*{min-width:0}.top h1{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 @media(max-width:900px){.cards{grid-template-columns:repeat(2,1fr)}.grid2dash{grid-template-columns:1fr}}
-@media(max-width:650px){.top{height:60px;padding:0 12px}.top h1{font-size:15px}.wrap{padding:15px 12px}.panel{padding:15px;border-radius:13px}.view-title{align-items:flex-start;flex-direction:column}.view-title h2{font-size:21px}.cards{grid-template-columns:1fr 1fr;gap:8px}.stat{padding:12px}.stat strong{font-size:20px;margin-top:10px}.stat-icon{width:30px;height:30px}.grid2dash{gap:12px}.toolbar,.toolbar-left,.toolbar-right{width:100%}.toolbar input,.toolbar select{min-width:0;flex:1;width:100%}.detail-grid{grid-template-columns:1fr}.detail.full{grid-column:auto}.modal{padding:7px;align-items:flex-end}.modal-card{max-height:94vh;padding:15px;border-radius:14px 14px 10px 10px}.drawer-panel{width:82vw}.analytics-controls{align-items:stretch}.range-buttons{width:100%}.range-buttons button{flex:1}.chart{height:230px;gap:6px}.bar-wrap{min-width:31px}.logout{font-size:11px;padding:8px 9px}.order-card{align-items:flex-start}.order-price{font-size:12px}}
+@media(max-width:650px){
+html{-webkit-text-size-adjust:100%}
+body{overflow-x:hidden}
+.btn{min-height:40px}
+/* top bar + drawer */
+.top{height:56px;padding:0 12px;gap:10px}.top h1{font-size:15px}.menu-btn{width:38px;height:38px;flex:none}.logout{font-size:12px;padding:8px 10px;flex:none}
+.drawer-panel{width:82vw;max-width:320px;padding:18px 12px}.nav-item{padding:14px 12px;font-size:15px}
+/* layout */
+.wrap{padding:14px 12px 30px}.login{margin:28px auto}.panel{padding:14px;border-radius:13px}
+.view-title{align-items:stretch;flex-direction:column;gap:10px;margin-bottom:14px}.view-title h2{font-size:20px}.view-title .btn{width:100%}
+/* stat cards */
+.cards{grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}.stat{padding:12px}.stat-top{font-size:10px;gap:6px}.stat-icon{width:28px;height:28px;flex:none}.stat strong{font-size:18px;margin-top:9px;overflow-wrap:anywhere}.stat small{font-size:10px}
+.grid2dash{gap:12px}
+/* inputs: 16px stops iPhone from zooming in when you tap a field */
+.field input,.field textarea,.field select,.toolbar input,.toolbar select{font-size:16px}
+.toolbar,.toolbar-left,.toolbar-right{width:100%}.toolbar-left{flex-direction:column;align-items:stretch}.toolbar input,.toolbar select{min-width:0;width:100%;flex:none}.toolbar>.btn{width:100%}
+/* recent orders + rankings */
+.order-card{flex-wrap:wrap;align-items:center;gap:6px 10px}.order-main{flex:1 1 100%}.order-price{margin-left:auto;font-size:13px}
+.product-rank{grid-template-columns:34px 1fr auto;gap:9px}.product-rank>*{min-width:0}.rank-name{overflow-wrap:anywhere}
+/* tables become cards */
+.table-wrap{overflow:visible}
+.table{min-width:0;display:block;border-collapse:separate}.table thead{display:none}.table tbody{display:block}
+.table tr{display:block;border:1px solid var(--line);border-radius:12px;padding:6px 12px;margin-bottom:10px;background:#fff}
+.table tbody tr:hover{background:#fff}
+.table td{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:9px 0;border-bottom:1px dashed var(--line);text-align:right;font-size:13px}
+.table td:last-child{border-bottom:0}
+.table td[data-label]::before{content:attr(data-label);color:var(--sub);font-size:11px;font-weight:800;text-align:left;flex:none}
+.table td:not([data-label]){display:block;text-align:left}
+.table td.empty{display:block;text-align:center;padding:30px 10px}
+.btn-block{width:100%}
+.actions{gap:8px}.actions .btn{flex:1 1 calc(50% - 8px);font-size:12px;padding:10px 8px}
+/* modals become bottom sheets */
+.modal{padding:0;align-items:flex-end}
+.modal-card{width:100%;max-height:92vh;padding:16px 16px calc(16px + env(safe-area-inset-bottom));border-radius:16px 16px 0 0}
+.modal-head h2{font-size:17px}
+.detail-grid{grid-template-columns:1fr}.detail.full{grid-column:auto}.item-row{font-size:13px}
+#orderDetail .btn{width:100%}#orderDetail select{flex:1;font-size:16px}
+#productForm>div:last-child .btn{flex:1}
+/* analytics */
+.analytics-controls{flex-direction:column;align-items:stretch;gap:10px}.analytics-controls .field{width:100%}.analytics-controls .btn{width:100%}
+.range-buttons{display:grid;grid-template-columns:repeat(3,1fr);width:100%}.range-buttons button{padding:10px 6px;font-size:12px}
+.chart{height:230px;gap:6px;padding:16px 2px 6px}.bar-wrap{min-width:46px}.bar-value{font-size:8px}
+}
+@media(max-width:380px){.stat strong{font-size:16px}.top h1{font-size:14px}.wrap{padding:12px 10px 28px}.panel{padding:12px}}
 </style>
 </head>
 <body>
@@ -200,7 +244,7 @@ function renderOrders(){
     (!pf||o.payment_status===pf)&&
     (!df||o.delivery_status===df)
   );
-  $('orderRows').innerHTML=list.length?list.map(o=>`<tr><td><strong>${esc(o.order_number)}</strong></td><td>${esc(o.customer_name)}<br><small class="muted">${esc(o.customer_phone)}</small></td><td><strong>${money(o.total_amount)}</strong></td><td><span class="status ${statusClass(o.payment_status)}">${esc(paymentLabel(o.payment_status))}</span></td><td><span class="status ${statusClass(o.delivery_status)}">${esc(o.delivery_status)}</span></td><td>${new Date(o.created_at).toLocaleDateString('en-NG')}</td><td><button class="btn btn-light" onclick="viewOrder('${o.id}')">View</button></td></tr>`).join(''):'<tr><td colspan="7" class="empty">No orders found.</td></tr>';
+  $('orderRows').innerHTML=list.length?list.map(o=>`<tr><td><strong>${esc(o.order_number)}</strong></td><td data-label="Customer">${esc(o.customer_name)}<br><small class="muted">${esc(o.customer_phone)}</small></td><td data-label="Total"><strong>${money(o.total_amount)}</strong></td><td data-label="Payment"><span class="status ${statusClass(o.payment_status)}">${esc(paymentLabel(o.payment_status))}</span></td><td data-label="Delivery"><span class="status ${statusClass(o.delivery_status)}">${esc(o.delivery_status)}</span></td><td data-label="Date">${new Date(o.created_at).toLocaleDateString('en-NG')}</td><td><button class="btn btn-light btn-block" onclick="viewOrder('${o.id}')">View order</button></td></tr>`).join(''):'<tr><td colspan="7" class="empty">No orders found.</td></tr>';
 }
 
 async function viewOrder(id){
@@ -320,7 +364,7 @@ function renderProducts(){
   $('productRows').innerHTML=list.length?list.map(p=>{
     const sale=p.sale_price!=null&&Number(p.sale_price)>0;
     const img=imageUrl(p.image_url);
-    return `<tr><td><div style="display:flex;align-items:center;gap:9px">${img?`<img src="${esc(img)}" style="width:42px;height:42px;border-radius:8px;object-fit:cover;background:#eee" alt="">`:''}<div><strong>${esc(p.name)}</strong><br><small class="muted">${esc(p.tag||'')}</small></div></div></td><td>${esc(p.category)}</td><td>${sale?`<del class="muted">${money(p.regular_price)}</del><br><strong>${money(p.sale_price)}</strong>`:money(p.regular_price)}</td><td><span class="status ${p.in_stock?'paid':'not_received'}">${p.in_stock?'In stock':'Out of stock'}</span></td><td>${p.visible?'Yes':'No'}</td><td><div class="actions"><button class="btn btn-light" onclick="editProduct('${p.id}')">Edit</button><button class="btn btn-light" onclick="toggleStock('${p.id}',${!p.in_stock})">${p.in_stock?'Out of stock':'In stock'}</button><button class="btn btn-light" onclick="toggleVisible('${p.id}',${!p.visible})">${p.visible?'Hide':'Show'}</button><button class="btn btn-danger" onclick="deleteProduct('${p.id}')">Delete</button></div></td></tr>`;
+    return `<tr><td><div style="display:flex;align-items:center;gap:9px">${img?`<img src="${esc(img)}" style="width:42px;height:42px;border-radius:8px;object-fit:cover;background:#eee" alt="">`:''}<div><strong>${esc(p.name)}</strong><br><small class="muted">${esc(p.tag||'')}</small></div></div></td><td data-label="Category">${esc(p.category)}</td><td data-label="Price">${sale?`<del class="muted">${money(p.regular_price)}</del><br><strong>${money(p.sale_price)}</strong>`:money(p.regular_price)}</td><td data-label="Stock"><span class="status ${p.in_stock?'paid':'not_received'}">${p.in_stock?'In stock':'Out of stock'}</span></td><td data-label="Visible">${p.visible?'Yes':'No'}</td><td><div class="actions"><button class="btn btn-light" onclick="editProduct('${p.id}')">Edit</button><button class="btn btn-light" onclick="toggleStock('${p.id}',${!p.in_stock})">${p.in_stock?'Out of stock':'In stock'}</button><button class="btn btn-light" onclick="toggleVisible('${p.id}',${!p.visible})">${p.visible?'Hide':'Show'}</button><button class="btn btn-danger" onclick="deleteProduct('${p.id}')">Delete</button></div></td></tr>`;
   }).join(''):'<tr><td colspan="6" class="empty">No products found.</td></tr>';
 }
 
