@@ -24,7 +24,45 @@
 </style>
 </head>
 <body>
-<div id="loginView" class="wrap"><div class="panel login"><h2>Hylar Herbs Admin</h2><p class="muted">Sign in to manage products, orders and sales.</p><div id="loginMsg"></div><form id="loginForm"><div class="field"><label>Email</label><input id="email" type="email" required autocomplete="email"></div><div class="field"><label>Password</label><input id="password" type="password" required autocomplete="current-password"></div><button class="btn btn-primary" style="width:100%">Sign in</button></form></div></div>
+<div id="loginView" class="wrap">
+  <div class="panel login">
+    <h2>Hylar Herbs Admin</h2>
+    <p class="muted">Sign in to manage products, orders and sales.</p>
+
+    <div id="loginMsg"></div>
+
+    <form id="loginForm">
+      <div class="field">
+        <label>Email</label>
+        <input
+          id="email"
+          type="email"
+          required
+          autocomplete="email"
+        >
+      </div>
+
+      <div class="field">
+        <label>Password</label>
+        <input
+          id="password"
+          type="password"
+          required
+          autocomplete="current-password"
+        >
+      </div>
+
+      <button
+        type="submit"
+        id="loginButton"
+        class="btn btn-primary"
+        style="width:100%"
+      >
+        Sign in
+      </button>
+    </form>
+  </div>
+</div>
 
 <div id="appView" class="hidden">
 <header class="top"><button class="menu-btn" id="menuBtn" aria-label="Open menu"><i data-lucide="menu"></i></button><h1>Hylar Herbs</h1><button class="logout" id="logout">Log out</button></header>
@@ -94,8 +132,271 @@ function renderProductAnalytics(items){const map={};items.forEach(i=>{map[i.prod
 document.querySelectorAll('[data-range]').forEach(b=>b.onclick=()=>{analyticsRange=b.dataset.range;document.querySelectorAll('[data-range]').forEach(x=>x.classList.toggle('active',x===b));const custom=analyticsRange==='custom';$('customFromWrap').classList.toggle('hidden',!custom);$('customToWrap').classList.toggle('hidden',!custom);$('applyCustom').classList.toggle('hidden',!custom);if(!custom)renderAnalytics()});$('applyCustom').onclick=()=>{if(!$('customFrom').value\vert{}\vert{}!$('customTo').value)return;if($('customFrom').value>$('customTo').value){msg('The start date must be before the end date.',true);return}analyticsFrom=$('customFrom').value;analyticsTo=$('customTo').value;renderAnalytics()};
 async function loadSettings(){const {data,error}=await sb.from('store_settings').select('*').eq('id',1).maybeSingle();if(error){msg(error.message,true);return}if(data){$('bankName').value=data.bank_name||'';$('accountName').value=data.account_name\vert{}\vert{}'';$('accountNumber').value=data.account_number||''}}
 $('settingsForm').addEventListener('submit',async e=>{e.preventDefault();const payload={id:1,bank_name:$('bankName').value.trim(),account_name:$('accountName').value.trim(),account_number:$('accountNumber').value.trim(),updated_at:new Date().toISOString()};const {error}=await sb.from('store_settings').upsert(payload,{onConflict:'id'});if(error)msg(error.message,true);else msg('Payment details saved.')});
-$('logout').onclick=async()=>{await sb.auth.signOut();showApp()};$('loginForm').addEventListener('submit',async e=>{e.preventDefault();loginMsg('Signing in…');const {error}=await sb.auth.signInWithPassword({email:$('email').value,password:$('password').value});if(error){loginMsg(error.message,true);return}if(!(await ensureAdmin())){await sb.auth.signOut();loginMsg('This account is not an approved Hylar Herbs administrator.',true);return}await showApp()});
-sb.auth.onAuthStateChange((event, session)=>{if(session){showApp()}});showApp();
+/* =========================
+   AUTHENTICATION
+========================= */
+
+let authBusy = false;
+
+async function ensureAdmin() {
+  const {
+    data: { user },
+    error: userError
+  } = await sb.auth.getUser();
+
+  if (userError) {
+    console.error('GET USER ERROR:', userError);
+    return false;
+  }
+
+  if (!user) return false;
+
+  const {
+    data,
+    error
+  } = await sb
+    .from('admins')
+    .select('user_id')
+    .eq('user_id', user.id)
+    .maybeSingle();
+
+  if (error) {
+    console.error('ADMIN CHECK ERROR:', error);
+    return false;
+  }
+
+  return !!data;
+}
+
+
+async function checkLogin() {
+  try {
+    const {
+      data: { session }
+    } = await sb.auth.getSession();
+
+    if (!session) {
+      $('loginView').classList.remove('hidden');
+      $('appView').classList.add('hidden');
+      return;
+    }
+
+    const isAdmin = await ensureAdmin();
+
+    if (!isAdmin) {
+      await sb.auth.signOut();
+
+      $('loginView').classList.remove('hidden');
+      $('appView').classList.add('hidden');
+
+      loginMsg(
+        'This account is not an approved Hylar Herbs administrator.',
+        true
+      );
+
+      return;
+    }
+
+    $('loginView').classList.add('hidden');
+    $('appView').classList.remove('hidden');
+
+    await loadDashboard();
+
+    if (window.lucide) {
+      lucide.createIcons();
+    }
+
+  } catch (error) {
+    console.error('LOGIN CHECK ERROR:', error);
+
+    $('loginView').classList.remove('hidden');
+    $('appView').classList.add('hidden');
+
+    loginMsg(
+      error.message || 'Unable to check your login.',
+      true
+    );
+  }
+}
+
+
+/* LOGIN */
+
+$('loginForm').addEventListener('submit', async function (e) {
+  e.preventDefault();
+  e.stopPropagation();
+
+  if (authBusy) return;
+
+  const email = $('email').value.trim();
+  const password = $('password').value;
+  const button = $('loginButton');
+
+  if (!email || !password) {
+    loginMsg('Please enter your email and password.', true);
+    return;
+  }
+
+  authBusy = true;
+
+  button.disabled = true;
+  button.textContent = 'Signing in...';
+
+  loginMsg('');
+
+  try {
+
+    console.log('LOGIN START:', email);
+
+    const {
+      data,
+      error
+    } = await sb.auth.signInWithPassword({
+      email: email,
+      password: password
+    });
+
+    console.log('SUPABASE LOGIN:', data, error);
+
+    if (error) {
+      console.error('LOGIN ERROR:', error);
+
+      loginMsg(
+        error.message || 'Incorrect email or password.',
+        true
+      );
+
+      return;
+    }
+
+    if (!data || !data.user) {
+      loginMsg(
+        'Login failed. No user account was returned.',
+        true
+      );
+
+      return;
+    }
+
+    console.log('LOGGED IN USER:', data.user.id);
+
+
+    /* CHECK ADMIN */
+
+    const {
+      data: adminData,
+      error: adminError
+    } = await sb
+      .from('admins')
+      .select('user_id')
+      .eq('user_id', data.user.id)
+      .maybeSingle();
+
+    console.log('ADMIN RESULT:', adminData, adminError);
+
+    if (adminError) {
+      console.error('ADMIN TABLE ERROR:', adminError);
+
+      await sb.auth.signOut();
+
+      loginMsg(
+        'Admin verification failed: ' + adminError.message,
+        true
+      );
+
+      return;
+    }
+
+    if (!adminData) {
+      await sb.auth.signOut();
+
+      loginMsg(
+        'This email is valid, but it is not registered as a Hylar Herbs administrator.',
+        true
+      );
+
+      return;
+    }
+
+
+    /* LOGIN SUCCESS */
+
+    $('loginView').classList.add('hidden');
+    $('appView').classList.remove('hidden');
+
+    loginMsg('');
+
+    await loadDashboard();
+
+    if (window.lucide) {
+      lucide.createIcons();
+    }
+
+  } catch (error) {
+
+    console.error('LOGIN EXCEPTION:', error);
+
+    loginMsg(
+      error.message || 'Something went wrong while signing in.',
+      true
+    );
+
+  } finally {
+
+    authBusy = false;
+
+    button.disabled = false;
+    button.textContent = 'Sign in';
+  }
+});
+
+
+/* LOGOUT */
+
+$('logout').addEventListener('click', async function () {
+
+  try {
+    await sb.auth.signOut();
+  } catch (error) {
+    console.error('LOGOUT ERROR:', error);
+  }
+
+  $('appView').classList.add('hidden');
+  $('loginView').classList.remove('hidden');
+
+  $('email').value = '';
+  $('password').value = '';
+
+  loginMsg('');
+});
+
+
+/* AUTH STATE */
+
+sb.auth.onAuthStateChange(function (event, session) {
+
+  console.log('AUTH EVENT:', event);
+
+  if (event === 'SIGNED_OUT' || !session) {
+
+    $('appView').classList.add('hidden');
+    $('loginView').classList.remove('hidden');
+
+    return;
+  }
+
+  if (event === 'SIGNED_IN') {
+    console.log(
+      'SIGNED IN:',
+      session.user.email
+    );
+  }
+});
+
+
+/* INITIAL CHECK */
+
+checkLogin();
 </script>
 </body>
 </html>
