@@ -48,7 +48,7 @@
 <!-- APP -->
 <div id="appView" class="hidden">
 <header class="top"><button class="menu-btn" id="menuBtn" aria-label="Open menu"><i data-lucide="menu"></i></button><h1>Hylar Herbs</h1><button class="logout" id="logout">Log out</button></header>
-<div class="drawer" id="drawer"><div class="drawer-backdrop" id="drawerBackdrop"></div><aside class="drawer-panel"><div class="drawer-head"><button class="drawer-close" id="drawerClose" aria-label="Close menu"><i data-lucide="x"></i></button></div><div class="drawer-brand"><img src="../hylar-herbs-logo.jpg" alt="Hylar Herbs"><div><strong>Hylar Herbs</strong><small>Store management</small></div></div><button class="nav-item active" data-view="dashboard"><i data-lucide="layout-dashboard"></i>Overview</button><button class="nav-item" data-view="orders"><i data-lucide="shopping-bag"></i>Orders</button><button class="nav-item" data-view="products"><i data-lucide="package"></i>Products</button><button class="nav-item" data-view="analytics"><i data-lucide="trending-up"></i>Analytics</button><button class="nav-item" data-view="settings"><i data-lucide="settings"></i>Store Settings</button></aside></div>
+<div class="drawer" id="drawer"><div class="drawer-backdrop" id="drawerBackdrop"></div><aside class="drawer-panel"><div class="drawer-head"><button class="drawer-close" id="drawerClose" aria-label="Close menu"><i data-lucide="x"></i></button></div><div class="drawer-brand"><img id="brandLogo" alt="Hylar Herbs"><div><strong>Hylar Herbs</strong><small>Store management</small></div></div><button class="nav-item active" data-view="dashboard"><i data-lucide="layout-dashboard"></i>Overview</button><button class="nav-item" data-view="orders"><i data-lucide="shopping-bag"></i>Orders</button><button class="nav-item" data-view="products"><i data-lucide="package"></i>Products</button><button class="nav-item" data-view="analytics"><i data-lucide="trending-up"></i>Analytics</button><button class="nav-item" data-view="settings"><i data-lucide="settings"></i>Store Settings</button></aside></div>
 <main class="wrap"><div id="msg"></div>
 
 <section id="dashboardView"><div class="view-title"><div><h2>Good day</h2><small class="muted">Here's what's happening with your Hylar Herbs store.</small></div></div><div class="cards"><div class="stat"><div class="stat-top"><span>Sales today</span><span class="stat-icon"><i data-lucide="banknote"></i></span></div><strong id="statToday">₦0</strong><small>Paid orders</small></div><div class="stat"><div class="stat-top"><span>Sales this month</span><span class="stat-icon"><i data-lucide="trending-up"></i></span></div><strong id="statMonth">₦0</strong><small>Hylar website sales</small></div><div class="stat"><div class="stat-top"><span>Orders</span><span class="stat-icon"><i data-lucide="shopping-bag"></i></span></div><strong id="statOrders">0</strong><small>Submitted orders</small></div><div class="stat"><div class="stat-top"><span>Awaiting payment</span><span class="stat-icon"><i data-lucide="clock-3"></i></span></div><strong id="statAwaiting">0</strong><small>Need bank confirmation</small></div></div><div class="grid2dash"><div class="panel"><div class="section-head"><h3>Recent orders</h3><button class="btn btn-light" data-goto="orders">View all</button></div><div id="recentOrders" class="muted">Loading…</div></div><div class="panel"><div class="section-head"><h3>Top selling products</h3><button class="btn btn-light" data-goto="analytics">Analytics</button></div><div id="topProducts">Loading…</div></div></div></section>
@@ -73,6 +73,14 @@
 const SUPABASE_URL='https://wstpvrhjhscctekwbkcs.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY='sb_publishable_XHxPBPuaGr1uMRZ8LwC8qw_Odhi8hMP';
 const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
+
+/* WHERE YOUR SITE IMAGES LIVE
+   - Admin file is in the SAME folder as your images (repo root, e.g. admin.html): use ''
+   - Admin file is in a subfolder (e.g. /admin/index.html) and images are in the repo root: use '../'
+   Set LOGO_FILE to the exact filename of your logo on GitHub (case-sensitive). */
+const SITE_ROOT='../';
+const LOGO_FILE='hylar-herbs-logo.jpg';
+document.getElementById('brandLogo').src=SITE_ROOT+LOGO_FILE;
 
 const $=id=>document.getElementById(id);
 const money=n=>'₦'+Number(n||0).toLocaleString('en-NG');
@@ -116,7 +124,11 @@ function statusClass(v){return String(v||'').replace(/[^a-z_]/g,'')}
 function imageUrl(v){
   if(!v)return '';
   if(/^https?:\/\//.test(v))return v;
-  return `${SUPABASE_URL}/storage/v1/object/public/product-images/${encodeURIComponent(v).replace(/%2F/g,'/')}`;
+  /* Images uploaded from this admin page are named like <uuid>.jpg and live in Supabase Storage */
+  if(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.[a-z0-9]+$/i.test(v))
+    return `${SUPABASE_URL}/storage/v1/object/public/product-images/${v}`;
+  /* Anything else (e.g. image_05.jpg) is a file on your GitHub site */
+  return SITE_ROOT+encodeURI(v);
 }
 
 async function getAllData(){
