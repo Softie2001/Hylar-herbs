@@ -30,7 +30,7 @@
 <header class="top"><button class="menu-btn" id="menuBtn" aria-label="Open menu"><i data-lucide="menu"></i></button><h1>Hylar Herbs</h1><button class="logout" id="logout">Log out</button></header>
 <div class="drawer" id="drawer"><div class="drawer-backdrop" id="drawerBackdrop"></div><aside class="drawer-panel"><div class="drawer-head"><button class="drawer-close" id="drawerClose" aria-label="Close menu"><i data-lucide="x"></i></button></div><div class="drawer-brand"><img src="../hylar-herbs-logo.jpg" alt="Hylar Herbs"><div><strong>Hylar Herbs</strong><small>Store management</small></div></div><button class="nav-item active" data-view="dashboard"><i data-lucide="layout-dashboard"></i>Overview</button><button class="nav-item" data-view="orders"><i data-lucide="shopping-bag"></i>Orders</button><button class="nav-item" data-view="products"><i data-lucide="package"></i>Products</button><button class="nav-item" data-view="analytics"><i data-lucide="chart-no-axes-combined"></i>Analytics</button><button class="nav-item" data-view="settings"><i data-lucide="settings"></i>Store Settings</button></aside></div>
 <main class="wrap"><div id="msg"></div>
-<section id="dashboardView"><div class="view-title"><div><h2>Good day 👋</h2><small class="muted">Here's what's happening with your Hylar Herbs store.</small></div></div><div class="cards"><div class="stat"><div class="stat-top"><span>Sales today</span><span class="stat-icon"><i data-lucide="banknote"></i></span></div><strong id="statToday">₦0</strong><small>Paid orders</small></div><div class="stat"><div class="stat-top"><span>Sales this month</span><span class="stat-icon"><i data-lucide="trending-up"></i></span></div><strong id="statMonth">₦0</strong><small>Hylar website sales</small></div><div class="stat"><div class="stat-top"><span>Orders</span><span class="stat-icon"><i data-lucide="shopping-bag"></i></span></div><strong id="statOrders">0</strong><small>Submitted orders</small></div><div class="stat"><div class="stat-top"><span>Awaiting payment</span><span class="stat-icon"><i data-lucide="clock-3"></i></span></div><strong id="statAwaiting">0</strong><small>Need bank confirmation</small></div></div><div class="grid2dash"><div class="panel"><div class="section-head"><h3>Recent orders</h3><button class="btn btn-light" data-goto="orders">View all</button></div><div id="recentOrders" class="muted">Loading…</div></div><div class="panel"><div class="section-head"><h3>Top selling products</h3><button class="btn btn-light" data-goto="analytics">Analytics</button></div><div id="topProducts">Loading…</div></div></div></section>
+<section id="dashboardView"><div class="view-title"><div><h2>Good day</h2><small class="muted">Here's what's happening with your Hylar Herbs store.</small></div></div><div class="cards"><div class="stat"><div class="stat-top"><span>Sales today</span><span class="stat-icon"><i data-lucide="banknote"></i></span></div><strong id="statToday">₦0</strong><small>Paid orders</small></div><div class="stat"><div class="stat-top"><span>Sales this month</span><span class="stat-icon"><i data-lucide="trending-up"></i></span></div><strong id="statMonth">₦0</strong><small>Hylar website sales</small></div><div class="stat"><div class="stat-top"><span>Orders</span><span class="stat-icon"><i data-lucide="shopping-bag"></i></span></div><strong id="statOrders">0</strong><small>Submitted orders</small></div><div class="stat"><div class="stat-top"><span>Awaiting payment</span><span class="stat-icon"><i data-lucide="clock-3"></i></span></div><strong id="statAwaiting">0</strong><small>Need bank confirmation</small></div></div><div class="grid2dash"><div class="panel"><div class="section-head"><h3>Recent orders</h3><button class="btn btn-light" data-goto="orders">View all</button></div><div id="recentOrders" class="muted">Loading…</div></div><div class="panel"><div class="section-head"><h3>Top selling products</h3><button class="btn btn-light" data-goto="analytics">Analytics</button></div><div id="topProducts">Loading…</div></div></div></section>
 
 <section id="ordersView" class="hidden"><div class="view-title"><div><h2>Orders</h2><small class="muted">Review submitted payments, products and delivery details.</small></div><button class="btn btn-light" id="downloadCsv"><i data-lucide="download"></i>Download CSV</button></div><div class="panel"><div class="toolbar"><div class="toolbar-left"><input id="orderSearch" placeholder="Search order or customer…"><select id="paymentFilter"><option value="">All payment</option><option value="awaiting_confirmation">Awaiting confirmation</option><option value="paid">Paid</option><option value="not_received">Not received</option></select><select id="deliveryFilter"><option value="">All delivery</option><option value="pending">Pending</option><option value="processing">Processing</option><option value="sent">Sent</option><option value="delivered">Delivered</option><option value="cancelled">Cancelled</option></select></div><button class="btn btn-light" id="refreshOrders"><i data-lucide="refresh-cw"></i>Refresh</button></div><div class="table-wrap"><table class="table"><thead><tr><th>Order</th><th>Customer</th><th>Total</th><th>Payment</th><th>Delivery</th><th>Date</th><th></th></tr></thead><tbody id="orderRows"></tbody></table></div></div></section>
 
@@ -94,7 +94,127 @@ function renderProductAnalytics(items){const map={};items.forEach(i=>{map[i.prod
 document.querySelectorAll('[data-range]').forEach(b=>b.onclick=()=>{analyticsRange=b.dataset.range;document.querySelectorAll('[data-range]').forEach(x=>x.classList.toggle('active',x===b));const custom=analyticsRange==='custom';$('customFromWrap').classList.toggle('hidden',!custom);$('customToWrap').classList.toggle('hidden',!custom);$('applyCustom').classList.toggle('hidden',!custom);if(!custom)renderAnalytics()});$('applyCustom').onclick=()=>{if(!$('customFrom').value\vert{}\vert{}!$('customTo').value)return;if($('customFrom').value>$('customTo').value){msg('The start date must be before the end date.',true);return}analyticsFrom=$('customFrom').value;analyticsTo=$('customTo').value;renderAnalytics()};
 async function loadSettings(){const {data,error}=await sb.from('store_settings').select('*').eq('id',1).maybeSingle();if(error){msg(error.message,true);return}if(data){$('bankName').value=data.bank_name||'';$('accountName').value=data.account_name\vert{}\vert{}'';$('accountNumber').value=data.account_number||''}}
 $('settingsForm').addEventListener('submit',async e=>{e.preventDefault();const payload={id:1,bank_name:$('bankName').value.trim(),account_name:$('accountName').value.trim(),account_number:$('accountNumber').value.trim(),updated_at:new Date().toISOString()};const {error}=await sb.from('store_settings').upsert(payload,{onConflict:'id'});if(error)msg(error.message,true);else msg('Payment details saved.')});
-$('logout').onclick=async()=>{await sb.auth.signOut();showApp()};$('loginForm').addEventListener('submit',async e=>{e.preventDefault();loginMsg('Signing in…');const {error}=await sb.auth.signInWithPassword({email:$('email').value,password:$('password').value});if(error){loginMsg(error.message,true);return}if(!(await ensureAdmin())){await sb.auth.signOut();loginMsg('This account is not an approved Hylar Herbs administrator.',true);return}await showApp()});sb.auth.onAuthStateChange(()=>setTimeout(showApp,0));showApp();
+let authChecking = false;
+
+async function handleAuthState() {
+  if (authChecking) return;
+
+  authChecking = true;
+
+  try {
+    const {
+      data: { user }
+    } = await sb.auth.getUser();
+
+    if (!user) {
+      $('loginView').classList.remove('hidden');
+      $('appView').classList.add('hidden');
+      return;
+    }
+
+    const isAdmin = await ensureAdmin();
+
+    if (!isAdmin) {
+      await sb.auth.signOut();
+      $('loginView').classList.remove('hidden');
+      $('appView').classList.add('hidden');
+      loginMsg('This account is not an approved Hylar Herbs administrator.', true);
+      return;
+    }
+
+    $('loginView').classList.add('hidden');
+    $('appView').classList.remove('hidden');
+
+    await loadDashboard();
+    lucide.createIcons();
+
+  } catch (e) {
+    console.error('Auth error:', e);
+    $('loginView').classList.remove('hidden');
+    $('appView').classList.add('hidden');
+    loginMsg(e.message || 'Unable to check your login.', true);
+  } finally {
+    authChecking = false;
+  }
+}
+
+$('loginForm').addEventListener('submit', async e => {
+  e.preventDefault();
+
+  const email = $('email').value.trim();
+  const password = $('password').value;
+
+  if (!email || !password) {
+    loginMsg('Please enter your email and password.', true);
+    return;
+  }
+
+  const button = $('loginForm').querySelector('button[type="submit"]');
+  button.disabled = true;
+  button.textContent = 'Signing in…';
+  loginMsg('');
+
+  try {
+    const { error } = await sb.auth.signInWithPassword({
+      email,
+      password
+    });
+
+    if (error) {
+      loginMsg(error.message, true);
+      return;
+    }
+
+    const isAdmin = await ensureAdmin();
+
+    if (!isAdmin) {
+      await sb.auth.signOut();
+      loginMsg(
+        'This account is not an approved Hylar Herbs administrator.',
+        true
+      );
+      return;
+    }
+
+    $('loginView').classList.add('hidden');
+    $('appView').classList.remove('hidden');
+
+    await loadDashboard();
+    lucide.createIcons();
+
+  } catch (e) {
+    console.error('Login error:', e);
+    loginMsg(e.message || 'Login failed. Please try again.', true);
+
+  } finally {
+    button.disabled = false;
+    button.textContent = 'Sign in';
+  }
+});
+
+$('logout').onclick = async () => {
+  await sb.auth.signOut();
+
+  $('appView').classList.add('hidden');
+  $('loginView').classList.remove('hidden');
+
+  $('password').value = '';
+  loginMsg('');
+};
+
+sb.auth.onAuthStateChange((event, session) => {
+  console.log('Auth event:', event);
+
+  // Only react to actual session-ending events here.
+  if (event === 'SIGNED_OUT') {
+    $('appView').classList.add('hidden');
+    $('loginView').classList.remove('hidden');
+    $('password').value = '';
+  }
+});
+
+// Check existing session once when the page loads.
+handleAuthState();
 </script>
 </body>
 </html>
