@@ -57,7 +57,7 @@ function closeDrawer(){$('drawer').classList.remove('open')};function openDrawer
 document.querySelectorAll('.nav-item').forEach(b=>b.onclick=()=>setView(b.dataset.view));document.querySelectorAll('[data-goto]').forEach(b=>b.onclick=()=>setView(b.dataset.goto));
 function setView(view){currentView=view;['dashboard','orders','products','analytics','settings'].forEach(v=>$(v+'View').classList.toggle('hidden',v!==view));document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active',b.dataset.view===view));closeDrawer();if(view==='dashboard')loadDashboard();if(view==='orders')loadOrders();if(view==='products')loadProducts();if(view==='analytics')loadAnalytics();if(view==='settings')loadSettings();}
 async function ensureAdmin(){const {data:{user}}=await sb.auth.getUser();if(!user)return false;const {data,error}=await sb.from('admins').select('user_id').eq('user_id',user.id).maybeSingle();return !error&&!!data}
-async function showApp(){const ok=await ensureAdmin();$('loginView').classList.toggle('hidden',ok);$('appView').classList.toggle('hidden',!ok);if(ok){await loadDashboard();lucide.createIcons()}}
+async function showApp(){const ok=await ensureAdmin();$('loginView').classList.toggle('hidden',ok);$('appView').classList.toggle('hidden',!ok);if(ok){await loadDashboard();if(window.lucide)lucide.createIcons()}}
 function paymentLabel(v){return v==='awaiting_confirmation'?'Awaiting confirmation':v==='not_received'?'Not received':v==='paid'?'Paid':v||'—'}
 function statusClass(v){return String(v||'').replace(/[^a-z_]/g,'')}
 function imageUrl(v){if(!v)return '';if(/^https?:\/\//.test(v))return v;return `${SUPABASE_URL}/storage/v1/object/public/product-images/${encodeURIComponent(v).replace(/%2F/g,'/')}`}
@@ -65,13 +65,13 @@ async function getAllData(){const [o,i,p]=await Promise.all([sb.from('orders').s
 function paidOrders(){return allOrders.filter(o=>o.payment_status==='paid')}
 function sumOrders(list){return list.reduce((s,o)=>s+Number(o.total_amount||0),0)}
 function startOfToday(){const d=new Date();d.setHours(0,0,0,0);return d}
-async function loadDashboard(){try{await getAllData();const today=startOfToday(),month=new Date(today.getFullYear(),today.getMonth(),1);const po=paidOrders();$('statToday').textContent=money(sumOrders(po.filter(o=>new Date(o.paid_at\vert{}\vert{}o.created_at)>=today)));$('statMonth').textContent=money(sumOrders(po.filter(o=>new Date(o.paid_at||o.created_at)>=month)));$('statOrders').textContent=allOrders.length;$('statAwaiting').textContent=allOrders.filter(o=>o.payment_status==='awaiting_confirmation').length;renderRecent();renderTopProducts();lucide.createIcons()}catch(e){msg(e.message||'Could not load dashboard.',true)}}
+async function loadDashboard(){try{await getAllData();const today=startOfToday(),month=new Date(today.getFullYear(),today.getMonth(),1);const po=paidOrders();$('statToday').textContent=money(sumOrders(po.filter(o=>new Date(o.paid_at\vert{}\vert{}o.created_at)>=today)));$('statMonth').textContent=money(sumOrders(po.filter(o=>new Date(o.paid_at||o.created_at)>=month)));$('statOrders').textContent=allOrders.length;$('statAwaiting').textContent=allOrders.filter(o=>o.payment_status==='awaiting_confirmation').length;renderRecent();renderTopProducts();if(window.lucide)lucide.createIcons()}catch(e){msg(e.message||'Could not load dashboard.',true)}}
 function renderRecent(){const list=allOrders.slice(0,6);$('recentOrders').innerHTML=list.length?list.map(o=>`<div class="order-card"><div class="order-main"><strong>${esc(o.order_number)}</strong><span>${esc(o.customer_name)} · ${new Date(o.created_at).toLocaleDateString('en-NG')}</span></div><span class="status ${statusClass(o.payment_status)}">${esc(paymentLabel(o.payment_status))}</span><div class="order-price">${money(o.total_amount)}</div></div>`).join(''):'<div class="empty">No submitted orders yet.</div>'}
-function renderTopProducts(){const paidIds=new Set(paidOrders().map(o=>o.id));const map={};allItems.filter(i=>paidIds.has(i.order_id)).forEach(i=>{map[i.product_id]=map[i.product_id]||{name:i.product_name,qty:0,revenue:0};map[i.product_id].qty+=Number(i.quantity||0);map[i.product_id].revenue+=Number(i.line_total||0)});const rows=Object.values(map).sort((a,b)=>b.qty-a.qty).slice(0,5);$('topProducts').innerHTML=rows.length?rows.map(r=>{const p=allProducts.find(x=>x.id===Object.keys(map).find(k=>map[k]===r));return `<div class="product-rank"><div class="stat-icon"><i data-lucide="package"></i></div><div><div class="rank-name">${esc(r.name)}</div><div class="rank-meta">${r.qty} unit${r.qty===1?'':'s'} sold</div></div><div class="rank-revenue">${money(r.revenue)}</div></div>`}).join(''):'<div class="empty">No paid product sales yet.</div>';lucide.createIcons()}
+function renderTopProducts(){const paidIds=new Set(paidOrders().map(o=>o.id));const map={};allItems.filter(i=>paidIds.has(i.order_id)).forEach(i=>{map[i.product_id]=map[i.product_id]||{name:i.product_name,qty:0,revenue:0};map[i.product_id].qty+=Number(i.quantity||0);map[i.product_id].revenue+=Number(i.line_total||0)});const rows=Object.values(map).sort((a,b)=>b.qty-a.qty).slice(0,5);$('topProducts').innerHTML=rows.length?rows.map(r=>{const p=allProducts.find(x=>x.id===Object.keys(map).find(k=>map[k]===r));return `<div class="product-rank"><div class="stat-icon"><i data-lucide="package"></i></div><div><div class="rank-name">${esc(r.name)}</div><div class="rank-meta">${r.qty} unit${r.qty===1?'':'s'} sold</div></div><div class="rank-revenue">${money(r.revenue)}</div></div>`}).join(''):'<div class="empty">No paid product sales yet.</div>';if(window.lucide)lucide.createIcons()}
 async function loadOrders(){try{await getAllData();renderOrders()}catch(e){msg(e.message||'Could not load orders.',true)}}
 function renderOrders(){const q=$('orderSearch').value.trim().toLowerCase(),pf=$('paymentFilter').value,df=$('deliveryFilter').value;const list=allOrders.filter(o=>(!q||`${o.order_number} ${o.customer_name} ${o.customer_phone} ${o.delivery_address} ${o.delivery_location}`.toLowerCase().includes(q))&&(!pf||o.payment_status===pf)&&(!df||o.delivery_status===df));$('orderRows').innerHTML=list.length?list.map(o=>`<tr><td><strong>${esc(o.order_number)}</strong></td><td>${esc(o.customer_name)}<br><small class="muted">${esc(o.customer_phone)}</small></td><td><strong>${money(o.total_amount)}</strong></td><td><span class="status ${statusClass(o.payment_status)}">${esc(paymentLabel(o.payment_status))}</span></td><td><span class="status ${statusClass(o.delivery_status)}">${esc(o.delivery_status)}</span></td><td>${new Date(o.created_at).toLocaleDateString('en-NG')}</td><td><button class="btn btn-light" onclick="viewOrder('${o.id}')">View</button></td></tr>`).join(''):'<tr><td colspan="7" class="empty">No orders found.</td></tr>'}
 async function viewOrder(id){const o=allOrders.find(x=>x.id===id);if(!o)return;const items=allItems.filter(i=>i.order_id===id);let proof='';if(o.payment_proof_path){const {data}=await sb.storage.from('payment-proofs').createSignedUrl(o.payment_proof_path,3600);if(data?.signedUrl)proof=`<div class="proof"><strong>Payment proof</strong><div style="height:8px"></div><a href="${esc(data.signedUrl)}" target="_blank" rel="noopener"><img src="${esc(data.signedUrl)}" alt="Payment proof"></a></div>`}
-const chatType=o.payment_status==='paid'?'confirmed':o.payment_status==='not_received'?'not_received':'awaiting';const wa=whatsappUrl(o,chatType);const deliveryWa=whatsappUrl(o,'dispatch');$('orderDetail').innerHTML=`<div class="detail-grid"><div class="detail"><small>Order</small><strong>${esc(o.order_number)}</strong></div><div class="detail"><small>Payment</small><strong>${esc(paymentLabel(o.payment_status))}</strong></div><div class="detail"><small>Customer</small><strong>${esc(o.customer_name)}</strong></div><div class="detail"><small>WhatsApp</small><strong>${esc(o.customer_phone)}</strong></div><div class="detail full"><small>Delivery address</small><strong>${esc(o.delivery_address)}</strong></div><div class="detail full"><small>Preferred delivery location</small><strong>${esc(o.delivery_location)}</strong></div><div class="detail"><small>Products total</small><strong>${money(o.subtotal)}</strong></div><div class="detail"><small>Delivery</small><strong>Fee negotiated separately</strong></div></div><div class="items"><strong>Products ordered</strong>${items.map(i=>`<div class="item-row"><span>${esc(i.product_name)} × ${Number(i.quantity)}</span><strong>${money(i.line_total)}</strong></div>`).join('')}<div class="item-row"><strong>Total</strong><strong>${money(o.total_amount)}</strong></div></div>${proof}<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px"><button class="btn btn-green" ${o.payment_status==='paid'?'disabled':''} onclick="confirmPayment('${o.id}')"><i data-lucide="circle-check"></i>Confirm Payment</button><button class="btn btn-danger" ${o.payment_status==='not_received'?'disabled':''} onclick="paymentNotReceived('${o.id}')"><i data-lucide="circle-x"></i>Payment Not Received</button><button class="btn btn-light" onclick="openWhatsApp('${esc(wa)}')"><i data-lucide="message-circle"></i>Chat Customer</button><button class="btn btn-light" onclick="openWhatsApp('${esc(deliveryWa)}')"><i data-lucide="truck"></i>Dispatch Message</button></div><div style="display:flex;gap:8px;align-items:center;margin-top:12px"><label style="font-size:11px;font-weight:800">Delivery status</label><select onchange="updateDelivery('${o.id}',this.value)" style="padding:8px;border:1px solid var(--line);border-radius:8px"><option value="pending" ${o.delivery_status==='pending'?'selected':''}>Pending</option><option value="processing" ${o.delivery_status==='processing'?'selected':''}>Processing</option><option value="sent" ${o.delivery_status==='sent'?'selected':''}>Sent</option><option value="delivered" ${o.delivery_status==='delivered'?'selected':''}>Delivered</option><option value="cancelled" ${o.delivery_status==='cancelled'?'selected':''}>Cancelled</option></select></div>`;$('orderModal').classList.remove('hidden');lucide.createIcons()}
+const chatType=o.payment_status==='paid'?'confirmed':o.payment_status==='not_received'?'not_received':'awaiting';const wa=whatsappUrl(o,chatType);const deliveryWa=whatsappUrl(o,'dispatch');$('orderDetail').innerHTML=`<div class="detail-grid"><div class="detail"><small>Order</small><strong>${esc(o.order_number)}</strong></div><div class="detail"><small>Payment</small><strong>${esc(paymentLabel(o.payment_status))}</strong></div><div class="detail"><small>Customer</small><strong>${esc(o.customer_name)}</strong></div><div class="detail"><small>WhatsApp</small><strong>${esc(o.customer_phone)}</strong></div><div class="detail full"><small>Delivery address</small><strong>${esc(o.delivery_address)}</strong></div><div class="detail full"><small>Preferred delivery location</small><strong>${esc(o.delivery_location)}</strong></div><div class="detail"><small>Products total</small><strong>${money(o.subtotal)}</strong></div><div class="detail"><small>Delivery</small><strong>Fee negotiated separately</strong></div></div><div class="items"><strong>Products ordered</strong>${items.map(i=>`<div class="item-row"><span>${esc(i.product_name)} × ${Number(i.quantity)}</span><strong>${money(i.line_total)}</strong></div>`).join('')}<div class="item-row"><strong>Total</strong><strong>${money(o.total_amount)}</strong></div></div>${proof}<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px"><button class="btn btn-green" ${o.payment_status==='paid'?'disabled':''} onclick="confirmPayment('${o.id}')"><i data-lucide="circle-check"></i>Confirm Payment</button><button class="btn btn-danger" ${o.payment_status==='not_received'?'disabled':''} onclick="paymentNotReceived('${o.id}')"><i data-lucide="circle-x"></i>Payment Not Received</button><button class="btn btn-light" onclick="openWhatsApp('${esc(wa)}')"><i data-lucide="message-circle"></i>Chat Customer</button><button class="btn btn-light" onclick="openWhatsApp('${esc(deliveryWa)}')"><i data-lucide="truck"></i>Dispatch Message</button></div><div style="display:flex;gap:8px;align-items:center;margin-top:12px"><label style="font-size:11px;font-weight:800">Delivery status</label><select onchange="updateDelivery('${o.id}',this.value)" style="padding:8px;border:1px solid var(--line);border-radius:8px"><option value="pending" ${o.delivery_status==='pending'?'selected':''}>Pending</option><option value="processing" ${o.delivery_status==='processing'?'selected':''}>Processing</option><option value="sent" ${o.delivery_status==='sent'?'selected':''}>Sent</option><option value="delivered" ${o.delivery_status==='delivered'?'selected':''}>Delivered</option><option value="cancelled" ${o.delivery_status==='cancelled'?'selected':''}>Cancelled</option></select></div>`;$('orderModal').classList.remove('hidden');if(window.lucide)lucide.createIcons()}
 function phoneForWhatsApp(v){let n=String(v||'').replace(/\D/g,'');if(n.startsWith('0'))n='234'+n.slice(1);return n}
 function whatsappUrl(o,type){const items=allItems.filter(i=>i.order_id===o.id);let text;if(type==='dispatch'){text=`Hello ${o.customer_name}, your order ${o.order_number} has been dispatched for delivery.\n\nOrder details:\n${items.map(i=>`• ${i.product_name} ×${i.quantity}`).join('\n')}\n\nDelivery location: ${o.delivery_location}\nDelivery address: ${o.delivery_address}\n\nThe dispatch rider will contact you soon. Please communicate with the rider to track your delivery.`}else if(type==='not_received'){text=`Hello ${o.customer_name}, we could not confirm the payment for order ${o.order_number}.\n\nOrder details:\n${items.map(i=>`• ${i.product_name} ×${i.quantity}`).join('\n')}\n\nAmount: ${money(o.total_amount)}\n\nWe have not received the payment yet. Please check your transfer details and contact us if you believe the payment has been made.`}else if(type==='awaiting'){text=`Hello ${o.customer_name}, we have received your payment submission for order ${o.order_number}. We are checking the payment and will confirm it once received.`}else{text=`Hello ${o.customer_name}, your payment for order ${o.order_number} has been confirmed.\n\nOrder details:\n${items.map(i=>`• ${i.product_name} ×${i.quantity}`).join('\n')}\n\nTotal paid: ${money(o.total_amount)}\nDelivery location: ${o.delivery_location}\nDelivery address: ${o.delivery_address}\n\nYour order is now being processed.`}return `https://wa.me/${phoneForWhatsApp(o.customer_phone)}?text=${encodeURIComponent(text)}`}
 window.openWhatsApp=url=>window.open(url,'_blank','noopener,noreferrer');
@@ -88,133 +88,14 @@ $('productForm').addEventListener('submit',async e=>{e.preventDefault();try{cons
 $('addProduct').onclick=()=>openProductModal();$('closeProductModal').onclick=closeProductModal;$('cancelProduct').onclick=closeProductModal;$('productSearch').oninput=renderProducts;$('productModal').onclick=e=>{if(e.target===$('productModal'))closeProductModal()};
 async function loadAnalytics(){try{await getAllData();renderAnalytics()}catch(e){msg(e.message||'Could not load analytics.',true)}}
 function getRange(){const now=new Date();if(analyticsRange==='today'){const a=new Date(now);a.setHours(0,0,0,0);const b=new Date(a);b.setDate(b.getDate()+1);return [a,b]}if(analyticsRange==='week'){const a=new Date(now);a.setHours(0,0,0,0);const day=a.getDay();a.setDate(a.getDate()-(day===0?6:day-1));const b=new Date(a);b.setDate(b.getDate()+7);return [a,b]}if(analyticsRange==='month'){const a=new Date(now.getFullYear(),now.getMonth(),1);const b=new Date(now.getFullYear(),now.getMonth()+1,1);return [a,b]}if(analyticsRange==='year'){const a=new Date(now.getFullYear(),0,1);const b=new Date(now.getFullYear()+1,0,1);return [a,b]}return [new Date(analyticsFrom+'T00:00:00'),new Date(analyticsTo+'T23:59:59.999')]}
-function renderAnalytics(){const [from,to]=getRange();const orders=paidOrders().filter(o=>{const d=new Date(o.paid_at||o.created_at);return d>=from&&d<to});const ids=new Set(orders.map(o=>o.id));const items=allItems.filter(i=>ids.has(i.order_id));const revenue=sumOrders(orders),units=items.reduce((s,i)=>s+Number(i.quantity||0),0);$('anRevenue').textContent=money(revenue);$('anOrders').textContent=orders.length;$('anUnits').textContent=units;$('anAverage').textContent=money(orders.length?revenue/orders.length:0);const label=analyticsRange==='today'?'Sales today':analyticsRange==='week'?'Sales this week':analyticsRange==='month'?'Sales this month':analyticsRange==='year'?'Sales this year':'Sales for selected dates';$('chartTitle').textContent=label;renderChart(orders,from,to);renderProductAnalytics(items);lucide.createIcons()}
+function renderAnalytics(){const [from,to]=getRange();const orders=paidOrders().filter(o=>{const d=new Date(o.paid_at||o.created_at);return d>=from&&d<to});const ids=new Set(orders.map(o=>o.id));const items=allItems.filter(i=>ids.has(i.order_id));const revenue=sumOrders(orders),units=items.reduce((s,i)=>s+Number(i.quantity||0),0);$('anRevenue').textContent=money(revenue);$('anOrders').textContent=orders.length;$('anUnits').textContent=units;$('anAverage').textContent=money(orders.length?revenue/orders.length:0);const label=analyticsRange==='today'?'Sales today':analyticsRange==='week'?'Sales this week':analyticsRange==='month'?'Sales this month':analyticsRange==='year'?'Sales this year':'Sales for selected dates';$('chartTitle').textContent=label;renderChart(orders,from,to);renderProductAnalytics(items);if(window.lucide)lucide.createIcons()}
 function renderChart(orders,from,to){const span=to-from;let buckets=[];if(analyticsRange==='today'){for(let h=0;h<24;h++)buckets.push({label:String(h).padStart(2,'0')+':00',start:new Date(from.getTime()+h*3600000),end:new Date(from.getTime()+(h+1)*3600000)})}else if(analyticsRange==='week'){for(let d=0;d<7;d++)buckets.push({label:new Date(from.getTime()+d*86400000).toLocaleDateString('en-NG',{weekday:'short'}),start:new Date(from.getTime()+d*86400000),end:new Date(from.getTime()+(d+1)*86400000)})}else if(analyticsRange==='month'){const days=Math.ceil(span/86400000);for(let d=0;d<days;d++)buckets.push({label:String(d+1),start:new Date(from.getTime()+d*86400000),end:new Date(from.getTime()+(d+1)*86400000)})}else{for(let m=0;m<12;m++)buckets.push({label:new Date(from.getFullYear(),m,1).toLocaleDateString('en-NG',{month:'short'}),start:new Date(from.getFullYear(),m,1),end:new Date(from.getFullYear(),m+1,1)})}if(analyticsRange==='custom'){buckets=[];const days=Math.max(1,Math.ceil(span/86400000));const step=days>31?7:1;for(let d=0;d<days;d+=step){const st=new Date(from.getTime()+d*86400000),en=new Date(Math.min(to.getTime(),from.getTime()+(d+step)*86400000));buckets.push({label:days>31?st.toLocaleDateString('en-NG',{day:'numeric',month:'short'}):String(st.getDate()),start:st,end:en})}}const vals=buckets.map(b=>orders.filter(o=>{const d=new Date(o.paid_at||o.created_at);return d>=b.start&&d<b.end}).reduce((s,o)=>s+Number(o.total_amount||0),0));const max=Math.max(...vals,1);$('salesChart').innerHTML=buckets.map((b,i)=>`<div class="bar-wrap"><div class="bar-value">${vals[i]?money(vals[i]).replace('₦','₦'):''}</div><div class="bar" style="height:${Math.max(3,Math.round(vals[i]/max*165))}px"></div><div class="bar-label">${esc(b.label)}</div></div>`).join('')}
 function renderProductAnalytics(items){const map={};items.forEach(i=>{map[i.product_id]=map[i.product_id]||{name:i.product_name,qty:0,revenue:0};map[i.product_id].qty+=Number(i.quantity||0);map[i.product_id].revenue+=Number(i.line_total||0)});const rows=Object.values(map).sort((a,b)=>b.qty-a.qty);$('productAnalytics').innerHTML=rows.length?rows.map((r,idx)=>`<div class="product-rank"><div style="font-weight:800;color:var(--sub);font-size:12px">${idx+1}</div><div><div class="rank-name">${esc(r.name)}</div><div class="rank-meta">${r.qty} unit${r.qty===1?'':'s'} sold</div></div><div class="rank-revenue">${money(r.revenue)}</div></div>`).join(''):'<div class="empty">No paid sales in this period.</div>'}
 document.querySelectorAll('[data-range]').forEach(b=>b.onclick=()=>{analyticsRange=b.dataset.range;document.querySelectorAll('[data-range]').forEach(x=>x.classList.toggle('active',x===b));const custom=analyticsRange==='custom';$('customFromWrap').classList.toggle('hidden',!custom);$('customToWrap').classList.toggle('hidden',!custom);$('applyCustom').classList.toggle('hidden',!custom);if(!custom)renderAnalytics()});$('applyCustom').onclick=()=>{if(!$('customFrom').value\vert{}\vert{}!$('customTo').value)return;if($('customFrom').value>$('customTo').value){msg('The start date must be before the end date.',true);return}analyticsFrom=$('customFrom').value;analyticsTo=$('customTo').value;renderAnalytics()};
 async function loadSettings(){const {data,error}=await sb.from('store_settings').select('*').eq('id',1).maybeSingle();if(error){msg(error.message,true);return}if(data){$('bankName').value=data.bank_name||'';$('accountName').value=data.account_name\vert{}\vert{}'';$('accountNumber').value=data.account_number||''}}
 $('settingsForm').addEventListener('submit',async e=>{e.preventDefault();const payload={id:1,bank_name:$('bankName').value.trim(),account_name:$('accountName').value.trim(),account_number:$('accountNumber').value.trim(),updated_at:new Date().toISOString()};const {error}=await sb.from('store_settings').upsert(payload,{onConflict:'id'});if(error)msg(error.message,true);else msg('Payment details saved.')});
-let authChecking = false;
-
-async function handleAuthState() {
-  if (authChecking) return;
-
-  authChecking = true;
-
-  try {
-    const {
-      data: { user }
-    } = await sb.auth.getUser();
-
-    if (!user) {
-      $('loginView').classList.remove('hidden');
-      $('appView').classList.add('hidden');
-      return;
-    }
-
-    const isAdmin = await ensureAdmin();
-
-    if (!isAdmin) {
-      await sb.auth.signOut();
-      $('loginView').classList.remove('hidden');
-      $('appView').classList.add('hidden');
-      loginMsg('This account is not an approved Hylar Herbs administrator.', true);
-      return;
-    }
-
-    $('loginView').classList.add('hidden');
-    $('appView').classList.remove('hidden');
-
-    await loadDashboard();
-    lucide.createIcons();
-
-  } catch (e) {
-    console.error('Auth error:', e);
-    $('loginView').classList.remove('hidden');
-    $('appView').classList.add('hidden');
-    loginMsg(e.message || 'Unable to check your login.', true);
-  } finally {
-    authChecking = false;
-  }
-}
-
-$('loginForm').addEventListener('submit', async e => {
-  e.preventDefault();
-
-  const email = $('email').value.trim();
-  const password = $('password').value;
-
-  if (!email || !password) {
-    loginMsg('Please enter your email and password.', true);
-    return;
-  }
-
-  const button = $('loginForm').querySelector('button[type="submit"]');
-  button.disabled = true;
-  button.textContent = 'Signing in…';
-  loginMsg('');
-
-  try {
-    const { error } = await sb.auth.signInWithPassword({
-      email,
-      password
-    });
-
-    if (error) {
-      loginMsg(error.message, true);
-      return;
-    }
-
-    const isAdmin = await ensureAdmin();
-
-    if (!isAdmin) {
-      await sb.auth.signOut();
-      loginMsg(
-        'This account is not an approved Hylar Herbs administrator.',
-        true
-      );
-      return;
-    }
-
-    $('loginView').classList.add('hidden');
-    $('appView').classList.remove('hidden');
-
-    await loadDashboard();
-    lucide.createIcons();
-
-  } catch (e) {
-    console.error('Login error:', e);
-    loginMsg(e.message || 'Login failed. Please try again.', true);
-
-  } finally {
-    button.disabled = false;
-    button.textContent = 'Sign in';
-  }
-});
-
-$('logout').onclick = async () => {
-  await sb.auth.signOut();
-
-  $('appView').classList.add('hidden');
-  $('loginView').classList.remove('hidden');
-
-  $('password').value = '';
-  loginMsg('');
-};
-
-sb.auth.onAuthStateChange((event, session) => {
-  console.log('Auth event:', event);
-
-  // Only react to actual session-ending events here.
-  if (event === 'SIGNED_OUT') {
-    $('appView').classList.add('hidden');
-    $('loginView').classList.remove('hidden');
-    $('password').value = '';
-  }
-});
-
-// Check existing session once when the page loads.
-handleAuthState();
+$('logout').onclick=async()=>{await sb.auth.signOut();showApp()};$('loginForm').addEventListener('submit',async e=>{e.preventDefault();loginMsg('Signing in…');const {error}=await sb.auth.signInWithPassword({email:$('email').value,password:$('password').value});if(error){loginMsg(error.message,true);return}if(!(await ensureAdmin())){await sb.auth.signOut();loginMsg('This account is not an approved Hylar Herbs administrator.',true);return}await showApp()});
+sb.auth.onAuthStateChange((event, session)=>{if(session){showApp()}});showApp();
 </script>
 </body>
 </html>
