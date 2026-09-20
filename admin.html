@@ -3,22 +3,24 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
 <title>Hylar Herbs — Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
 <style>
 :root{--brand:#1E8E3E;--deep:#073E2D;--bg:#F6F7F3;--surface:#fff;--ink:#132018;--sub:#68736C;--line:#E5E9E5;--danger:#C62828;--warn:#8A6500;--blue:#2B63A7;--shadow:0 8px 28px rgba(14,34,24,.055)}
-*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Inter,Arial,sans-serif;background:var(--bg);color:var(--ink)}button,input,textarea,select{font:inherit}.hidden{display:none!important}.wrap{max-width:1260px;margin:auto;padding:24px}.muted{color:var(--sub)}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:'Manrope',Arial,sans-serif;background:var(--bg);color:var(--ink)}button,input,textarea,select{font:inherit}.hidden{display:none!important}.wrap{max-width:1260px;margin:auto;padding:24px}.muted{color:var(--sub)}
 .top{height:68px;background:var(--surface);border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 24px;gap:14px;position:sticky;top:0;z-index:30}.top h1{font-size:18px;margin:0;font-weight:800;flex:1}.menu-btn{width:40px;height:40px;border:1px solid var(--line);border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--deep)}.logout{border:1px solid var(--line);background:#fff;color:var(--deep);border-radius:9px;padding:9px 12px;font-weight:700;cursor:pointer}
 .panel{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:var(--shadow)}.login{max-width:430px;margin:80px auto}.login h2{margin:0 0 6px}.field{margin-bottom:14px}.field label{display:block;font-size:12px;font-weight:800;margin-bottom:6px}.field input,.field textarea,.field select{width:100%;border:1px solid var(--line);border-radius:9px;padding:11px 12px;background:#fff;color:var(--ink);outline:none}.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--brand)}.field input[type=checkbox]{width:auto;margin-right:6px}
 .btn{border:0;border-radius:9px;padding:10px 13px;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:7px}.btn:disabled{opacity:.5;cursor:not-allowed}.btn svg{width:16px;height:16px}.btn-primary{background:var(--deep);color:#fff}.btn-green{background:var(--brand);color:#fff}.btn-light{background:#EFF5F0;color:var(--deep)}.btn-danger{background:#FDECEC;color:#A31D1D}.btn-white{background:#fff;border:1px solid var(--line);color:var(--ink)}
-.drawer{position:fixed;inset:0;z-index:100;pointer-events:none}.drawer.open{pointer-events:auto}.drawer-backdrop{position:absolute;inset:0;background:rgba(4,25,17,.35);opacity:0;transition:.2s}.drawer.open .drawer-backdrop{opacity:1}.drawer-panel{position:absolute;left:0;top:0;bottom:0;width:270px;background:var(--deep);color:#fff;padding:22px 16px;transform:translateX(-100%);transition:.24s;box-shadow:12px 0 35px rgba(0,0,0,.18)}.drawer.open .drawer-panel{transform:translateX(0)}.drawer-brand{display:flex;align-items:center;gap:10px;padding:0 8px 22px;border-bottom:1px solid rgba(255,255,255,.12);margin-bottom:18px}.drawer-brand img{width:38px;height:38px;border-radius:9px;object-fit:cover}.drawer-brand strong{font-size:14px}.drawer-brand small{display:block;color:rgba(255,255,255,.62);font-size:10px;margin-top:2px}.drawer-head{display:flex;justify-content:flex-end;margin-bottom:8px}.drawer-close{width:36px;height:36px;border:0;border-radius:9px;background:rgba(255,255,255,.1);color:#fff;cursor:pointer}.nav-item{width:100%;border:0;background:transparent;color:rgba(255,255,255,.78);padding:12px 12px;border-radius:9px;display:flex;align-items:center;gap:11px;text-align:left;font-weight:700;cursor:pointer;margin:3px 0}.nav-item svg{width:17px}.nav-item:hover,.nav-item.active{background:rgba(255,255,255,.12);color:#fff}
-.view-title{display:flex;align-items:flex-end;justify-content:space-between;gap:15px;margin-bottom:18px}.view-title h2{margin:0 0 5px;font-size:24px}.view-title small{font-size:12px}.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}.stat{background:#fff;border:1px solid var(--line);border-radius:15px;padding:17px}.stat-top{display:flex;align-items:center;justify-content:space-between;color:var(--sub);font-size:11px;font-weight:800}.stat-icon{width:34px;height:34px;border-radius:10px;background:#EFF5F0;color:var(--brand);display:flex;align-items:center;justify-content:center}.stat-icon svg{width:17px}.stat strong{display:block;font-size:25px;color:var(--deep);margin-top:13px}.stat small{display:block;color:var(--sub);font-size:10px;margin-top:5px}
-.grid2dash{display:grid;grid-template-columns:1.45fr .9fr;gap:18px}.section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:13px}.section-head h3{margin:0;font-size:15px}.section-head button{font-size:11px}
-.order-card{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--line)}.order-card:last-child{border-bottom:0}.order-main{flex:1;min-width:0}.order-main strong{display:block;font-size:13px}.order-main span{display:block;font-size:11px;color:var(--sub);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.order-price{font-weight:800;font-size:13px;white-space:nowrap}.status{display:inline-flex;padding:5px 8px;border-radius:999px;font-size:10px;font-weight:800;white-space:nowrap}.status.awaiting_confirmation{background:#FFF5D8;color:#7A5B00}.status.awaiting{background:#FFF5D8;color:#7A5B00}.status.paid{background:#E7F5EA;color:#17652B}.status.not_received{background:#FDECEC;color:#9B1C1C}.status.processing,.status.sent{background:#E9F0FF;color:#2453A6}.status.delivered{background:#E7F5EA;color:#17652B}.status.cancelled{background:#FDECEC;color:#9B1C1C}.status.pending{background:#FFF5D8;color:#7A5B00}
-.toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:14px}.toolbar-left,.toolbar-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.toolbar input,.toolbar select{border:1px solid var(--line);border-radius:9px;padding:10px 11px;background:#fff;min-width:170px}.table-wrap{overflow:auto}.table{width:100%;border-collapse:collapse;min-width:820px}.table th,.table td{text-align:left;padding:12px 9px;border-bottom:1px solid var(--line);vertical-align:middle}.table th{font-size:10px;color:var(--sub);text-transform:uppercase;letter-spacing:.03em}.table td{font-size:12px}.table tbody tr:hover{background:#FAFBF9}.actions{display:flex;gap:6px;flex-wrap:wrap}.actions .btn{font-size:11px;padding:7px 9px}.empty{text-align:center;padding:45px 15px;color:var(--sub)}
-.analytics-controls{display:flex;align-items:end;gap:9px;flex-wrap:wrap;margin-bottom:18px}.analytics-controls .field{margin:0}.analytics-controls label{font-size:10px}.range-buttons{display:flex;gap:6px;flex-wrap:wrap}.range-buttons button.active{background:var(--deep);color:#fff}.chart{height:260px;display:flex;align-items:flex-end;gap:10px;padding:20px 6px 8px;border-top:1px solid var(--line);overflow-x:auto}.bar-wrap{height:100%;min-width:38px;flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:7px}.bar{width:100%;max-width:46px;min-height:3px;background:var(--brand);border-radius:7px 7px 2px 2px}.bar-label{font-size:9px;color:var(--sub);white-space:nowrap}.bar-value{font-size:9px;font-weight:800;color:var(--deep);white-space:nowrap}.product-rank{display:grid;grid-template-columns:40px 1fr auto;gap:11px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line)}.product-rank:last-child{border-bottom:0}.product-rank img{width:40px;height:40px;border-radius:9px;object-fit:cover;background:#eee}.rank-name{font-size:12px;font-weight:800}.rank-meta{font-size:10px;color:var(--sub);margin-top:3px}.rank-revenue{font-size:12px;font-weight:800;color:var(--deep)}
-.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.detail{background:#F7F9F6;border-radius:10px;padding:11px}.detail.full{grid-column:1/-1}.detail small{display:block;color:var(--sub);font-size:10px;margin-bottom:4px}.detail strong{font-size:12px;line-height:1.45;word-break:break-word}.items{margin-top:16px;border-top:1px solid var(--line);padding-top:14px}.item-row{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);font-size:12px}.proof{margin-top:15px}.proof img{max-width:100%;max-height:360px;border:1px solid var(--line);border-radius:10px;display:block}.modal{position:fixed;inset:0;z-index:80;background:rgba(4,20,14,.48);display:flex;align-items:center;justify-content:center;padding:15px}.modal-card{background:#fff;width:min(720px,100%);max-height:92vh;overflow:auto;border-radius:16px;padding:20px}.modal-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:16px}.modal-head h2{margin:0;font-size:18px}.modal-head button{width:36px;height:36px;border:0;border-radius:9px;background:#EEF2EE;cursor:pointer;font-size:20px}.setting-note{font-size:11px;color:var(--sub);line-height:1.5;margin-top:4px}.notice{padding:11px 12px;border-radius:9px;background:#EEF5EF;color:var(--deep);font-size:12px;margin-bottom:14px}.error{background:#FDECEC;color:#9B1C1C}
+.drawer{position:fixed;inset:0;z-index:100;pointer-events:none}.drawer.open{pointer-events:auto}.drawer-backdrop{position:absolute;inset:0;background:rgba(4,25,17,.35);opacity:0;transition:.2s}.drawer.open .drawer-backdrop{opacity:1}.drawer-panel{position:absolute;left:0;top:0;bottom:0;width:270px;background:var(--deep);color:#fff;padding:22px 16px;transform:translateX(-100%);transition:.24s;box-shadow:12px 0 35px rgba(0,0,0,.18)}.drawer.open .drawer-panel{transform:translateX(0)}.drawer-brand{display:flex;align-items:center;gap:10px;padding:0 8px 22px;border-bottom:1px solid rgba(255,255,255,.12);margin-bottom:18px}.drawer-brand img{width:38px;height:38px;border-radius:9px;object-fit:cover}.drawer-brand strong{font-size:14px}.drawer-brand small{display:block;color:rgba(255,255,255,.62);font-size:12px;margin-top:2px}.drawer-head{display:flex;justify-content:flex-end;margin-bottom:8px}.drawer-close{width:36px;height:36px;border:0;border-radius:9px;background:rgba(255,255,255,.1);color:#fff;cursor:pointer}.nav-item{width:100%;border:0;background:transparent;color:rgba(255,255,255,.78);padding:12px 12px;border-radius:9px;display:flex;align-items:center;gap:11px;text-align:left;font-weight:700;cursor:pointer;margin:3px 0}.nav-item svg{width:17px}.nav-item:hover,.nav-item.active{background:rgba(255,255,255,.12);color:#fff}
+.view-title{display:flex;align-items:flex-end;justify-content:space-between;gap:15px;margin-bottom:18px}.view-title h2{margin:0 0 5px;font-size:24px}.view-title small{font-size:12px}.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}.stat{background:#fff;border:1px solid var(--line);border-radius:15px;padding:17px}.stat-top{display:flex;align-items:center;justify-content:space-between;color:var(--sub);font-size:12px;font-weight:800}.stat-icon{width:34px;height:34px;border-radius:10px;background:#EFF5F0;color:var(--brand);display:flex;align-items:center;justify-content:center}.stat-icon svg{width:17px}.stat strong{display:block;font-size:25px;color:var(--deep);margin-top:13px}.stat small{display:block;color:var(--sub);font-size:12px;margin-top:5px}
+.grid2dash{display:grid;grid-template-columns:1.45fr .9fr;gap:18px}.section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:13px}.section-head h3{margin:0;font-size:15px}.section-head button{font-size:12px}
+.order-card{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--line)}.order-card:last-child{border-bottom:0}.order-main{flex:1;min-width:0}.order-main strong{display:block;font-size:13px}.order-main span{display:block;font-size:12px;color:var(--sub);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.order-price{font-weight:800;font-size:13px;white-space:nowrap}.status{display:inline-flex;padding:5px 8px;border-radius:999px;font-size:12px;font-weight:800;white-space:nowrap}.status.awaiting_confirmation{background:#FFF5D8;color:#7A5B00}.status.awaiting{background:#FFF5D8;color:#7A5B00}.status.paid{background:#E7F5EA;color:#17652B}.status.not_received{background:#FDECEC;color:#9B1C1C}.status.processing,.status.sent{background:#E9F0FF;color:#2453A6}.status.delivered{background:#E7F5EA;color:#17652B}.status.cancelled{background:#FDECEC;color:#9B1C1C}.status.pending{background:#FFF5D8;color:#7A5B00}
+.toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:14px}.toolbar-left,.toolbar-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.toolbar input,.toolbar select{border:1px solid var(--line);border-radius:9px;padding:10px 11px;background:#fff;min-width:170px}.table-wrap{overflow:auto}.table{width:100%;border-collapse:collapse;min-width:820px}.table th,.table td{text-align:left;padding:12px 9px;border-bottom:1px solid var(--line);vertical-align:middle}.table th{font-size:12px;color:var(--sub);text-transform:uppercase;letter-spacing:.03em}.table td{font-size:12px}.table tbody tr:hover{background:#FAFBF9}.actions{display:flex;gap:6px;flex-wrap:wrap}.actions .btn{font-size:12px;padding:7px 9px}.empty{text-align:center;padding:45px 15px;color:var(--sub)}
+.analytics-controls{display:flex;align-items:end;gap:9px;flex-wrap:wrap;margin-bottom:18px}.analytics-controls .field{margin:0}.analytics-controls label{font-size:12px}.range-buttons{display:flex;gap:6px;flex-wrap:wrap}.range-buttons button.active{background:var(--deep);color:#fff}.chart{height:260px;display:flex;align-items:flex-end;gap:10px;padding:20px 6px 8px;border-top:1px solid var(--line);overflow-x:auto}.bar-wrap{height:100%;min-width:38px;flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:7px}.bar{width:100%;max-width:46px;min-height:3px;background:var(--brand);border-radius:7px 7px 2px 2px}.bar-label{font-size:12px;color:var(--sub);white-space:nowrap}.bar-value{font-size:12px;font-weight:800;color:var(--deep);white-space:nowrap}.product-rank{display:grid;grid-template-columns:40px 1fr auto;gap:11px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line)}.product-rank:last-child{border-bottom:0}.product-rank img{width:40px;height:40px;border-radius:9px;object-fit:cover;background:#eee}.rank-name{font-size:12px;font-weight:800}.rank-meta{font-size:12px;color:var(--sub);margin-top:3px}.rank-revenue{font-size:12px;font-weight:800;color:var(--deep)}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.detail{background:#F7F9F6;border-radius:10px;padding:11px}.detail.full{grid-column:1/-1}.detail small{display:block;color:var(--sub);font-size:12px;margin-bottom:4px}.detail strong{font-size:12px;line-height:1.45;word-break:break-word}.items{margin-top:16px;border-top:1px solid var(--line);padding-top:14px}.item-row{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);font-size:12px}.proof{margin-top:15px}.proof img{max-width:100%;max-height:360px;border:1px solid var(--line);border-radius:10px;display:block}.modal{position:fixed;inset:0;z-index:80;background:rgba(4,20,14,.48);display:flex;align-items:center;justify-content:center;padding:15px}.modal-card{background:#fff;width:min(720px,100%);max-height:92vh;overflow:auto;border-radius:16px;padding:20px}.modal-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:16px}.modal-head h2{margin:0;font-size:18px}.modal-head button{width:36px;height:36px;border:0;border-radius:9px;background:#EEF2EE;cursor:pointer;font-size:20px}.setting-note{font-size:12px;color:var(--sub);line-height:1.5;margin-top:4px}.notice{padding:11px 12px;border-radius:9px;background:#EEF5EF;color:var(--deep);font-size:12px;margin-bottom:14px}.error{background:#FDECEC;color:#9B1C1C}
 img{max-width:100%}.grid2dash>*,.cards>*{min-width:0}.top h1{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 @media(max-width:900px){.cards{grid-template-columns:repeat(2,1fr)}.grid2dash{grid-template-columns:1fr}}
 @media(max-width:650px){
@@ -32,7 +34,7 @@ body{overflow-x:hidden}
 .wrap{padding:14px 12px 30px}.login{margin:28px auto}.panel{padding:14px;border-radius:13px}
 .view-title{align-items:stretch;flex-direction:column;gap:10px;margin-bottom:14px}.view-title h2{font-size:20px}.view-title .btn{width:100%}
 /* stat cards */
-.cards{grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}.stat{padding:12px}.stat-top{font-size:10px;gap:6px}.stat-icon{width:28px;height:28px;flex:none}.stat strong{font-size:18px;margin-top:9px;overflow-wrap:anywhere}.stat small{font-size:10px}
+.cards{grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}.stat{padding:12px}.stat-top{font-size:12px;gap:6px}.stat-icon{width:28px;height:28px;flex:none}.stat strong{font-size:18px;margin-top:9px;overflow-wrap:anywhere}.stat small{font-size:12px}
 .grid2dash{gap:12px}
 /* inputs: 16px stops iPhone from zooming in when you tap a field */
 .field input,.field textarea,.field select,.toolbar input,.toolbar select{font-size:16px}
@@ -47,7 +49,7 @@ body{overflow-x:hidden}
 .table tbody tr:hover{background:#fff}
 .table td{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:9px 0;border-bottom:1px dashed var(--line);text-align:right;font-size:13px}
 .table td:last-child{border-bottom:0}
-.table td[data-label]::before{content:attr(data-label);color:var(--sub);font-size:11px;font-weight:800;text-align:left;flex:none}
+.table td[data-label]::before{content:attr(data-label);color:var(--sub);font-size:12px;font-weight:800;text-align:left;flex:none}
 .table td:not([data-label]){display:block;text-align:left}
 .table td.empty{display:block;text-align:center;padding:30px 10px}
 .btn-block{width:100%}
@@ -62,9 +64,73 @@ body{overflow-x:hidden}
 /* analytics */
 .analytics-controls{flex-direction:column;align-items:stretch;gap:10px}.analytics-controls .field{width:100%}.analytics-controls .btn{width:100%}
 .range-buttons{display:grid;grid-template-columns:repeat(3,1fr);width:100%}.range-buttons button{padding:10px 6px;font-size:12px}
-.chart{height:230px;gap:6px;padding:16px 2px 6px}.bar-wrap{min-width:46px}.bar-value{font-size:8px}
+.chart{height:230px;gap:6px;padding:16px 2px 6px}.bar-wrap{min-width:46px}.bar-value{font-size:12px}
 }
 @media(max-width:380px){.stat strong{font-size:16px}.top h1{font-size:14px}.wrap{padding:12px 10px 28px}.panel{padding:12px}}
+
+/* brand type + overview rebuild */
+h1,h2{font-family:'Fraunces',Georgia,serif;font-weight:600;letter-spacing:-.015em}
+body{font-size:15px;line-height:1.5}
+.stat-icon{display:none}.stat strong{font-size:28px;margin-top:10px}.stat-top{font-size:12px;letter-spacing:.02em}
+.confirm-panel{border-left:4px solid var(--brand);margin-bottom:18px}
+.confirm-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}.confirm-row:last-child{border-bottom:0}
+.count-pill{background:var(--deep);color:#fff;border-radius:999px;padding:3px 11px;font-weight:800;font-size:13px}
+.order-main strong{font-size:14px}.table td{font-size:13.5px}
+@media(max-width:650px){.confirm-row{flex-wrap:wrap}.confirm-row .btn{width:100%}.stat strong{font-size:22px}}
+
+/* ===== APP-STYLE SHELL ===== */
+body{font-size:15px}
+.top{background:var(--deep);color:#fff;border-bottom:0;height:66px;padding:0 16px;gap:10px}
+.top .brand{display:flex;align-items:center;gap:11px;flex:1;min-width:0}
+.top .brand img{width:42px;height:42px;border-radius:12px;object-fit:cover;background:#fff;flex:none}
+.top .brand strong{display:block;font-family:'Fraunces',Georgia,serif;font-size:19px;line-height:1.1;font-weight:600}
+.top .brand small{display:block;font-size:12.5px;color:rgba(255,255,255,.72);font-weight:600;margin-top:2px}
+.icon-btn{position:relative;width:44px;height:44px;flex:none;border-radius:13px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.icon-btn svg{width:20px;height:20px}
+.bell-badge{position:absolute;top:-6px;right:-6px;min-width:20px;height:20px;padding:0 5px;border-radius:10px;background:var(--danger);color:#fff;font-size:12px;font-weight:800;align-items:center;justify-content:center}
+.tabbar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(12px + env(safe-area-inset-bottom));width:min(560px,calc(100% - 24px));z-index:60;background:var(--deep);border-radius:22px;padding:7px 6px;display:flex;gap:2px;box-shadow:0 14px 34px rgba(4,25,17,.35)}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;border:0;background:none;color:rgba(255,255,255,.62);font-size:12px;font-weight:700;padding:7px 2px;cursor:pointer;border-radius:15px}
+.tab svg{width:22px;height:22px}
+.tab.active{color:#fff;background:rgba(255,255,255,.14)}
+main.wrap{padding-bottom:118px}
+.block-title{font-size:17px;font-weight:800;margin:4px 0 12px}
+.panel,.stat{border-radius:18px}
+.stat-icon{display:flex;width:38px;height:38px;border-radius:12px}
+.stat-top{flex-direction:row-reverse;justify-content:flex-end;gap:10px;font-size:13px}
+.stat strong{font-size:28px}.stat small{font-size:12.5px}
+.btn{border-radius:12px;min-height:44px}
+.field input,.field textarea,.field select,.toolbar input,.toolbar select{min-height:46px;border-radius:12px}
+.empty-box{display:flex;flex-direction:column;align-items:center;gap:6px;padding:26px 10px;text-align:center}
+.empty-box .ring{width:84px;height:84px;border-radius:26px;background:#EFF5F0;color:var(--brand);display:flex;align-items:center;justify-content:center;margin-bottom:8px}
+.empty-box .ring svg{width:38px;height:38px}
+.empty-box strong{font-size:17px;color:var(--ink)}.empty-box span{font-size:14px;color:var(--sub);max-width:270px}
+
+.confirm-row .order-main strong{color:var(--ink);font-size:15px}
+#toConfirm{color:inherit}
+@media(max-width:650px){
+  /* compact order + product cards so many fit on one screen */
+  #orderRows tr,#productRows tr{display:grid;grid-template-columns:1fr auto;gap:8px 10px;padding:14px}
+  #orderRows td,#productRows td{display:block;border:0;padding:0;text-align:left}
+  #orderRows td[data-label]::before,#productRows td[data-label]::before{display:none}
+  #orderRows td:nth-child(1){grid-column:1;font-size:15px}
+  #orderRows td:nth-child(3){grid-column:2;grid-row:1;text-align:right;font-size:15px}
+  #orderRows td:nth-child(2){grid-column:1/-1}
+  #orderRows td:nth-child(4){grid-column:1}
+  #orderRows td:nth-child(5){grid-column:2;text-align:right}
+  #orderRows td:nth-child(6){grid-column:1/-1;font-size:12.5px;color:var(--sub)}
+  #orderRows td:nth-child(7){grid-column:1/-1}
+  #productRows td:nth-child(1){grid-column:1/-1}
+  #productRows td:nth-child(2),#productRows td:nth-child(5){display:none}
+  #productRows td:nth-child(3){grid-column:1;align-self:center;font-size:15px}
+  #productRows td:nth-child(4){grid-column:2;text-align:right}
+  #productRows td:nth-child(6){grid-column:1/-1}
+  #productRows .actions .btn{min-height:40px}
+  #orderRows tr:has(td.empty),#productRows tr:has(td.empty){border:0;padding:0;background:none;display:block}
+  .toolbar-left{flex-direction:row;flex-wrap:wrap;gap:8px}
+  #orderSearch{flex:1 1 100%}
+  #paymentFilter,#deliveryFilter{flex:1 1 calc(50% - 4px);width:auto}
+  #refreshOrders{display:none}
+}
 </style>
 </head>
 <body>
@@ -91,11 +157,10 @@ body{overflow-x:hidden}
 
 <!-- APP -->
 <div id="appView" class="hidden">
-<header class="top"><button class="menu-btn" id="menuBtn" aria-label="Open menu"><i data-lucide="menu"></i></button><h1>Hylar Herbs</h1><button class="logout" id="logout">Log out</button></header>
-<div class="drawer" id="drawer"><div class="drawer-backdrop" id="drawerBackdrop"></div><aside class="drawer-panel"><div class="drawer-head"><button class="drawer-close" id="drawerClose" aria-label="Close menu"><i data-lucide="x"></i></button></div><div class="drawer-brand"><img id="brandLogo" alt="Hylar Herbs"><div><strong>Hylar Herbs</strong><small>Store management</small></div></div><button class="nav-item active" data-view="dashboard"><i data-lucide="layout-dashboard"></i>Overview</button><button class="nav-item" data-view="orders"><i data-lucide="shopping-bag"></i>Orders</button><button class="nav-item" data-view="products"><i data-lucide="package"></i>Products</button><button class="nav-item" data-view="analytics"><i data-lucide="trending-up"></i>Analytics</button><button class="nav-item" data-view="settings"><i data-lucide="settings"></i>Store Settings</button></aside></div>
+<header class="top"><div class="brand"><img id="brandLogo" alt="Hylar Herbs"><div><strong>Hylar Herbs</strong><small>Store management</small></div></div><button class="icon-btn" id="bellBtn" aria-label="Payments waiting"><i data-lucide="bell"></i><span class="bell-badge" id="bellCount" style="display:none">0</span></button><button class="icon-btn" id="logout" aria-label="Log out"><i data-lucide="log-out"></i></button></header>
 <main class="wrap"><div id="msg"></div>
 
-<section id="dashboardView"><div class="view-title"><div><h2>Good day</h2><small class="muted">Here's what's happening with your Hylar Herbs store.</small></div></div><div class="cards"><div class="stat"><div class="stat-top"><span>Sales today</span><span class="stat-icon"><i data-lucide="banknote"></i></span></div><strong id="statToday">₦0</strong><small>Paid orders</small></div><div class="stat"><div class="stat-top"><span>Sales this month</span><span class="stat-icon"><i data-lucide="trending-up"></i></span></div><strong id="statMonth">₦0</strong><small>Hylar website sales</small></div><div class="stat"><div class="stat-top"><span>Orders</span><span class="stat-icon"><i data-lucide="shopping-bag"></i></span></div><strong id="statOrders">0</strong><small>Submitted orders</small></div><div class="stat"><div class="stat-top"><span>Awaiting payment</span><span class="stat-icon"><i data-lucide="clock-3"></i></span></div><strong id="statAwaiting">0</strong><small>Need bank confirmation</small></div></div><div class="grid2dash"><div class="panel"><div class="section-head"><h3>Recent orders</h3><button class="btn btn-light" data-goto="orders">View all</button></div><div id="recentOrders" class="muted">Loading…</div></div><div class="panel"><div class="section-head"><h3>Top selling products</h3><button class="btn btn-light" data-goto="analytics">Analytics</button></div><div id="topProducts">Loading…</div></div></div></section>
+<section id="dashboardView"><div class="view-title"><div><h2>Overview</h2><small class="muted" id="todayDate"></small></div></div><div class="panel confirm-panel"><div class="section-head"><h3>Payments to confirm</h3><span class="count-pill" id="confirmCount">0</span></div><div id="toConfirm" class="muted">Loading…</div></div><h3 class="block-title">Quick stats</h3><div class="cards"><div class="stat"><div class="stat-top"><span>Sales today</span><span class="stat-icon"><i data-lucide="banknote"></i></span></div><strong id="statToday">₦0</strong><small>Paid orders</small></div><div class="stat"><div class="stat-top"><span>This month</span><span class="stat-icon"><i data-lucide="trending-up"></i></span></div><strong id="statMonth">₦0</strong><small>Hylar website sales</small></div><div class="stat"><div class="stat-top"><span>Orders</span><span class="stat-icon"><i data-lucide="shopping-bag"></i></span></div><strong id="statOrders">0</strong><small>Submitted orders</small></div><div class="stat"><div class="stat-top"><span>Awaiting</span><span class="stat-icon"><i data-lucide="clock-3"></i></span></div><strong id="statAwaiting">0</strong><small>Need bank confirmation</small></div></div><div class="grid2dash"><div class="panel"><div class="section-head"><h3>Recent orders</h3><button class="btn btn-light" data-goto="orders">View all</button></div><div id="recentOrders" class="muted">Loading…</div></div><div class="panel"><div class="section-head"><h3>Top selling products</h3><button class="btn btn-light" data-goto="analytics">Analytics</button></div><div id="topProducts">Loading…</div></div></div></section>
 
 <section id="ordersView" class="hidden"><div class="view-title"><div><h2>Orders</h2><small class="muted">Review submitted payments, products and delivery details.</small></div><button class="btn btn-light" id="downloadCsv"><i data-lucide="download"></i>Download CSV</button></div><div class="panel"><div class="toolbar"><div class="toolbar-left"><input id="orderSearch" placeholder="Search order or customer…"><select id="paymentFilter"><option value="">All payment</option><option value="awaiting_confirmation">Awaiting confirmation</option><option value="paid">Paid</option><option value="not_received">Not received</option></select><select id="deliveryFilter"><option value="">All delivery</option><option value="pending">Pending</option><option value="processing">Processing</option><option value="sent">Sent</option><option value="delivered">Delivered</option><option value="cancelled">Cancelled</option></select></div><button class="btn btn-light" id="refreshOrders"><i data-lucide="refresh-cw"></i>Refresh</button></div><div class="table-wrap"><table class="table"><thead><tr><th>Order</th><th>Customer</th><th>Total</th><th>Payment</th><th>Delivery</th><th>Date</th><th></th></tr></thead><tbody id="orderRows"></tbody></table></div></div></section>
 
@@ -104,7 +169,9 @@ body{overflow-x:hidden}
 <section id="analyticsView" class="hidden"><div class="view-title"><div><h2>Analytics</h2><small class="muted">Sales generated through the Hylar Herbs website only.</small></div></div><div class="panel"><div class="analytics-controls"><div class="range-buttons"><button class="btn btn-light active" data-range="today">Today</button><button class="btn btn-light" data-range="week">This week</button><button class="btn btn-light" data-range="month">This month</button><button class="btn btn-light" data-range="year">This year</button><button class="btn btn-light" data-range="custom">Custom</button></div><div class="field hidden" id="customFromWrap"><label>From</label><input type="date" id="customFrom"></div><div class="field hidden" id="customToWrap"><label>To</label><input type="date" id="customTo"></div><button class="btn btn-primary hidden" id="applyCustom">Apply</button></div><div class="cards"><div class="stat"><div class="stat-top"><span>Revenue</span><span class="stat-icon"><i data-lucide="banknote"></i></span></div><strong id="anRevenue">₦0</strong><small>Paid orders only</small></div><div class="stat"><div class="stat-top"><span>Orders</span><span class="stat-icon"><i data-lucide="receipt"></i></span></div><strong id="anOrders">0</strong><small>Paid orders</small></div><div class="stat"><div class="stat-top"><span>Units sold</span><span class="stat-icon"><i data-lucide="boxes"></i></span></div><strong id="anUnits">0</strong><small>Total product quantity</small></div><div class="stat"><div class="stat-top"><span>Average order</span><span class="stat-icon"><i data-lucide="calculator"></i></span></div><strong id="anAverage">₦0</strong><small>Revenue ÷ paid orders</small></div></div><div class="panel"><div class="section-head"><h3 id="chartTitle">Sales today</h3></div><div class="chart" id="salesChart"></div></div><div style="height:14px"></div><div class="panel"><div class="section-head"><h3>Product performance</h3><span class="muted" style="font-size:11px">Units sold · revenue</span></div><div id="productAnalytics"></div></div></div></section>
 
 <section id="settingsView" class="hidden"><div class="view-title"><div><h2>Store Settings</h2><small class="muted">Payment details customers see at checkout.</small></div></div><div class="panel"><form id="settingsForm"><div class="grid2dash"><div class="field"><label>Bank name</label><input id="bankName" placeholder="e.g. Moniepoint"></div><div class="field"><label>Account name</label><input id="accountName" placeholder="Account name"></div><div class="field"><label>Account number</label><input id="accountNumber" inputmode="numeric" placeholder="Account number"></div></div><p class="setting-note">These details are shown to customers during checkout. Never put secret keys or passwords here.</p><div style="margin-top:16px"><button class="btn btn-green" type="submit"><i data-lucide="save"></i>Save payment details</button></div></form></div></section>
-</main></div>
+</main>
+<nav class="tabbar" aria-label="Main"><button class="tab active" data-view="dashboard"><i data-lucide="layout-dashboard"></i><span>Home</span></button><button class="tab" data-view="products"><i data-lucide="package"></i><span>Products</span></button><button class="tab" data-view="orders"><i data-lucide="shopping-bag"></i><span>Orders</span></button><button class="tab" data-view="analytics"><i data-lucide="trending-up"></i><span>Analytics</span></button><button class="tab" data-view="settings"><i data-lucide="settings"></i><span>Settings</span></button></nav>
+</div>
 
 <div id="productModal" class="modal hidden"><div class="modal-card"><div class="modal-head"><h2 id="productModalTitle">Add product</h2><button id="closeProductModal" type="button">×</button></div><form id="productForm"><input id="pid" type="hidden"><div class="grid2dash"><div class="field"><label>Product name</label><input id="pname" required></div><div class="field"><label>Category</label><select id="pcat"><option value="feminine">Feminine Wellness</option><option value="ttc">Fertility &amp; TTC</option><option value="infection">Infection Care</option><option value="men">Men's Vitality</option><option value="body">Body &amp; Weight</option></select></div><div class="field"><label>Regular price (₦)</label><input id="regular" type="number" min="0" step="0.01" required></div><div class="field"><label>Sale price (₦)</label><input id="sale" type="number" min="0" step="0.01"></div><div class="field"><label>Tag</label><select id="tag"><option value="">None</option><option value="Kit">Kit</option></select></div><div class="field"><label>Sort order</label><input id="sort" type="number" min="0" value="999"></div><div class="field"><label><input id="stock" type="checkbox" checked> In stock</label><label><input id="visible" type="checkbox" checked> Visible on shop</label><label><input id="best" type="checkbox"> Best seller</label></div><div class="field"><label>Product image</label><input id="image" type="file" accept="image/*"><div id="previewWrap"></div></div><div class="field full"><label>Description</label><textarea id="desc"></textarea></div></div><div style="display:flex;justify-content:flex-end;gap:8px"><button class="btn btn-light" type="button" id="cancelProduct">Cancel</button><button class="btn btn-green" type="submit">Save product</button></div></form></div></div>
 
@@ -119,10 +186,10 @@ const SUPABASE_PUBLISHABLE_KEY='sb_publishable_XHxPBPuaGr1uMRZ8LwC8qw_Odhi8hMP';
 const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
 
 /* WHERE YOUR SITE IMAGES LIVE
-   - Admin file is in the SAME folder as your images (repo root, e.g. admin.html): use ''
-   - Admin file is in a subfolder (e.g. /admin/index.html) and images are in the repo root: use '../'
+   - This file (admin.html) sits in the SAME folder as your images (repo root): use ''
+   - If you ever move it into a subfolder such as /admin/, change this to '../'
    Set LOGO_FILE to the exact filename of your logo on GitHub (case-sensitive). */
-const SITE_ROOT='../';
+const SITE_ROOT='';
 const LOGO_FILE='hylar-herbs-logo.jpg';
 document.getElementById('brandLogo').src=SITE_ROOT+LOGO_FILE;
 
@@ -139,19 +206,15 @@ function loginMsg(t,error=false){$('loginMsg').innerHTML=t?`<div class="notice $
 /* =========================
    NAVIGATION
 ========================= */
-function closeDrawer(){$('drawer').classList.remove('open')}
-function openDrawer(){$('drawer').classList.add('open')}
-$('menuBtn').onclick=openDrawer;
-$('drawerClose').onclick=closeDrawer;
-$('drawerBackdrop').onclick=closeDrawer;
-document.querySelectorAll('.nav-item').forEach(b=>b.onclick=()=>setView(b.dataset.view));
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>setView(b.dataset.view));
+$('bellBtn').onclick=()=>setView('dashboard');
 document.querySelectorAll('[data-goto]').forEach(b=>b.onclick=()=>setView(b.dataset.goto));
 
 function setView(view){
   currentView=view;
   ['dashboard','orders','products','analytics','settings'].forEach(v=>$(v+'View').classList.toggle('hidden',v!==view));
-  document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active',b.dataset.view===view));
-  closeDrawer();
+  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.view===view));
+  window.scrollTo(0,0);
   msg('');
   if(view==='dashboard')loadDashboard();
   if(view==='orders')loadOrders();
@@ -205,12 +268,22 @@ async function loadDashboard(){
     $('statMonth').textContent=money(sumOrders(po.filter(o=>new Date(o.paid_at||o.created_at)>=month)));
     $('statOrders').textContent=allOrders.length;
     $('statAwaiting').textContent=allOrders.filter(o=>o.payment_status==='awaiting_confirmation').length;
+    renderToConfirm();
     renderRecent();
     renderTopProducts();
     icons();
   }catch(e){msg(e.message||'Could not load dashboard.',true)}
 }
 
+function emptyBox(ic,t,x){return `<div class="empty-box"><div class="ring"><i data-lucide="${ic}"></i></div><strong>${t}</strong><span>${x}</span></div>`}
+function ago(d){const m=Math.max(1,Math.round((Date.now()-new Date(d))/60000));if(m<60)return m+' min ago';const h=Math.round(m/60);if(h<24)return h+' hr ago';const n=Math.round(h/24);return n+' day'+(n===1?'':'s')+' ago'}
+function renderToConfirm(){
+  $('todayDate').textContent=new Date().toLocaleDateString('en-NG',{weekday:'long',day:'numeric',month:'long'});
+  const list=allOrders.filter(o=>o.payment_status==='awaiting_confirmation').reverse();
+  $('confirmCount').textContent=list.length;
+  $('bellCount').textContent=list.length;$('bellCount').style.display=list.length?'flex':'none';
+  $('toConfirm').innerHTML=list.length?list.map(o=>`<div class="confirm-row"><div class="order-main"><strong>${esc(o.order_number)} · ${esc(o.customer_name)}</strong><span>${money(o.total_amount)} · ${ago(o.created_at)} · ${o.payment_proof_path?'receipt attached':'no receipt'}</span></div><button class="btn btn-green" onclick="viewOrder('${o.id}')">Review</button></div>`).join(''):emptyBox('circle-check','All caught up','New payments will show up here.');
+}
 function renderRecent(){
   const list=allOrders.slice(0,6);
   $('recentOrders').innerHTML=list.length?list.map(o=>`<div class="order-card"><div class="order-main"><strong>${esc(o.order_number)}</strong><span>${esc(o.customer_name)} · ${new Date(o.created_at).toLocaleDateString('en-NG')}</span></div><span class="status ${statusClass(o.payment_status)}">${esc(paymentLabel(o.payment_status))}</span><div class="order-price">${money(o.total_amount)}</div></div>`).join(''):'<div class="empty">No submitted orders yet.</div>';
@@ -244,7 +317,7 @@ function renderOrders(){
     (!pf||o.payment_status===pf)&&
     (!df||o.delivery_status===df)
   );
-  $('orderRows').innerHTML=list.length?list.map(o=>`<tr><td><strong>${esc(o.order_number)}</strong></td><td data-label="Customer">${esc(o.customer_name)}<br><small class="muted">${esc(o.customer_phone)}</small></td><td data-label="Total"><strong>${money(o.total_amount)}</strong></td><td data-label="Payment"><span class="status ${statusClass(o.payment_status)}">${esc(paymentLabel(o.payment_status))}</span></td><td data-label="Delivery"><span class="status ${statusClass(o.delivery_status)}">${esc(o.delivery_status)}</span></td><td data-label="Date">${new Date(o.created_at).toLocaleDateString('en-NG')}</td><td><button class="btn btn-light btn-block" onclick="viewOrder('${o.id}')">View order</button></td></tr>`).join(''):'<tr><td colspan="7" class="empty">No orders found.</td></tr>';
+  $('orderRows').innerHTML=list.length?list.map(o=>`<tr><td><strong>${esc(o.order_number)}</strong></td><td data-label="Customer">${esc(o.customer_name)}<br><small class="muted">${esc(o.customer_phone)}</small></td><td data-label="Total"><strong>${money(o.total_amount)}</strong></td><td data-label="Payment"><span class="status ${statusClass(o.payment_status)}">${esc(paymentLabel(o.payment_status))}</span></td><td data-label="Delivery"><span class="status ${statusClass(o.delivery_status)}">${esc(o.delivery_status)}</span></td><td data-label="Date">${new Date(o.created_at).toLocaleDateString('en-NG')}</td><td><button class="btn btn-light btn-block" onclick="viewOrder('${o.id}')">View order</button></td></tr>`).join(''):'<tr><td colspan="7" class="empty">'+emptyBox('package-open','No orders yet','Orders will appear here once customers start purchasing.')+'</td></tr>';icons();
 }
 
 async function viewOrder(id){
