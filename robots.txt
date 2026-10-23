@@ -1,9 +1,0 @@
-User-agent: *
-Allow: /
-Disallow: /admin.html
-
-User-agent: OAI-SearchBot
-Allow: /
-Disallow: /admin.html
-
-Sitemap: https://hylarherbs.com.ng/sitemap.xml
