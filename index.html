@@ -1295,6 +1295,47 @@
     };
   }
 
+  function updateCatalogueStructuredData(items){
+    try {
+      const catalogue = items.filter(p => p.visible !== false && p.name && p.id);
+      const elements = catalogue.map((p, index) => {
+        const item = {
+          '@type': 'Product',
+          name: String(p.name),
+          sku: String(p.id),
+          brand: {'@type':'Brand',name:'Hylar Herbs & Body Wellness'}
+        };
+        if(p.img){
+          const src = resolveImage(p.img);
+          if(src) item.image = new URL(src, window.location.origin).href;
+        }
+        if(Number.isFinite(p.price) && p.price > 0){
+          item.offers = {
+            '@type':'Offer',
+            priceCurrency:'NGN',
+            price:p.price,
+            availability:p.inStock === false ? 'https://schema.org/OutOfStock' : 'https://schema.org/InStock',
+            seller:{'@type':'Organization',name:'Hylar Herbs & Body Wellness'}
+          };
+        }
+        return {'@type':'ListItem',position:index+1,item};
+      });
+      const existing = document.getElementById('hylar-live-catalogue-jsonld');
+      if(!elements.length){ if(existing) existing.remove(); return; }
+      const node = existing || document.createElement('script');
+      node.id = 'hylar-live-catalogue-jsonld';
+      node.type = 'application/ld+json';
+      node.textContent = JSON.stringify({
+        '@context':'https://schema.org',
+        '@type':'ItemList',
+        name:'Hylar Herbs live product catalogue',
+        numberOfItems:elements.length,
+        itemListElement:elements
+      }).replace(/</g,'\u003c');
+      if(!existing) document.head.appendChild(node);
+    }catch(err){ console.warn('Catalogue structured data unavailable',err); }
+  }
+
   async function loadProductsFromSupabase(){
     try{
       const { data, error } = await supabaseClient
@@ -1307,6 +1348,10 @@
 
       if(Array.isArray(data) && data.length){
         products = data.map(mapSupabaseProduct);
+        // GEO Phase 2B: describe only products confirmed by the live database.
+        // This is supplementary machine-readable catalogue data, not a replacement
+        // for independently crawlable product pages (planned after DB verification).
+        updateCatalogueStructuredData(products);
       } else {
         products = fallbackProducts.slice();
       }
