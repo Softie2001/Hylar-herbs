@@ -140,6 +140,7 @@
   }
   .cat-strip a:hover{color:#fff; border-color:var(--accent);}
 
+  .hero-visual:not(.hero-ready){visibility:hidden}
   /* ---------- HERO / PROMO BANNER ---------- */
   .hero{background:linear-gradient(120deg, var(--brand-deep) 0%, var(--brand-dark) 55%, var(--brand) 100%); position:relative; overflow:hidden;}
   .hero::after{
@@ -1947,11 +1948,30 @@ document.getElementById('contactForm').addEventListener('submit', async (e) => {
 /* Hylar scheduled hero: public read-only, Africa/Lagos schedule stored as timestamptz. */
 (function(){
  const hero=document.querySelector('.hero-card img'), timer=document.getElementById('heroCountdown'), defaultPrice=document.getElementById('heroDefaultPrice');
- if(!hero||!timer||!window.supabase)return;
+ if(!hero||!timer||!window.supabase){document.querySelector('.hero-visual')?.classList.add('hero-ready');return;}
  const base=hero.getAttribute('src'); let endAt=null;
  const client=window.supabase.createClient('https://wstpvrhjhscctekwbkcs.supabase.co','sb_publishable_XHxPBPuaGr1uMRZ8LwC8qw_Odhi8hMP');
  function tick(){if(!endAt){timer.hidden=true;defaultPrice.hidden=false;return}let s=Math.max(0,Math.floor((endAt-Date.now())/1000));if(!s){timer.hidden=true;defaultPrice.hidden=false;endAt=null;refresh();return}const d=Math.floor(s/86400);s%=86400;const h=Math.floor(s/3600);s%=3600;const m=Math.floor(s/60),sec=s%60;timer.innerHTML='<strong>SALE ENDS IN</strong><span>'+d+'d '+String(h).padStart(2,'0')+'h '+String(m).padStart(2,'0')+'m '+String(sec).padStart(2,'0')+'s</span>';timer.hidden=false;defaultPrice.hidden=true}
- async function refresh(){try{const now=new Date().toISOString();const {data,error}=await client.from('hero_campaigns').select('image_url,kind,ends_at').eq('enabled',true).lte('starts_at',now).gt('ends_at',now).order('starts_at',{ascending:false}).limit(1);if(error)throw error;const item=data?.[0];hero.src=item?.image_url||base;endAt=item?.kind==='sale'?new Date(item.ends_at).getTime():null;tick()}catch(e){console.warn('Hero campaign unavailable',e);hero.src=base;endAt=null;timer.hidden=true;defaultPrice.hidden=false}}
+ const visual=hero.closest('.hero-visual');
+ let firstLoad=true;
+ const reveal=()=>{if(visual)visual.classList.add('hero-ready');firstLoad=false};
+ // Network errors must never leave the hero invisible indefinitely.
+ setTimeout(reveal,6500);
+ function imageReady(src){return new Promise(resolve=>{if(hero.getAttribute('src')===src && hero.complete && hero.naturalWidth){resolve();return}const image=new Image();let finished=false;const done=()=>{if(!finished){finished=true;resolve()}};image.onload=done;image.onerror=done;image.src=src;setTimeout(done,4500)})}
+ async function refresh(){
+  try{
+   const now=new Date().toISOString();
+   const {data,error}=await client.from('hero_campaigns').select('image_url,kind,ends_at').eq('enabled',true).lte('starts_at',now).gt('ends_at',now).order('starts_at',{ascending:false}).limit(1);
+   if(error)throw error;
+   const item=data?.[0], nextSrc=item?.image_url||base;
+   await imageReady(nextSrc);
+   hero.src=nextSrc;
+   endAt=item?.kind==='sale'?new Date(item.ends_at).getTime():null;
+   tick();
+  }catch(e){console.warn('Hero campaign unavailable',e);hero.src=base;endAt=null;timer.hidden=true;defaultPrice.hidden=false}
+  finally{if(firstLoad)reveal()}
+ }
+
  refresh();setInterval(tick,1000);setInterval(refresh,60000);
 })();
 </script>
