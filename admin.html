@@ -168,7 +168,7 @@ main.wrap{padding-bottom:118px}
 
 <section id="analyticsView" class="hidden"><div class="view-title"><div><h2>Analytics</h2><small class="muted">Sales generated through the Hylar Herbs website only.</small></div></div><div class="panel"><div class="analytics-controls"><div class="range-buttons"><button class="btn btn-light active" data-range="today">Today</button><button class="btn btn-light" data-range="week">This week</button><button class="btn btn-light" data-range="month">This month</button><button class="btn btn-light" data-range="year">This year</button><button class="btn btn-light" data-range="custom">Custom</button></div><div class="field hidden" id="customFromWrap"><label>From</label><input type="date" id="customFrom"></div><div class="field hidden" id="customToWrap"><label>To</label><input type="date" id="customTo"></div><button class="btn btn-primary hidden" id="applyCustom">Apply</button></div><div class="cards"><div class="stat"><div class="stat-top"><span>Revenue</span><span class="stat-icon"><i data-lucide="banknote"></i></span></div><strong id="anRevenue">₦0</strong><small>Paid orders only</small></div><div class="stat"><div class="stat-top"><span>Orders</span><span class="stat-icon"><i data-lucide="receipt"></i></span></div><strong id="anOrders">0</strong><small>Paid orders</small></div><div class="stat"><div class="stat-top"><span>Units sold</span><span class="stat-icon"><i data-lucide="boxes"></i></span></div><strong id="anUnits">0</strong><small>Total product quantity</small></div><div class="stat"><div class="stat-top"><span>Average order</span><span class="stat-icon"><i data-lucide="calculator"></i></span></div><strong id="anAverage">₦0</strong><small>Revenue ÷ paid orders</small></div></div><div class="panel"><div class="section-head"><h3 id="chartTitle">Sales today</h3></div><div class="chart" id="salesChart"></div></div><div style="height:14px"></div><div class="panel"><div class="section-head"><h3>Product performance</h3><span class="muted" style="font-size:11px">Units sold · revenue</span></div><div id="productAnalytics"></div></div></div></section>
 
-<section id="settingsView" class="hidden"><div class="view-title"><div><h2>Store Settings</h2><small class="muted">Payment details customers see at checkout.</small></div></div><div class="panel"><form id="settingsForm"><div class="grid2dash"><div class="field"><label>Bank name</label><input id="bankName" placeholder="e.g. Moniepoint"></div><div class="field"><label>Account name</label><input id="accountName" placeholder="Account name"></div><div class="field"><label>Account number</label><input id="accountNumber" inputmode="numeric" placeholder="Account number"></div></div><p class="setting-note">These details are shown to customers during checkout. Never put secret keys or passwords here.</p><div style="margin-top:16px"><button class="btn btn-green" type="submit"><i data-lucide="save"></i>Save payment details</button></div></form></div></section>
+<section id="settingsView" class="hidden"><div class="view-title"><div><h2>Store Settings</h2><small class="muted">Payment details customers see at checkout.</small></div></div><div class="panel"><form id="settingsForm"><div class="grid2dash"><div class="field"><label>Bank name</label><input id="bankName" placeholder="e.g. Moniepoint"></div><div class="field"><label>Account name</label><input id="accountName" placeholder="Account name"></div><div class="field"><label>Account number</label><input id="accountNumber" inputmode="numeric" placeholder="Account number"></div></div><p class="setting-note">These details are shown to customers during checkout. Never put secret keys or passwords here.</p><div style="margin-top:16px"><button class="btn btn-green" type="submit"><i data-lucide="save"></i>Save payment details</button></div></form></div><div class="panel" style="margin-top:18px"><div class="section-head"><h3>Homepage banners & scheduled promotions</h3></div><p class="setting-note">Upload a flyer or anniversary image. Set Nigeria start/end times. Active promotions temporarily replace the original three-bottle image; it returns automatically after the end time. Sales display a small countdown on the image.</p><form id="campaignForm"><div class="grid2dash"><div class="field"><label>Campaign name</label><input id="campaignName" required maxlength="100" placeholder="e.g. November sales"></div><div class="field"><label>Banner type</label><select id="campaignKind"><option value="sale">Sale (show countdown)</option><option value="occasion">Anniversary / general (no countdown)</option></select></div><div class="field"><label>Starts (Nigeria time)</label><input id="campaignStart" type="datetime-local" required></div><div class="field"><label>Ends (Nigeria time)</label><input id="campaignEnd" type="datetime-local" required></div><div class="field"><label>Upload flyer / image</label><input id="campaignImage" type="file" accept="image/jpeg,image/png,image/webp" required><small class="setting-note">JPEG, PNG or WebP, maximum 5 MB.</small></div></div><button type="submit" class="btn btn-green" id="campaignSave">Schedule banner</button></form><div id="campaignStatus" class="setting-note" role="status"></div><div id="campaignList" style="margin-top:14px"></div></div></section>
 </main>
 <nav class="tabbar" aria-label="Main"><button class="tab active" data-view="dashboard"><i data-lucide="layout-dashboard"></i><span>Home</span></button><button class="tab" data-view="products"><i data-lucide="package"></i><span>Products</span></button><button class="tab" data-view="orders"><i data-lucide="shopping-bag"></i><span>Orders</span></button><button class="tab" data-view="analytics"><i data-lucide="trending-up"></i><span>Analytics</span></button><button class="tab" data-view="settings"><i data-lucide="settings"></i><span>Settings</span></button></nav>
 </div>
@@ -220,7 +220,7 @@ function setView(view){
   if(view==='orders')loadOrders();
   if(view==='products')loadProducts();
   if(view==='analytics')loadAnalytics();
-  if(view==='settings')loadSettings();
+  if(view==='settings'){loadSettings();loadCampaigns();}
 }
 
 /* =========================
@@ -652,6 +652,31 @@ $('settingsForm').addEventListener('submit',async e=>{
   const {error}=await sb.from('store_settings').upsert(payload,{onConflict:'id'});
   if(error)msg(error.message,true);
   else msg('Payment details saved.');
+});
+
+
+/* Scheduled hero campaigns; admin authorization is enforced by Supabase RLS. */
+function nigeriaTimeToISO(value){return new Date(value+':00+01:00').toISOString()}
+async function loadCampaigns(){
+ const target=$('campaignList');if(!target)return;
+ const {data,error}=await sb.from('hero_campaigns').select('id,name,kind,starts_at,ends_at,image_url,enabled').order('starts_at',{ascending:false}).limit(30);
+ if(error){target.textContent='Unable to load banners: '+error.message;return}
+ target.innerHTML=(data||[]).map(c=>`<div style="display:flex;align-items:center;gap:12px;border-top:1px solid var(--line);padding:12px 0;flex-wrap:wrap"><img src="${esc(c.image_url)}" alt="" style="width:75px;height:65px;object-fit:cover;border-radius:9px"><div style="flex:1;min-width:160px"><strong>${esc(c.name)}</strong><div class="setting-note">${esc(c.kind)} · ${new Date(c.starts_at).toLocaleString('en-NG',{timeZone:'Africa/Lagos'})} – ${new Date(c.ends_at).toLocaleString('en-NG',{timeZone:'Africa/Lagos'})}</div><small>${c.enabled?'Enabled':'Disabled'}</small></div><button type="button" class="btn btn-light" data-toggle-campaign="${esc(c.id)}" data-enabled="${c.enabled}">${c.enabled?'Disable':'Enable'}</button><button type="button" class="btn btn-danger" data-delete-campaign="${esc(c.id)}">Delete</button></div>`).join('')||'<p class="muted">No scheduled banners yet.</p>';
+ target.querySelectorAll('[data-toggle-campaign]').forEach(b=>b.onclick=async()=>{const {error}=await sb.from('hero_campaigns').update({enabled:b.dataset.enabled!=='true'}).eq('id',b.dataset.toggleCampaign);if(error)msg(error.message,true);else loadCampaigns()});
+ target.querySelectorAll('[data-delete-campaign]').forEach(b=>b.onclick=async()=>{if(!confirm('Delete this scheduled banner?'))return;const {error}=await sb.from('hero_campaigns').delete().eq('id',b.dataset.deleteCampaign);if(error)msg(error.message,true);else loadCampaigns()});
+}
+$('campaignForm').addEventListener('submit',async e=>{
+ e.preventDefault();const status=$('campaignStatus'),btn=$('campaignSave'),file=$('campaignImage').files[0];
+ if(!file||!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>5*1024*1024){status.textContent='Choose a JPEG, PNG or WebP image under 5 MB.';return}
+ const start=nigeriaTimeToISO($('campaignStart').value),end=nigeriaTimeToISO($('campaignEnd').value);
+ if(new Date(end)<=new Date(start)){status.textContent='End must be later than start.';return}
+ btn.disabled=true;status.textContent='Uploading banner…';
+ try{const ext={'image/jpeg':'jpg','image/png':'png','image/webp':'webp'}[file.type];const path=crypto.randomUUID()+'.'+ext;
+ const uploaded=await sb.storage.from('hero-banners').upload(path,file,{contentType:file.type,upsert:false});if(uploaded.error)throw uploaded.error;
+ const url=sb.storage.from('hero-banners').getPublicUrl(path).data.publicUrl;
+ const {error}=await sb.from('hero_campaigns').insert({name:$('campaignName').value.trim(),kind:$('campaignKind').value,starts_at:start,ends_at:end,image_url:url,enabled:true});if(error)throw error;
+ status.textContent='Banner scheduled successfully.';$('campaignForm').reset();loadCampaigns();
+ }catch(err){status.textContent='Could not schedule banner: '+err.message}finally{btn.disabled=false}
 });
 
 /* =========================
