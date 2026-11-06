@@ -178,7 +178,7 @@
   }
   .cat-strip a:hover{color:#fff; border-color:var(--accent);}
 
-  .hero-visual:not(.hero-ready){visibility:hidden}
+  .hero-visual{visibility:visible}
   /* ---------- HERO / PROMO BANNER ---------- */
   .hero{background:linear-gradient(120deg, var(--brand-deep) 0%, var(--brand-dark) 55%, var(--brand) 100%); position:relative; overflow:hidden;}
   .hero::after{
@@ -740,6 +740,37 @@
 .review-grid .review p{flex:1;font-size:12.5px;margin-bottom:12px}
 .review-grid .review .stars{margin-bottom:9px}
 @media(max-width:760px){.review-grid .review{width:min(275px,calc(100vw - 70px))}}
+
+/* Stable mobile first paint: headline and actions precede hero image; no hidden-image gap. */
+@media(max-width:1080px){
+  .hero-inner{grid-template-columns:minmax(0,1fr);gap:24px;}
+  .hero-inner>div:first-child{order:0;}
+  .hero-inner>.hero-visual{order:1;max-width:min(100%,420px);}
+}
+@media(max-width:760px){
+  .hero-inner{padding:28px 20px 36px;gap:20px;}
+  .hero-inner>.hero-visual{max-width:100%;margin-top:4px;}
+  .hero h1{font-size:clamp(27px,7.7vw,38px);line-height:1.17;margin-bottom:22px;}
+  .hero-card{transform:none;padding:8px;border-radius:14px;}
+  .hero-card img{height:auto;max-height:280px;aspect-ratio:4/3;object-fit:cover;border-radius:10px;}
+  .hero-price-tag{bottom:8px;left:8px;transform:none;padding:8px 11px;}
+}
+/* The animation runs regardless of fetch speed or iOS scrollLeft throttling. */
+.review-track{display:flex!important;flex:none;width:max-content;gap:0;align-items:stretch;transform:translate3d(0,0,0);}
+.review-track.is-running{animation:hylar-review-flow var(--review-duration,32s) linear infinite;will-change:transform;}
+.review-marquee{overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch;touch-action:auto;}
+.review-marquee::-webkit-scrollbar{display:none}
+.review-grid{flex:none;flex-wrap:nowrap;display:flex!important;gap:14px;padding-right:14px;}
+.review-grid .review{flex:none;}
+.review-marquee.is-touching .review-track{animation-play-state:paused;}
+@keyframes hylar-review-flow{from{transform:translate3d(0,0,0)}to{transform:translate3d(-50%,0,0)}}
+@media(prefers-reduced-motion:reduce){.review-track.is-running{animation:none!important;transform:none!important;will-change:auto;}}
+
+
+/* Clickable product cards, without extra visible detail links. */
+#productGrid .card.card-clickable{cursor:pointer}
+#productGrid .card.card-clickable:focus-visible{outline:3px solid var(--brand);outline-offset:3px}
+#productGrid .card.card-clickable .add-btn{cursor:pointer}
 </style>
   
 <!-- Organization Schema -->
@@ -1370,6 +1401,7 @@
       updateCatalogueStructuredData(products);
       renderProducts();
       lucide.createIcons();
+      restoreCataloguePosition();
       return true;
     }catch(error){
       console.warn("Supabase product loading failed; shop inventory unavailable.", error);
@@ -1794,9 +1826,68 @@
   });
 
   // ---------- Render products ----------
-  let currentFilter = 'all';
-  let currentSearch = '';
-  let spotlightProductId = new URLSearchParams(location.search).get('product');
+  // Restore the exact catalogue row and filter when returning from product details.
+  const catalogueReturnKey='hylar:catalogue:return:v1';
+  const returnQuery=new URLSearchParams(location.search).get('returnProduct');
+  function readCatalogueReturn(){
+    try{
+      const saved=JSON.parse(sessionStorage.getItem(catalogueReturnKey)||'null');
+      return saved && Date.now()-saved.savedAt<1800000 ? saved : null;
+    }catch(e){return null}
+  }
+  function returnedFromProductPage(){
+    try{
+      const u=new URL(document.referrer);
+      if(u.origin===location.origin && u.pathname.endsWith('/product.html'))return true;
+    }catch(e){}
+    return performance.getEntriesByType('navigation')[0]?.type==='back_forward';
+  }
+  const initialReturn=readCatalogueReturn();
+  let restoringCatalogue=(!!returnQuery || (!!initialReturn && returnedFromProductPage()));
+  let catalogueRestored=false;
+  function rememberCatalogueProduct(p,card){
+    const state={
+      savedAt:Date.now(),id:String(p.id),
+      y:window.scrollY,top:card.getBoundingClientRect().top,
+      filter:currentFilter,search:currentSearch,
+      spotlight:spotlightProductId
+    };
+    try{sessionStorage.setItem(catalogueReturnKey,JSON.stringify(state));}catch(e){}
+  }
+  function restoreProductRow(state,productId){
+    const card=Array.from(document.querySelectorAll('#productGrid .card[data-product-id]'))
+      .find(el=>el.dataset.productId===String(productId));
+    if(!card)return false;
+    const desiredTop=Number.isFinite(Number(state?.top))?Math.max(45,Number(state.top)):110;
+    const newTop=Math.max(0,window.scrollY+card.getBoundingClientRect().top-desiredTop);
+    window.scrollTo(0,Math.round(newTop));
+    return true;
+  }
+  function restoreCataloguePosition(){
+    if(!restoringCatalogue||catalogueRestored||!products.length)return;
+    const state=initialReturn;
+    const id=returnQuery||state?.id;
+    if(!id)return;
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      const restored=restoreProductRow(state,id);
+      if(restored){
+        catalogueRestored=true;restoringCatalogue=false;
+        try{sessionStorage.removeItem(catalogueReturnKey);}catch(e){}
+        if(returnQuery){
+          const url=new URL(location.href);url.searchParams.delete('returnProduct');
+          history.replaceState(history.state,'',url.pathname+url.search+url.hash);
+        }
+      }
+    }));
+  }
+  let currentFilter = restoringCatalogue && initialReturn?.filter || 'all';
+  let currentSearch = restoringCatalogue && initialReturn?.search || '';
+  let spotlightProductId = restoringCatalogue ? (initialReturn?.spotlight||null) : new URLSearchParams(location.search).get('product');
+  if(restoringCatalogue){
+    const search=document.getElementById('searchInput');
+    if(search)search.value=currentSearch;
+    document.querySelectorAll('.filter-btn').forEach(b=>b.classList.toggle('active',b.dataset.filter===currentFilter));
+  }
   function renderProducts(){
     const grid = document.getElementById('productGrid');
     const filtered = products.filter(p => {
@@ -1820,7 +1911,11 @@
       const outOfStock = !productCanBuy(p);
       const card = document.createElement('div');
       const productLink = productDetailsUrl(p.id);
-      card.className = 'card';
+      card.className = 'card card-clickable';
+      card.dataset.productId=String(p.id);
+      card.setAttribute('role','link');
+      card.tabIndex=0;
+      card.setAttribute('aria-label','View details for '+p.name);
       card.innerHTML = `
         <div class="card-media">
           ${imgSrc ? `<img src="${imgSrc}" alt="${escapeCatalogHtml(p.name)} — Hylar Herbs" loading="lazy" onerror="this.style.display='none';">` : `<div class="no-photo"><i data-lucide="image-off" aria-hidden="true"></i><span>Photo coming soon</span></div>`}
@@ -1842,6 +1937,17 @@
             </button>
           </div>
         </div>`;
+      card.addEventListener('click',(event)=>{
+        if(event.target.closest('button'))return;
+        rememberCatalogueProduct(p,card);
+        if(!event.target.closest('a'))location.assign(productLink);
+      });
+      card.addEventListener('keydown',(event)=>{
+        if(event.target!==card || !['Enter',' '].includes(event.key))return;
+        event.preventDefault();
+        rememberCatalogueProduct(p,card);
+        location.assign(productLink);
+      });
       if(!outOfStock){
         card.querySelector('.add-btn').addEventListener('click', (e) => addToOrder(p, e.currentTarget));
       }
@@ -1852,6 +1958,17 @@
   renderProducts();
   lucide.createIcons();
   loadProductsFromSupabase();
+  // Back/forward cache restores the DOM without another catalogue fetch.
+  window.addEventListener('pageshow',event=>{
+    if(!event.persisted)return;
+    const state=readCatalogueReturn();
+    if(!state)return;
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      if(restoreProductRow(state,state.id)){
+        try{sessionStorage.removeItem(catalogueReturnKey);}catch(e){}
+      }
+    }));
+  });
 
   document.getElementById('filterRow').addEventListener('click', (e) => {
     const btn = e.target.closest('.filter-btn');
@@ -1977,42 +2094,54 @@
 
   // Keep the original three reviews in HTML; append reviews published by admin.
   // Two identical sets enable seamless scrolling, while the viewport remains swipeable.
-  (async function initReviewMarquee(){
+  (function initReviewMarquee(){
     const viewport=document.getElementById('reviewMarquee');
     const track=document.getElementById('reviewTrack');
     const first=document.getElementById('reviewGrid');
     if(!viewport||!track||!first)return;
-    const safe=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-    try{
-      if(supabaseClient){
+    let copy=null;
+    const safe=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    function startLoop(){
+      if(copy)copy.remove();
+      copy=first.cloneNode(true);
+      copy.removeAttribute('id');
+      copy.setAttribute('aria-hidden','true');
+      copy.querySelectorAll('a,button,input').forEach(el=>el.setAttribute('tabindex','-1'));
+      track.appendChild(copy);
+      track.classList.remove('is-running');
+      track.style.setProperty('--review-duration',Math.max(28,first.scrollWidth/32).toFixed(2)+'s');
+      // Force animation to restart after dynamic reviews are appended.
+      void track.offsetWidth;
+      track.classList.add('is-running');
+    }
+    // Begin immediately with the existing customer reviews; never wait for network.
+    startLoop();
+    viewport.addEventListener('touchstart',()=>viewport.classList.add('is-touching'),{passive:true});
+    const continueLoop=()=>{
+      viewport.classList.remove('is-touching');
+      const width=first.getBoundingClientRect().width;
+      if(width>0 && viewport.scrollLeft>=width)viewport.scrollLeft-=width;
+    };
+    viewport.addEventListener('touchend',continueLoop,{passive:true});
+    viewport.addEventListener('touchcancel',continueLoop,{passive:true});
+    (async()=>{
+      if(!supabaseClient)return;
+      try{
         const {data,error}=await supabaseClient.from('site_reviews')
           .select('id,reviewer_name,reviewer_location,review_text,rating,verified')
           .eq('is_visible',true).order('created_at',{ascending:true}).limit(100);
         if(error)throw error;
-        for(const rev of data||[]){
+        if(!data||!data.length)return;
+        for(const rev of data){
           const stars=Array.from({length:Math.max(1,Math.min(5,Number(rev.rating)||5))},()=>'<i data-lucide="star" aria-hidden="true"></i>').join('');
-          first.insertAdjacentHTML('beforeend','<div class="review"><div class="stars" aria-label="'+safe(rev.rating)+' out of 5 stars">'+stars+'</div><p>"'+safe(rev.review_text)+'"</p><div class="review-who"><div class="avatar">'+safe(String(rev.reviewer_name||'?').charAt(0).toUpperCase())+'</div><div><strong>'+safe(rev.reviewer_name)+'</strong><span>'+safe(rev.reviewer_location||'')+'</span>'+(rev.verified?'<div class="verified"><i data-lucide="badge-check" aria-hidden="true"></i>Verified order</div>':'')+'</div></div></div>');
+          const item='<div class="review"><div class="stars" aria-label="'+safe(rev.rating)+' out of 5 stars">'+stars+'</div><p>"'+safe(rev.review_text)+'"</p><div class="review-who"><div class="avatar">'+safe(String(rev.reviewer_name||'?').charAt(0).toUpperCase())+'</div><div><strong>'+safe(rev.reviewer_name)+'</strong><span>'+safe(rev.reviewer_location||'')+'</span>'+(rev.verified?'<div class="verified"><i data-lucide="badge-check" aria-hidden="true"></i>Verified order</div>':'')+'</div></div></div>';
+          first.insertAdjacentHTML('beforeend',item);
         }
-      }
-    }catch(e){console.info('Review database not configured; original reviews remain visible.');}
-    if(window.lucide)lucide.createIcons();
-    const mirror=first.cloneNode(true);
-    mirror.removeAttribute('id');mirror.setAttribute('aria-hidden','true');
-    track.appendChild(mirror);
-    if(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return;
-    let pauseUntil=0,hovering=false,last=0;
-    for(const ev of ['pointerdown','touchstart'])viewport.addEventListener(ev,()=>{pauseUntil=performance.now()+2600;},{passive:true});
-    for(const ev of ['pointerup','touchend'])viewport.addEventListener(ev,()=>{pauseUntil=performance.now()+1600;},{passive:true});
-    viewport.addEventListener('mouseenter',()=>{hovering=true;});viewport.addEventListener('mouseleave',()=>{hovering=false;});
-    viewport.addEventListener('focusin',()=>{hovering=true;});viewport.addEventListener('focusout',()=>{hovering=false;});
-    function tick(now){
-      if(last&&!hovering&&now>pauseUntil&&!document.hidden){
-        const width=first.getBoundingClientRect().width;
-        if(width>0){viewport.scrollLeft+=Math.min(80,now-last)*.038;if(viewport.scrollLeft>=width)viewport.scrollLeft-=width;}
-      }
-      last=now;requestAnimationFrame(tick);
-    }
-    requestAnimationFrame(tick);
+        if(window.lucide)lucide.createIcons();
+        viewport.scrollLeft=0;
+        startLoop();
+      }catch(e){console.info('Using the original three customer reviews.');}
+    })();
   })();
 
   // ---------- FAQ accordion ----------
