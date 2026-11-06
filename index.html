@@ -926,13 +926,9 @@ header.hero-cover .hero-inner{padding-top:94px;padding-bottom:104px}
   }
 }
 
-/* Hide the fixed order tray while the mobile keyboard is open.
-   A keyboard replaces visible viewport space on iOS, otherwise the tray floats over the form. */
-@media(max-width:760px){
-  body.cart-keyboard-active #orderTray.order-tray{
-    display:none!important;
-  }
-}
+/* Hide the fixed cart whenever an on-screen keyboard is active.
+   Applied by focus and keyboard viewport detection on iOS Safari/Chrome and Android Chrome. */
+body.cart-keyboard-active #orderTray.order-tray{display:none!important;}
 </style>
   
 <!-- Organization Schema -->
@@ -2194,38 +2190,54 @@ header.hero-cover .hero-inner{padding-top:94px;padding-bottom:104px}
   // Keep the mobile order tray out of the way while customers type.
   // VisualViewport also detects a keyboard being dismissed without a blur event on iOS.
   (function keepCartBelowKeyboard(){
-    const mobile=()=>window.matchMedia('(max-width:760px)').matches;
-    const isTextField=el=>!!el?.matches?.(
-      'textarea,[contenteditable="true"],input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):not([type="submit"]):not([type="button"])'
-    );
-    let keyboardSeen=false,dismissedWhileFocused=false;
+    // Chrome on Android may resize window.innerHeight and visualViewport together;
+    // Safari/Chrome on iOS can resize only visualViewport. Use both plus focus.
+    const tray=document.getElementById('orderTray');
+    if(!tray)return;
+    const keyboardClass='cart-keyboard-active';
+    const editingSelector='textarea,[contenteditable="true"],input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):not([type="submit"]):not([type="button"]):not([type="reset"])';
+    const isEditing=el=>!!el?.matches?.(editingSelector);
+    const mobile=()=>window.matchMedia('(max-width:1024px)').matches &&
+      (window.matchMedia('(pointer:coarse)').matches || window.innerWidth<=760);
+    const currentHeight=()=>Math.min(window.innerHeight,window.visualViewport?.height||window.innerHeight);
+    let fullHeight=currentHeight(),keyboardSeen=false,dismissedWhileFocused=false;
     function update(){
       if(!mobile()){
-        keyboardSeen=false;dismissedWhileFocused=false;
-        document.body.classList.remove('cart-keyboard-active');
-        return;
+        keyboardSeen=false;dismissedWhileFocused=false;fullHeight=currentHeight();
+        document.body.classList.remove(keyboardClass);return;
       }
-      const viewport=window.visualViewport;
-      const obscured=viewport ? Math.max(0,window.innerHeight-viewport.height) : 0;
-      if(obscured>150){
+      const editing=isEditing(document.activeElement);
+      const height=currentHeight();
+      // Learn the normal mobile viewport while not typing; don't treat toolbar changes as a keyboard.
+      if(!editing && !document.body.classList.contains(keyboardClass)){
+        fullHeight=Math.max(fullHeight,height);
+      }
+      const keyboardVisible=fullHeight-height>150;
+      if(keyboardVisible){
         keyboardSeen=true;dismissedWhileFocused=false;
       }else if(keyboardSeen){
-        keyboardSeen=false;dismissedWhileFocused=true;
+        keyboardSeen=false;dismissedWhileFocused=editing;
       }
-      document.body.classList.toggle('cart-keyboard-active',
-        keyboardSeen || (isTextField(document.activeElement) && !dismissedWhileFocused));
+      if(!editing && !keyboardVisible){
+        keyboardSeen=false;dismissedWhileFocused=false;
+        fullHeight=Math.max(fullHeight,height);
+      }
+      document.body.classList.toggle(keyboardClass,
+        keyboardVisible || (editing && !dismissedWhileFocused));
     }
     document.addEventListener('focusin',event=>{
-      if(isTextField(event.target))dismissedWhileFocused=false;
-      update();
+      if(isEditing(event.target)){dismissedWhileFocused=false;update();}
     });
     document.addEventListener('focusout',()=>{
-      dismissedWhileFocused=false;
       requestAnimationFrame(update);
     });
     window.visualViewport?.addEventListener('resize',update,{passive:true});
     window.addEventListener('resize',update,{passive:true});
     window.addEventListener('pageshow',update);
+    window.addEventListener('orientationchange',()=>{
+      fullHeight=currentHeight();keyboardSeen=false;dismissedWhileFocused=false;
+      requestAnimationFrame(update);
+    });
     update();
   })();
 
