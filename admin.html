@@ -192,6 +192,101 @@ main.wrap{padding-bottom:118px}
 .hero-editor .field input[type="file"]{font-size:12px;padding:10px}
 @media(max-width:760px){.hero-editor-layout{grid-template-columns:1fr;gap:15px}.hero-editor-preview{aspect-ratio:16/9}.hero-editor .actions .btn{flex:1}}
 
+
+/* Clean mobile-first store dashboard inspired by the provided reference. */
+#dashboardView{width:100%;max-width:1100px;margin:0 auto}
+#dashboardView h2,#dashboardView h3{font-family:'Manrope',Arial,sans-serif;letter-spacing:-.035em}
+.dashboard-welcome{padding:5px 1px 18px}
+.dashboard-welcome h2{font-size:clamp(24px,3vw,29px);font-weight:800;line-height:1.2;margin:0 0 5px;color:#073e28}
+.dashboard-welcome p{font-size:13px;margin:0;color:#4d5750;line-height:1.4}
+.dashboard-payment-card{
+  position:relative;display:flex;align-items:stretch;overflow:hidden;
+  min-height:181px;padding:24px 24px 23px;
+  border-radius:22px;background:radial-gradient(ellipse 90% 115% at 85% 38%,#116038 0%,transparent 80%),linear-gradient(115deg,#08472b,#064426);
+  color:#fff;box-shadow:0 7px 25px rgba(6,62,35,.11);margin-bottom:23px;
+}
+.dashboard-payment-copy{position:relative;z-index:1;flex:1;max-width:70%}
+.dashboard-payment-copy h3{font-size:clamp(18px,2.6vw,23px);font-weight:800;color:#fff;margin:0 0 6px;line-height:1.23}
+.dashboard-payment-copy p{font-size:13.5px;line-height:1.5;color:rgba(255,255,255,.88);margin:0 0 16px;max-width:300px}
+.dashboard-pending-button{display:inline-flex;gap:7px;align-items:center;justify-content:center;
+  padding:9px 13px;min-height:38px;border:0;border-radius:100px;background:#E9F8DC;
+  color:#0c4926;font-weight:800;font-size:13px;cursor:pointer}
+.dashboard-pending-button strong{font-size:15px}
+.dashboard-pending-button svg{width:16px;height:16px;flex:none}
+.dashboard-pending-button svg:last-child{width:14px}
+.dashboard-pending-button:focus-visible{outline:3px solid #fff;outline-offset:3px}
+.dashboard-payment-graphic{position:absolute;right:5px;bottom:-5px;width:174px;max-width:39%;height:175px;pointer-events:none}
+.dashboard-payment-graphic svg{width:100%;height:100%;display:block}
+.dashboard-pending-list{margin:-8px 0 23px;border-color:#d4e6d5}
+.dashboard-pending-list[hidden]{display:none!important}
+.dashboard-pending-list .section-head{margin-bottom:3px}
+.dashboard-pending-list .section-head h3{font-size:14px}
+.dashboard-live-tag{font-size:10px;color:#785a07;background:#fff3c9;border-radius:100px;padding:4px 10px;font-weight:800}
+.dashboard-section-title{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:4px 2px 13px}
+.dashboard-section-title h3{font-size:20px;font-weight:800;margin:0;color:#092e1d}
+.dashboard-time-chip{display:inline-flex;align-items:center;gap:7px;font-weight:750;font-size:12px;color:#425c4a;background:#fff;border:1px solid #E2E8E0;border-radius:100px;padding:8px 12px}
+.dashboard-time-chip svg{height:15px;width:15px}
+#dashboardView .dashboard-stat-cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin:0 0 24px}
+#dashboardView .dashboard-stat-cards>.stat{
+  background:#fff;border:1px solid #E7EDE6;box-shadow:0 5px 17px rgba(11,51,27,.05);
+  display:flex;align-items:center;gap:12px;min-width:0;padding:15px;border-radius:19px;
+}
+#dashboardView .dashboard-stat-icon{width:50px;height:50px;flex:none;display:flex;align-items:center;justify-content:center;border-radius:14px}
+#dashboardView .dashboard-stat-icon svg{width:23px;height:23px}
+.stat-wallet{color:#1a9a4a;background:#E4F7E7}
+.stat-trend{color:#e5a400;background:#FFF5DB}
+.stat-orders{color:#2778D9;background:#E7F1FD}
+.stat-customers{color:#9148D3;background:#F3E9FF}
+#dashboardView .dashboard-stat-text{min-width:0;display:flex;flex-direction:column;gap:3px;align-items:flex-start}
+#dashboardView .dashboard-stat-text span{font-size:12px;font-weight:750;line-height:1.25;color:#34473d}
+#dashboardView .dashboard-stat-text strong{margin:0;font-family:'Manrope',Arial,sans-serif;font-size:clamp(17px,2vw,24px);line-height:1.15;font-weight:800;letter-spacing:-.035em;overflow-wrap:anywhere;color:#081f16}
+#dashboardView .dashboard-recent{padding:19px;border-radius:19px;background:#fff;border:1px solid #e7ece7;box-shadow:0 4px 18px rgba(12,47,25,.04);margin-bottom:14px}
+#dashboardView .dashboard-recent .section-head{margin-bottom:12px}
+#dashboardView .dashboard-recent .section-head h3{font-size:19px;font-weight:800;color:#092f1d}
+.dashboard-view-all{display:inline-flex;align-items:center;gap:5px;padding:8px;border:0;background:none;color:#155e35;font-size:12.5px;font-weight:800;cursor:pointer;white-space:nowrap}
+.dashboard-view-all svg{width:16px;height:16px}
+#dashboardView #recentOrders .empty-box{background:#fbfdfb;border:1px solid #EAF0E8;border-radius:18px;padding:23px 10px}
+#dashboardView #recentOrders .empty-box .ring{width:58px;height:58px;margin-bottom:5px;border-radius:18px}
+#dashboardView #recentOrders .empty-box .ring svg{width:27px;height:27px}
+#dashboardView #recentOrders .empty-box strong{font-size:15px}
+#dashboardView #recentOrders .empty-box span{font-size:12.5px}
+.dashboard-top-products{background:#fff;border:1px solid #e7ece7;border-radius:18px;padding:11px 17px 17px;margin:0 0 14px}
+.dashboard-top-products summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:8px;cursor:pointer;font-size:14px;font-weight:800;color:#244434;padding:5px 0}
+.dashboard-top-products summary::-webkit-details-marker{display:none}
+.dashboard-top-products summary svg{height:17px;width:17px}
+.dashboard-top-products[open] summary svg{transform:rotate(180deg)}
+.dashboard-top-products #topProducts{margin:12px 0}
+#appView>.top{background:radial-gradient(ellipse 56% 130% at 87% 140%,rgba(66,189,43,.36),transparent 80%),linear-gradient(95deg,#053a25,#06492f);height:72px}
+#appView .tabbar{background:#063e29;box-shadow:0 15px 34px rgba(0,35,15,.27)}
+#appView .tab.active{background:linear-gradient(135deg,#23b532,#168b36);color:#fff;box-shadow:0 3px 12px rgba(44,191,60,.28)}
+@media(max-width:760px){
+  #dashboardView{max-width:100%}
+  .dashboard-welcome{padding:8px 2px 17px}
+  .dashboard-welcome h2{font-size:26px}
+  .dashboard-payment-card{min-height:167px;padding:20px 17px 18px;border-radius:20px;margin-bottom:22px}
+  .dashboard-payment-copy{max-width:69%}
+  .dashboard-payment-copy h3{font-size:19px;margin-bottom:8px}
+  .dashboard-payment-copy p{font-size:12.7px;margin-bottom:15px;line-height:1.42}
+  .dashboard-pending-button{min-height:37px;font-size:12px;padding:8px 12px}
+  .dashboard-payment-graphic{width:142px;height:157px;max-width:40%;right:-4px;bottom:-4px}
+  .dashboard-section-title h3{font-size:19px}
+  #dashboardView .dashboard-stat-cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:23px}
+  #dashboardView .dashboard-stat-cards>.stat{padding:13px 11px;gap:10px;border-radius:17px;min-height:83px}
+  #dashboardView .dashboard-stat-icon{width:41px;height:41px;border-radius:13px}
+  #dashboardView .dashboard-stat-icon svg{width:21px;height:21px}
+  #dashboardView .dashboard-stat-text span{font-size:11px;line-height:1.2}
+  #dashboardView .dashboard-stat-text strong{font-size:19px}
+  #dashboardView .dashboard-recent{padding:16px 14px}
+  #appView>.top{height:72px}
+  #appView .tabbar{width:calc(100% - 22px);bottom:calc(10px + env(safe-area-inset-bottom));border-radius:19px}
+}
+@media(max-width:385px){
+  #dashboardView .dashboard-stat-cards>.stat{padding:10px 8px;gap:7px}
+  #dashboardView .dashboard-stat-icon{width:36px;height:36px}
+  #dashboardView .dashboard-stat-text strong{font-size:17px}
+  .dashboard-payment-graphic{opacity:.85;width:127px}
+}
+
 </style>
 </head>
 <body>
@@ -222,7 +317,94 @@ main.wrap{padding-bottom:118px}
 <header class="top"><div class="brand"><img id="brandLogo" alt="Hylar Herbs"><div><strong>Hylar Herbs</strong><small>Store management</small></div></div><button class="icon-btn" id="bellBtn" aria-label="Payments waiting"><i data-lucide="bell"></i><span class="bell-badge" id="bellCount" style="display:none">0</span></button><button class="icon-btn" id="logout" aria-label="Log out"><i data-lucide="log-out"></i></button></header>
 <main class="wrap"><div id="msg"></div>
 
-<section id="dashboardView"><div class="view-title"><div><h2>Overview</h2><small class="muted" id="todayDate"></small></div></div><div class="panel confirm-panel"><div class="section-head"><h3>Payments to confirm</h3><span class="count-pill" id="confirmCount">0</span></div><div id="toConfirm" class="muted">Loading…</div></div><h3 class="block-title">Quick stats</h3><div class="cards"><div class="stat"><div class="stat-top"><span>Sales today</span><span class="stat-icon"><i data-lucide="banknote"></i></span></div><strong id="statToday">₦0</strong><small>Paid orders</small></div><div class="stat"><div class="stat-top"><span>This month</span><span class="stat-icon"><i data-lucide="trending-up"></i></span></div><strong id="statMonth">₦0</strong><small>Hylar website sales</small></div><div class="stat"><div class="stat-top"><span>Orders</span><span class="stat-icon"><i data-lucide="shopping-bag"></i></span></div><strong id="statOrders">0</strong><small>Submitted orders</small></div><div class="stat"><div class="stat-top"><span>Awaiting</span><span class="stat-icon"><i data-lucide="clock-3"></i></span></div><strong id="statAwaiting">0</strong><small>Need bank confirmation</small></div></div><div class="grid2dash"><div class="panel"><div class="section-head"><h3>Recent orders</h3><button class="btn btn-light" data-goto="orders">View all</button></div><div id="recentOrders" class="muted">Loading…</div></div><div class="panel"><div class="section-head"><h3>Top selling products</h3><button class="btn btn-light" data-goto="analytics">Analytics</button></div><div id="topProducts">Loading…</div></div></div></section>
+<section id="dashboardView">
+  <div class="dashboard-welcome">
+    <h2 id="overviewGreeting">Good day <span aria-hidden="true">👋</span></h2>
+    <p id="todayDate" class="muted">Store overview</p>
+  </div>
+
+  <div class="dashboard-payment-card">
+    <div class="dashboard-payment-copy">
+      <h3>Payments to confirm</h3>
+      <p>Review and confirm customer payments.</p>
+      <button type="button" class="dashboard-pending-button" id="paymentsShortcut" data-goto="orders">
+        <i data-lucide="wallet-cards" aria-hidden="true"></i>
+        <strong id="confirmCount">0</strong> Pending
+        <i data-lucide="arrow-right" aria-hidden="true"></i>
+      </button>
+    </div>
+    <div class="dashboard-payment-graphic" aria-hidden="true">
+      <svg viewBox="0 0 185 180" xmlns="http://www.w3.org/2000/svg" fill="none">
+        <defs>
+          <linearGradient id="hylarClipBody" x1="27" y1="8" x2="155" y2="155" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#fff"/><stop offset="1" stop-color="#dbe8d9"/>
+          </linearGradient>
+          <linearGradient id="hylarClipGreen" x1="110" y1="118" x2="158" y2="166" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#8be15d"/><stop offset="1" stop-color="#27ac36"/>
+          </linearGradient>
+        </defs>
+        <path d="M146 17l5-8M158 30l10-3M156 46l10 7" stroke="#ffcc57" stroke-width="5" stroke-linecap="round"/>
+        <g transform="rotate(-11 92 92)">
+          <rect x="37" y="20" width="106" height="143" rx="15" fill="#03230d" opacity=".20"/>
+          <rect x="30" y="13" width="106" height="143" rx="15" fill="url(#hylarClipBody)" stroke="#95b99a" stroke-width="4"/>
+          <rect x="62" y="3" width="45" height="28" rx="8" fill="#67cb44" stroke="#145c2e" stroke-width="3"/>
+          <rect x="77" y="0" width="15" height="11" rx="4" fill="#2d9d3e"/>
+          <rect x="45" y="50" width="18" height="18" rx="7" fill="#4cc23c"/>
+          <path d="m49 59 5 4 7-9" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M71 59h44M71 66h35" stroke="#adbab0" stroke-width="4" stroke-linecap="round"/>
+          <rect x="45" y="83" width="18" height="18" rx="7" fill="#4cc23c"/>
+          <path d="m49 91 5 5 7-9" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M71 92h44M71 99h28" stroke="#adbab0" stroke-width="4" stroke-linecap="round"/>
+          <path d="M48 122h55" stroke="#bfcbc0" stroke-width="4" stroke-linecap="round"/>
+        </g>
+        <circle cx="134" cy="133" r="33" fill="#063b1c" opacity=".25"/>
+        <circle cx="129" cy="129" r="31" fill="url(#hylarClipGreen)" stroke="#d3f99b" stroke-width="3"/>
+        <path d="m113 128 11 11 21-24" stroke="#fff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+  </div>
+  <div id="pendingOrdersWrap" class="panel dashboard-pending-list" hidden>
+    <div class="section-head"><h3>Awaiting confirmation</h3><span class="dashboard-live-tag">Needs review</span></div>
+    <div id="toConfirm">Loading…</div>
+  </div>
+
+  <div class="dashboard-section-title">
+    <h3>Quick Stats</h3>
+    <span class="dashboard-time-chip"><i data-lucide="clock-3" aria-hidden="true"></i> Today</span>
+  </div>
+  <div class="cards dashboard-stat-cards">
+    <div class="stat">
+      <div class="dashboard-stat-icon stat-wallet"><i data-lucide="wallet" aria-hidden="true"></i></div>
+      <div class="dashboard-stat-text"><span>Sales today</span><strong id="statToday">₦0</strong></div>
+    </div>
+    <div class="stat">
+      <div class="dashboard-stat-icon stat-trend"><i data-lucide="trending-up" aria-hidden="true"></i></div>
+      <div class="dashboard-stat-text"><span>This month</span><strong id="statMonth">₦0</strong></div>
+    </div>
+    <div class="stat">
+      <div class="dashboard-stat-icon stat-orders"><i data-lucide="shopping-bag" aria-hidden="true"></i></div>
+      <div class="dashboard-stat-text"><span>Total orders</span><strong id="statOrders">0</strong></div>
+    </div>
+    <div class="stat">
+      <div class="dashboard-stat-icon stat-customers"><i data-lucide="users-round" aria-hidden="true"></i></div>
+      <div class="dashboard-stat-text"><span>Customers</span><strong id="statCustomers">0</strong></div>
+    </div>
+  </div>
+
+  <div class="panel dashboard-recent">
+    <div class="section-head">
+      <h3>Recent Orders</h3>
+      <button type="button" class="dashboard-view-all" data-goto="orders">View all <i data-lucide="arrow-right" aria-hidden="true"></i></button>
+    </div>
+    <div id="recentOrders">Loading…</div>
+  </div>
+
+  <details class="dashboard-top-products">
+    <summary>Top selling products <i data-lucide="chevron-down" aria-hidden="true"></i></summary>
+    <div id="topProducts">Loading…</div>
+    <button class="btn btn-light" type="button" data-goto="analytics">View analytics</button>
+  </details>
+</section>
 
 <section id="ordersView" class="hidden"><div class="view-title"><div><h2>Orders</h2><small class="muted">Review submitted payments, products and delivery details.</small></div><button class="btn btn-light" id="downloadCsv"><i data-lucide="download"></i>Download CSV</button></div><div class="panel"><div class="toolbar"><div class="toolbar-left"><input id="orderSearch" placeholder="Search order or customer…"><select id="paymentFilter"><option value="">All payment</option><option value="awaiting_confirmation">Awaiting confirmation</option><option value="paid">Paid</option><option value="not_received">Not received</option></select><select id="deliveryFilter"><option value="">All delivery</option><option value="pending">Pending</option><option value="processing">Processing</option><option value="sent">Sent</option><option value="delivered">Delivered</option><option value="cancelled">Cancelled</option></select></div><button class="btn btn-light" id="refreshOrders"><i data-lucide="refresh-cw"></i>Refresh</button></div><div class="table-wrap"><table class="table"><thead><tr><th>Order</th><th>Customer</th><th>Total</th><th>Payment</th><th>Delivery</th><th>Date</th><th></th></tr></thead><tbody id="orderRows"></tbody></table></div></div></section>
 
@@ -370,7 +552,8 @@ async function loadDashboard(){
     $('statToday').textContent=money(sumOrders(po.filter(o=>new Date(o.paid_at||o.created_at)>=today)));
     $('statMonth').textContent=money(sumOrders(po.filter(o=>new Date(o.paid_at||o.created_at)>=month)));
     $('statOrders').textContent=allOrders.length;
-    $('statAwaiting').textContent=allOrders.filter(o=>o.payment_status==='awaiting_confirmation').length;
+    // Unique customer contact numbers among actual submitted orders (guest checkout).
+    $('statCustomers').textContent=new Set(allOrders.map(o=>String(o.customer_phone||'').trim()).filter(Boolean)).size;
     renderToConfirm();
     renderRecent();
     renderTopProducts();
@@ -381,15 +564,24 @@ async function loadDashboard(){
 function emptyBox(ic,t,x){return `<div class="empty-box"><div class="ring"><i data-lucide="${ic}"></i></div><strong>${t}</strong><span>${x}</span></div>`}
 function ago(d){const m=Math.max(1,Math.round((Date.now()-new Date(d))/60000));if(m<60)return m+' min ago';const h=Math.round(m/60);if(h<24)return h+' hr ago';const n=Math.round(h/24);return n+' day'+(n===1?'':'s')+' ago'}
 function renderToConfirm(){
-  $('todayDate').textContent=new Date().toLocaleDateString('en-NG',{weekday:'long',day:'numeric',month:'long'});
-  const list=allOrders.filter(o=>o.payment_status==='awaiting_confirmation').reverse();
+  const now=new Date();
+  const hour=Number(new Intl.DateTimeFormat('en-GB',{timeZone:'Africa/Lagos',hour:'2-digit',hourCycle:'h23'}).format(now));
+  const greeting=hour<12?'Good Morning':hour<17?'Good Afternoon':'Good Evening';
+  $('overviewGreeting').textContent=greeting+' 👋';
+  $('todayDate').textContent=now.toLocaleDateString('en-NG',{weekday:'long',day:'numeric',month:'long',timeZone:'Africa/Lagos'});
+  const list=allOrders.filter(o=>o.payment_status==='awaiting_confirmation').slice().reverse();
   $('confirmCount').textContent=list.length;
-  $('bellCount').textContent=list.length;$('bellCount').style.display=list.length?'flex':'none';
-  $('toConfirm').innerHTML=list.length?list.map(o=>`<div class="confirm-row"><div class="order-main"><strong>${esc(o.order_number)} · ${esc(o.customer_name)}</strong><span>${money(o.total_amount)} · ${ago(o.created_at)} · ${o.payment_proof_path?'receipt attached':'no receipt'}</span></div><button class="btn btn-green" onclick="viewOrder('${o.id}')">Review</button></div>`).join(''):emptyBox('circle-check','All caught up','New payments will show up here.');
+  $('bellCount').textContent=list.length;
+  $('bellCount').style.display=list.length?'flex':'none';
+  $('pendingOrdersWrap').hidden=list.length===0;
+  $('toConfirm').innerHTML=list.length?list.map(o=>
+    `<div class="confirm-row"><div class="order-main"><strong>${esc(o.order_number)} · ${esc(o.customer_name)}</strong><span>${money(o.total_amount)} · ${ago(o.created_at)} · ${o.payment_proof_path?'receipt attached':'no receipt'}</span></div><button class="btn btn-green" onclick="viewOrder('${o.id}')">Review</button></div>`
+  ).join(''):'';
 }
+
 function renderRecent(){
   const list=allOrders.slice(0,6);
-  $('recentOrders').innerHTML=list.length?list.map(o=>`<div class="order-card"><div class="order-main"><strong>${esc(o.order_number)}</strong><span>${esc(o.customer_name)} · ${new Date(o.created_at).toLocaleDateString('en-NG')}</span></div><span class="status ${statusClass(o.payment_status)}">${esc(paymentLabel(o.payment_status))}</span><div class="order-price">${money(o.total_amount)}</div></div>`).join(''):'<div class="empty">No submitted orders yet.</div>';
+  $('recentOrders').innerHTML=list.length?list.map(o=>`<div class="order-card"><div class="order-main"><strong>${esc(o.order_number)}</strong><span>${esc(o.customer_name)} · ${new Date(o.created_at).toLocaleDateString('en-NG')}</span></div><span class="status ${statusClass(o.payment_status)}">${esc(paymentLabel(o.payment_status))}</span><div class="order-price">${money(o.total_amount)}</div></div>`).join(''):emptyBox('shopping-cart','No orders yet','Customer orders will appear here.');
 }
 
 function renderTopProducts(){

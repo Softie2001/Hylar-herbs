@@ -838,6 +838,46 @@ header.hero-cover .hero-inner{padding-top:94px;padding-bottom:104px}
  .hero-cover .hero-discovery{bottom:-29px}
 }
 
+
+/* Hero: larger reading size and bottom-anchored editorial copy on phones */
+@media(min-width:761px){
+  header.hero-cover .hero-inner{align-items:flex-end;padding-bottom:120px;}
+  .hero-cover .hero-copy{transform:none;}
+  .hero-cover #heroHeading{font-size:clamp(44px,5.4vw,70px);line-height:1.09;}
+  .hero-cover #heroSubtitle{font-size:16.5px;}
+}
+@media(max-width:760px){
+  header.hero-cover{min-height:500px;}
+  header.hero-cover .hero-inner{
+    min-height:500px;align-items:flex-end;justify-content:flex-start;
+    padding:34px 21px 74px;
+  }
+  .hero-cover .hero-copy{transform:none;width:100%;}
+  .hero-cover #heroHeading{
+    font-size:clamp(38px,9vw,47px);line-height:1.09;
+    max-width:390px;margin-bottom:15px;letter-spacing:-.04em;
+  }
+  .hero-cover #heroSubtitle{font-size:15px;line-height:1.55;margin-bottom:20px;max-width:370px;}
+  .hero-cover .hero-actions .btn-accent{font-size:12.5px;padding:12px 18px;min-height:45px;}
+  .hero-cover .hero-discovery{bottom:-29px;}
+}
+/* Search field replaces the category selector; value is used to filter the real product list. */
+.hero-discovery-choose{gap:7px;min-width:0;}
+.hero-discovery-choose>svg{left:17px!important;right:auto!important;flex:none;width:18px;height:18px;}
+.hero-discovery-choose input[type="search"]{
+  min-width:0;width:100%;height:100%;
+  border:0;outline-offset:3px;border-radius:100px;
+  background:transparent;box-shadow:none;padding:0 14px 0 46px;
+  color:#23442f;font:700 13px 'Manrope',sans-serif;-webkit-appearance:none;appearance:none;
+}
+.hero-discovery-choose input[type="search"]::placeholder{color:#637465;font-weight:600;opacity:1;}
+.hero-discovery-button{white-space:nowrap;}
+@media(max-width:760px){
+  .hero-discovery-choose>svg{left:13px!important;width:17px;height:17px;}
+  .hero-discovery-choose input[type="search"]{padding:0 8px 0 38px;font-size:12.5px;}
+  .hero-discovery-button{padding:0 17px;font-size:12px;}
+}
+@media(max-width:360px){.hero-cover #heroHeading{font-size:35px;}.hero-cover #heroSubtitle{font-size:14px;}}
 </style>
   
 <!-- Organization Schema -->
@@ -969,19 +1009,14 @@ header.hero-cover .hero-inner{padding-top:94px;padding-bottom:104px}
     </div>
   </div>
   <div id="heroCountdown" class="hero-promo-countdown" hidden aria-live="off"></div>
-  <div class="hero-discovery" role="search" aria-label="Search products by category">
-    <div class="hero-discovery-prompt"><span>EXPLORE THE SHOP</span><strong>Find your wellness essentials</strong></div>
-    <label class="hero-discovery-choose">
-      <span class="sr-only">Choose a product category</span>
-      <select id="heroCategoryPicker" aria-label="Choose a product category">
-        <option value="all">All Products</option><option value="feminine">Feminine Wellness</option>
-        <option value="ttc">Fertility &amp; TTC</option><option value="infection">Infection Care</option>
-        <option value="men">Men's Vitality</option><option value="body">Body &amp; Weight</option>
-      </select>
-      <i data-lucide="chevron-down" aria-hidden="true"></i>
+  <form id="heroSearchForm" class="hero-discovery" role="search" aria-label="Search Hylar Herbs products">
+    <div class="hero-discovery-prompt"><span>FIND SOMETHING SPECIFIC</span><strong>Search our catalogue</strong></div>
+    <label class="hero-discovery-choose" for="heroSearchInput">
+      <i data-lucide="search" aria-hidden="true"></i>
+      <input id="heroSearchInput" type="search" placeholder="Search products, kits..." aria-label="Search products and kits" autocomplete="off" enterkeyhint="search" maxlength="100">
     </label>
-    <button id="heroExploreButton" class="hero-discovery-button" type="button">Search <i data-lucide="search" aria-hidden="true"></i></button>
-  </div>
+    <button id="heroSearchButton" class="hero-discovery-button" type="submit">Search <i data-lucide="search" aria-hidden="true"></i></button>
+  </form>
 </header>
 
 <!-- CATEGORY TILES -->
@@ -2033,9 +2068,17 @@ header.hero-cover .hero-inner{padding-top:94px;padding-bottom:104px}
     }));
   });
 
-  document.getElementById('heroExploreButton')?.addEventListener('click',()=>{
-    const cat=document.getElementById('heroCategoryPicker').value;
-    document.querySelector('#filterRow .filter-btn[data-filter="'+cat+'"]')?.click();
+  // Real text search: reuse the product catalogue's live search and keep the header input in sync.
+  document.getElementById('heroSearchForm')?.addEventListener('submit',(event)=>{
+    event.preventDefault();
+    const term=document.getElementById('heroSearchInput').value.trim().slice(0,100);
+    const globalSearch=document.getElementById('searchInput');
+    if(globalSearch)globalSearch.value=term;
+    currentSearch=term.toLowerCase();
+    currentFilter='all';
+    spotlightProductId=null;
+    document.querySelectorAll('#filterRow .filter-btn').forEach(b=>b.classList.toggle('active',b.dataset.filter==='all'));
+    renderProducts();
     document.getElementById('shop')?.scrollIntoView({behavior:'smooth',block:'start'});
   });
 
