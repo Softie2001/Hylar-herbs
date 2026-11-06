@@ -878,6 +878,36 @@ header.hero-cover .hero-inner{padding-top:94px;padding-bottom:104px}
   .hero-discovery-button{padding:0 17px;font-size:12px;}
 }
 @media(max-width:360px){.hero-cover #heroHeading{font-size:35px;}.hero-cover #heroSubtitle{font-size:14px;}}
+
+/* Mobile cart should be docked to the screen bottom, not a floating/translated card. */
+@media(max-width:760px){
+  #orderTray.order-tray{
+    position:fixed!important;
+    bottom:0!important;left:0!important;right:0!important;
+    width:100%!important;max-width:none!important;margin:0!important;
+    transform:none!important;
+    border-radius:18px 18px 0 0!important;
+    border-left:0;border-right:0;border-bottom:0;
+    overflow:hidden;
+    box-shadow:0 -7px 28px rgba(0,0,0,.16);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+    z-index:300;
+  }
+  #orderTray.order-tray:not(.open){background:var(--brand);}
+  #orderTray.order-tray.open{background:var(--surface);}
+  #orderTray.order-tray:not(.open) .tray-body,
+  #orderTray.order-tray:not(.open) .tray-foot,
+  #orderTray.order-tray:not(.open) .tray-stock-notice{display:none!important;}
+  #orderTray .tray-head{
+    margin:0;width:100%;min-height:58px;
+    padding:15px 19px;
+    border-radius:18px 18px 0 0;
+  }
+  #orderTray.order-tray.open .tray-body{
+    max-height:min(44dvh,370px);
+    overflow-y:auto;
+  }
+}
 </style>
   
 <!-- Organization Schema -->
