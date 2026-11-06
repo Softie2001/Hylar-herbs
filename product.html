@@ -36,6 +36,9 @@ h1{font-size:clamp(27px,4vw,42px);margin:10px 0 16px}.desc{white-space:pre-line;
 footer{padding:26px 0 40px;text-align:center;color:var(--muted);font-size:13px}
 #status{padding:30px 0;color:var(--muted)}[hidden]{display:none!important}
 @media(max-width:740px){.product-wrap{grid-template-columns:1fr;padding:16px;gap:18px}.visual{min-height:260px}.head-links{gap:10px}.container{width:min(100% - 28px,1100px)}h1{font-size:30px}}
+.back-to-shop{display:inline-flex;align-items:center;gap:7px;font-size:13.5px;font-weight:800;margin:13px 0 0;padding:8px 12px;background:#e9f2e7;border-radius:999px;min-height:42px}
+.back-to-shop:hover{background:#d9ebd7;text-decoration:none}
+@media(max-width:740px){.back-to-shop{margin-top:12px;margin-bottom:4px}.breadcrumbs{padding:14px 0}}
 </style>
 </head>
 <body>
@@ -44,7 +47,8 @@ footer{padding:26px 0 40px;text-align:center;color:var(--muted);font-size:13px}
   <nav class="head-links" aria-label="Main navigation"><a href="/#shop">All Products</a><a href="/about.html">About</a><a href="/herbal-wellness-guide.html">Safety Guide</a></nav>
 </div></header>
 <main class="container">
-<nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/#shop">Products</a> / <span id="crumbName">Product details</span></nav>
+<a class="back-to-shop" id="backToShop" href="/#shop" aria-label="Back to product listing">← Back to products</a>
+<nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a id="breadcrumbProducts" href="/#shop">Products</a> / <span id="crumbName">Product details</span></nav>
 <div id="status" role="status" aria-live="polite">Loading current product details…</div>
 <article class="product-wrap" id="productArticle" hidden>
   <div class="visual" id="visual"><img id="productImage" alt="" loading="eager" hidden><span id="noImage">Product photograph not available</span></div>
@@ -78,6 +82,27 @@ footer{padding:26px 0 40px;text-align:center;color:var(--muted);font-size:13px}
   const id = new URLSearchParams(location.search).get('id');
   const $ = (name) => document.getElementById(name);
   const status = $('status');
+  const returnUrl=id ? '/?returnProduct='+encodeURIComponent(id)+'#shop' : '/#shop';
+  for(const name of ['backToShop','breadcrumbProducts','shopLink']){
+    const anchor=$(name);
+    if(anchor)anchor.href=returnUrl;
+  }
+  const arrivedFromShop=(()=>{
+    try{
+      const source=new URL(document.referrer);
+      return source.origin===location.origin && (source.pathname==='/'||source.pathname==='/index.html');
+    }catch(e){return false}
+  })();
+  for(const name of ['backToShop','breadcrumbProducts','shopLink']){
+    const link=$(name);
+    if(!link)continue;
+    link.addEventListener('click',event=>{
+      if(arrivedFromShop){
+        event.preventDefault();
+        history.back();
+      }
+    });
+  }
   const setMeta = (property,value,kind='name') => {
     let tag = document.querySelector('meta['+kind+'="'+property+'"]');
     if (!tag){tag=document.createElement('meta');tag.setAttribute(kind,property);document.head.appendChild(tag);}
@@ -111,9 +136,8 @@ footer{padding:26px 0 40px;text-align:center;color:var(--muted);font-size:13px}
     $('price').textContent=Number.isFinite(price)&&price>0 ? '₦'+price.toLocaleString('en-NG') : 'Contact for price';
     $('stock').textContent=!available?'Out of stock':stock===null?'Contact us for current quantity':stock<=5?'Only '+stock+' left in stock':'Available to order';
     $('stock').classList.toggle('soldout',!available);
-    $('shopLink').href='/?product='+encodeURIComponent(id)+'#shop';
-    $('shopLink').textContent=available?'View in shop & add to order':'Browse other available products';
-    if(!available){$('shopLink').href='/#shop';}
+    $('shopLink').href=returnUrl;
+    $('shopLink').textContent=available?'Back to shop & add to order':'Back to products';
     if(imageUrl){$('productImage').src=imageUrl;$('productImage').alt=name+' — Hylar Herbs & Body Wellness';$('productImage').hidden=false;$('noImage').hidden=true;}
     const title=name+' | Hylar Herbs & Body Wellness Nigeria';
     const summary=(description && !description.endsWith('— Hylar Herbs & Body Wellness.')?description : 'Explore '+name+' at Hylar Herbs & Body Wellness. Check current stock, price and product information before ordering in Nigeria.').slice(0,160);
