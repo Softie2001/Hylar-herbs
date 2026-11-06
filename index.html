@@ -730,6 +730,16 @@
 .about-stats{grid-template-columns:repeat(3,minmax(0,1fr))}
 @media(max-width:760px){.cat-tiles{gap:10px}.cat-tile{width:84px}.cat-tile .emoji{width:56px;height:56px}
 .about-grid{padding-left:24px!important;padding-right:24px!important;gap:22px!important}.about-grid .about-stats{gap:7px}.about-grid .stat-box{padding:11px 8px}.about-grid .stat-box strong{font-size:18px}.about-grid .stat-box span{font-size:10px;overflow-wrap:anywhere}}
+
+/* Nonstop review slideshow with native horizontal swipe */
+.review-marquee{overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none;scroll-behavior:auto;-webkit-overflow-scrolling:touch;touch-action:pan-x}
+.review-marquee::-webkit-scrollbar{display:none}
+.review-track{display:flex;width:max-content;align-items:stretch}
+.review-grid{display:flex!important;flex:none;flex-wrap:nowrap;gap:14px;padding-right:14px}
+.review-grid .review{width:clamp(245px,29vw,320px);max-width:calc(100vw - 58px);min-height:238px;flex:none;display:flex;flex-direction:column;padding:17px}
+.review-grid .review p{flex:1;font-size:12.5px;margin-bottom:12px}
+.review-grid .review .stars{margin-bottom:9px}
+@media(max-width:760px){.review-grid .review{width:min(275px,calc(100vw - 70px))}}
 </style>
   
 <!-- Organization Schema -->
@@ -969,7 +979,7 @@
 <section class="section" style="background:var(--surface); border-top:1px solid var(--line); border-bottom:1px solid var(--line);">
   <div class="wrap">
     <div class="section-head"><div><span class="eyebrow">Customer Reviews</span><h2>Trusted by everyday families.</h2></div></div>
-    <div class="review-grid">
+    <div class="review-marquee" id="reviewMarquee" aria-label="Customer reviews; swipe to explore" tabindex="0"><div class="review-track" id="reviewTrack"><div class="review-grid" id="reviewGrid">
       <div class="review">
         <div class="stars" aria-label="5 out of 5 stars"><i data-lucide="star" aria-hidden="true"></i><i data-lucide="star" aria-hidden="true"></i><i data-lucide="star" aria-hidden="true"></i><i data-lucide="star" aria-hidden="true"></i><i data-lucide="star" aria-hidden="true"></i></div>
         <p>"I ordered the Lady's Cleanser after a friend recommended it — the usage instructions made it so easy to follow. Will be reordering."</p>
@@ -985,7 +995,7 @@
         <p>"We got the TTC kit for my husband and I. The team was patient answering all our questions before we ordered."</p>
         <div class="review-who"><div class="avatar">K</div><div><strong>Kemi A.</strong><span>Osogbo</span><div class="verified"><i data-lucide="badge-check" aria-hidden="true"></i>Verified order</div></div></div>
       </div>
-    </div>
+    </div></div></div>
   </div>
 </section>
 
@@ -1963,6 +1973,47 @@
       closeMobileMenu();
     }
   });
+
+
+  // Keep the original three reviews in HTML; append reviews published by admin.
+  // Two identical sets enable seamless scrolling, while the viewport remains swipeable.
+  (async function initReviewMarquee(){
+    const viewport=document.getElementById('reviewMarquee');
+    const track=document.getElementById('reviewTrack');
+    const first=document.getElementById('reviewGrid');
+    if(!viewport||!track||!first)return;
+    const safe=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    try{
+      if(supabaseClient){
+        const {data,error}=await supabaseClient.from('site_reviews')
+          .select('id,reviewer_name,reviewer_location,review_text,rating,verified')
+          .eq('is_visible',true).order('created_at',{ascending:true}).limit(100);
+        if(error)throw error;
+        for(const rev of data||[]){
+          const stars=Array.from({length:Math.max(1,Math.min(5,Number(rev.rating)||5))},()=>'<i data-lucide="star" aria-hidden="true"></i>').join('');
+          first.insertAdjacentHTML('beforeend','<div class="review"><div class="stars" aria-label="'+safe(rev.rating)+' out of 5 stars">'+stars+'</div><p>"'+safe(rev.review_text)+'"</p><div class="review-who"><div class="avatar">'+safe(String(rev.reviewer_name||'?').charAt(0).toUpperCase())+'</div><div><strong>'+safe(rev.reviewer_name)+'</strong><span>'+safe(rev.reviewer_location||'')+'</span>'+(rev.verified?'<div class="verified"><i data-lucide="badge-check" aria-hidden="true"></i>Verified order</div>':'')+'</div></div></div>');
+        }
+      }
+    }catch(e){console.info('Review database not configured; original reviews remain visible.');}
+    if(window.lucide)lucide.createIcons();
+    const mirror=first.cloneNode(true);
+    mirror.removeAttribute('id');mirror.setAttribute('aria-hidden','true');
+    track.appendChild(mirror);
+    if(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return;
+    let pauseUntil=0,hovering=false,last=0;
+    for(const ev of ['pointerdown','touchstart'])viewport.addEventListener(ev,()=>{pauseUntil=performance.now()+2600;},{passive:true});
+    for(const ev of ['pointerup','touchend'])viewport.addEventListener(ev,()=>{pauseUntil=performance.now()+1600;},{passive:true});
+    viewport.addEventListener('mouseenter',()=>{hovering=true;});viewport.addEventListener('mouseleave',()=>{hovering=false;});
+    viewport.addEventListener('focusin',()=>{hovering=true;});viewport.addEventListener('focusout',()=>{hovering=false;});
+    function tick(now){
+      if(last&&!hovering&&now>pauseUntil&&!document.hidden){
+        const width=first.getBoundingClientRect().width;
+        if(width>0){viewport.scrollLeft+=Math.min(80,now-last)*.038;if(viewport.scrollLeft>=width)viewport.scrollLeft-=width;}
+      }
+      last=now;requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  })();
 
   // ---------- FAQ accordion ----------
   document.querySelectorAll('.faq-item').forEach(item => {
