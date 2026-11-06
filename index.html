@@ -925,6 +925,14 @@ header.hero-cover .hero-inner{padding-top:94px;padding-bottom:104px}
     padding-left:38px;
   }
 }
+
+/* Hide the fixed order tray while the mobile keyboard is open.
+   A keyboard replaces visible viewport space on iOS, otherwise the tray floats over the form. */
+@media(max-width:760px){
+  body.cart-keyboard-active #orderTray.order-tray{
+    display:none!important;
+  }
+}
 </style>
   
 <!-- Organization Schema -->
@@ -2118,6 +2126,8 @@ header.hero-cover .hero-inner{padding-top:94px;padding-bottom:104px}
   // Real text search: reuse the product catalogue's live search and keep the header input in sync.
   document.getElementById('heroSearchForm')?.addEventListener('submit',(event)=>{
     event.preventDefault();
+    // Submitting on the keyboard should dismiss it before showing catalogue results.
+    document.getElementById('heroSearchInput').blur();
     const term=document.getElementById('heroSearchInput').value.trim().slice(0,100);
     const globalSearch=document.getElementById('searchInput');
     if(globalSearch)globalSearch.value=term;
@@ -2179,6 +2189,45 @@ header.hero-cover .hero-inner{padding-top:94px;padding-bottom:104px}
       (firstCard || document.getElementById('shop'))?.scrollIntoView({behavior:'smooth', block:'start'});
     }
   });
+
+
+  // Keep the mobile order tray out of the way while customers type.
+  // VisualViewport also detects a keyboard being dismissed without a blur event on iOS.
+  (function keepCartBelowKeyboard(){
+    const mobile=()=>window.matchMedia('(max-width:760px)').matches;
+    const isTextField=el=>!!el?.matches?.(
+      'textarea,[contenteditable="true"],input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):not([type="submit"]):not([type="button"])'
+    );
+    let keyboardSeen=false,dismissedWhileFocused=false;
+    function update(){
+      if(!mobile()){
+        keyboardSeen=false;dismissedWhileFocused=false;
+        document.body.classList.remove('cart-keyboard-active');
+        return;
+      }
+      const viewport=window.visualViewport;
+      const obscured=viewport ? Math.max(0,window.innerHeight-viewport.height) : 0;
+      if(obscured>150){
+        keyboardSeen=true;dismissedWhileFocused=false;
+      }else if(keyboardSeen){
+        keyboardSeen=false;dismissedWhileFocused=true;
+      }
+      document.body.classList.toggle('cart-keyboard-active',
+        keyboardSeen || (isTextField(document.activeElement) && !dismissedWhileFocused));
+    }
+    document.addEventListener('focusin',event=>{
+      if(isTextField(event.target))dismissedWhileFocused=false;
+      update();
+    });
+    document.addEventListener('focusout',()=>{
+      dismissedWhileFocused=false;
+      requestAnimationFrame(update);
+    });
+    window.visualViewport?.addEventListener('resize',update,{passive:true});
+    window.addEventListener('resize',update,{passive:true});
+    window.addEventListener('pageshow',update);
+    update();
+  })();
 
   // ---------- Mobile nav + mobile search ----------
   const navToggle = document.getElementById('navToggle');
