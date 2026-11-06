@@ -181,6 +181,17 @@ main.wrap{padding-bottom:118px}
   border-radius:3px!important;box-shadow:none!important;
 }
 
+
+/* Independent default hero editor */
+.hero-editor-layout{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);align-items:start;gap:20px;margin-top:16px}
+.hero-editor-preview{width:100%;aspect-ratio:16/9;overflow:hidden;border-radius:13px;background:#e2ede0;border:1px solid var(--line)}
+.hero-editor-preview img{display:block;width:100%;height:100%;object-fit:cover;object-position:center}
+.hero-editor .setting-note{line-height:1.5}
+.hero-editor .actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:9px 0}
+.hero-editor #defaultHeroStatus{margin-top:10px}
+.hero-editor .field input[type="file"]{font-size:12px;padding:10px}
+@media(max-width:760px){.hero-editor-layout{grid-template-columns:1fr;gap:15px}.hero-editor-preview{aspect-ratio:16/9}.hero-editor .actions .btn{flex:1}}
+
 </style>
 </head>
 <body>
@@ -238,7 +249,28 @@ main.wrap{padding-bottom:118px}
  <div class="panel"><div class="section-head"><h3>Reviews added by admin</h3><button id="refreshReviews" class="btn btn-light" type="button"><i data-lucide="refresh-cw"></i>Refresh</button></div><div id="reviewsRows" class="reviews-admin-list"><div class="muted">Open Reviews to load entries.</div></div><p class="setting-note">The original three homepage reviews are preserved separately. New reviews appear alongside them once published.</p></div>
 </section>
 
-<section id="settingsView" class="hidden"><div class="view-title"><div><h2>Store Settings</h2><small class="muted">Payment details customers see at checkout.</small></div></div><div class="panel"><form id="settingsForm"><div class="grid2dash"><div class="field"><label>Bank name</label><input id="bankName" placeholder="e.g. Moniepoint"></div><div class="field"><label>Account name</label><input id="accountName" placeholder="Account name"></div><div class="field"><label>Account number</label><input id="accountNumber" inputmode="numeric" placeholder="Account number"></div></div><p class="setting-note">These details are shown to customers during checkout. Never put secret keys or passwords here.</p><div style="margin-top:16px"><button class="btn btn-green" type="submit"><i data-lucide="save"></i>Save payment details</button></div></form></div><div class="panel" style="margin-top:18px"><div class="section-head"><h3>Homepage banners & scheduled promotions</h3></div><p class="setting-note">Upload a flyer or anniversary image. Set Nigeria start/end times. Active promotions temporarily replace the original three-bottle image; it returns automatically after the end time. Sales display a small countdown on the image.</p><form id="campaignForm"><div class="grid2dash"><div class="field"><label>Campaign name</label><input id="campaignName" required maxlength="100" placeholder="e.g. November sales"></div><div class="field"><label>Banner type</label><select id="campaignKind"><option value="sale">Sale (show countdown)</option><option value="occasion">Anniversary / general (no countdown)</option></select></div><div class="field"><label>Starts (Nigeria time)</label><input id="campaignStart" type="datetime-local" required></div><div class="field"><label>Ends (Nigeria time)</label><input id="campaignEnd" type="datetime-local" required></div><div class="field"><label>Upload flyer / image</label><input id="campaignImage" type="file" accept="image/jpeg,image/png,image/webp" required><small class="setting-note">JPEG, PNG or WebP, maximum 5 MB.</small></div></div><button type="submit" class="btn btn-green" id="campaignSave">Schedule banner</button></form><div id="campaignStatus" class="setting-note" role="status"></div><div id="campaignList" style="margin-top:14px"></div></div></section>
+<section id="settingsView" class="hidden"><div class="view-title"><div><h2>Store Settings</h2><small class="muted">Payment details customers see at checkout.</small></div></div><div class="panel"><form id="settingsForm"><div class="grid2dash"><div class="field"><label>Bank name</label><input id="bankName" placeholder="e.g. Moniepoint"></div><div class="field"><label>Account name</label><input id="accountName" placeholder="Account name"></div><div class="field"><label>Account number</label><input id="accountNumber" inputmode="numeric" placeholder="Account number"></div></div><p class="setting-note">These details are shown to customers during checkout. Never put secret keys or passwords here.</p><div style="margin-top:16px"><button class="btn btn-green" type="submit"><i data-lucide="save"></i>Save payment details</button></div></form></div><div class="panel hero-editor" style="margin-top:18px">
+<div class="section-head"><h3>Default homepage hero</h3></div>
+<p class="setting-note">The regular full-width banner shown when there is no active promotion. You can replace its image and edit its text here without changing scheduled sales or anniversary banners.</p>
+<div class="hero-editor-layout">
+  <div class="hero-editor-preview"><img id="defaultHeroPreview" src="/hero-default.jpg" alt="Current default hero preview" loading="lazy"></div>
+  <form id="defaultHeroForm">
+    <div class="field"><label for="defaultHeroImage">Replace default hero image</label>
+    <input type="file" id="defaultHeroImage" accept="image/jpeg,image/png,image/webp">
+    <small class="setting-note">JPG, PNG or WebP, max 5 MB. A landscape image around 1600 × 900 works best. Leave empty to keep the current image.</small></div>
+    <div class="field"><label for="defaultHeroHeading">Hero headline (optional)</label>
+    <input id="defaultHeroHeading" type="text" maxlength="130" placeholder="Explore herbal wellness products in Nigeria"></div>
+    <div class="field"><label for="defaultHeroSubtitle">Supporting text (optional)</label>
+    <textarea id="defaultHeroSubtitle" rows="3" maxlength="220" placeholder="Describe what customers can find in your shop"></textarea></div>
+    <div class="actions">
+      <button id="defaultHeroSave" class="btn btn-green" type="submit"><i data-lucide="save"></i>Save default hero</button>
+      <button id="defaultHeroReset" class="btn btn-light" type="button">Restore original</button>
+    </div>
+    <div id="defaultHeroStatus" class="setting-note" role="status" aria-live="polite">Save a new banner, or keep the original image and edit only the headline.</div>
+  </form>
+</div>
+</div>
+<div class="panel" style="margin-top:18px"><div class="section-head"><h3>Scheduled promotional banners</h3></div><p class="setting-note">Upload a sale or anniversary flyer and choose start/end times in Nigeria time. Active promotions temporarily replace your default hero image, then the default returns automatically when the promotion ends.</p><form id="campaignForm"><div class="grid2dash"><div class="field"><label>Campaign name</label><input id="campaignName" required maxlength="100" placeholder="e.g. November sales"></div><div class="field"><label>Banner type</label><select id="campaignKind"><option value="sale">Sale (show countdown)</option><option value="occasion">Anniversary / general (no countdown)</option></select></div><div class="field"><label>Starts (Nigeria time)</label><input id="campaignStart" type="datetime-local" required></div><div class="field"><label>Ends (Nigeria time)</label><input id="campaignEnd" type="datetime-local" required></div><div class="field"><label>Upload flyer / image</label><input id="campaignImage" type="file" accept="image/jpeg,image/png,image/webp" required><small class="setting-note">JPEG, PNG or WebP, maximum 5 MB.</small></div></div><button type="submit" class="btn btn-green" id="campaignSave">Schedule banner</button></form><div id="campaignStatus" class="setting-note" role="status"></div><div id="campaignList" style="margin-top:14px"></div></div></section>
 </main>
 <nav class="tabbar" aria-label="Main"><button class="tab active" data-view="dashboard"><i data-lucide="layout-dashboard"></i><span>Home</span></button><button class="tab" data-view="products"><i data-lucide="package"></i><span>Products</span></button><button class="tab" data-view="orders"><i data-lucide="shopping-bag"></i><span>Orders</span></button><button class="tab" data-view="analytics"><i data-lucide="trending-up"></i><span>Analytics</span></button><button class="tab" data-view="reviews"><i data-lucide="star"></i><span>Reviews</span></button><button class="tab" data-view="settings"><i data-lucide="settings"></i><span>Settings</span></button></nav>
 </div>
@@ -715,6 +747,17 @@ $('applyCustom').onclick=()=>{
 /* =========================
    SETTINGS
 ========================= */
+let savedDefaultHeroImage='';
+let localDefaultHeroPreview='';
+function updateHeroPreview(url){
+ const preview=$('defaultHeroPreview');
+ if(!preview)return;
+ preview.onerror=()=>{preview.onerror=null;preview.src='/hero-default.jpg'};
+ preview.src=url||'/hero-default.jpg';
+}
+function defaultHeroStatus(message,isError=false){
+ const element=$('defaultHeroStatus');element.textContent=message;element.style.color=isError?'#9B1C1C':'var(--sub)';
+}
 async function loadSettings(){
   const {data,error}=await sb.from('store_settings').select('*').eq('id',1).maybeSingle();
   if(error){msg(error.message,true);return}
@@ -722,6 +765,10 @@ async function loadSettings(){
     $('bankName').value=data.bank_name||'';
     $('accountName').value=data.account_name||'';
     $('accountNumber').value=data.account_number||'';
+    savedDefaultHeroImage=data.hero_image_url||'';
+    $('defaultHeroHeading').value=data.hero_heading||'';
+    $('defaultHeroSubtitle').value=data.hero_subtitle||'';
+    updateHeroPreview(savedDefaultHeroImage);
   }
 }
 
@@ -739,6 +786,70 @@ $('settingsForm').addEventListener('submit',async e=>{
   else msg('Payment details saved.');
 });
 
+
+
+/* Default hero image and copy. Separate from scheduled promotional banners. */
+$('defaultHeroImage').addEventListener('change',()=>{
+ if(localDefaultHeroPreview){URL.revokeObjectURL(localDefaultHeroPreview);localDefaultHeroPreview=''}
+ const file=$('defaultHeroImage').files?.[0];
+ if(!file){updateHeroPreview(savedDefaultHeroImage);return}
+ if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>5*1024*1024){
+   $('defaultHeroImage').value='';defaultHeroStatus('Choose JPG, PNG or WebP no larger than 5 MB.',true);
+   updateHeroPreview(savedDefaultHeroImage);return;
+ }
+ localDefaultHeroPreview=URL.createObjectURL(file);
+ updateHeroPreview(localDefaultHeroPreview);
+});
+$('defaultHeroForm').addEventListener('submit',async event=>{
+ event.preventDefault();
+ const button=$('defaultHeroSave'),file=$('defaultHeroImage').files?.[0];
+ if(file&&(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>5*1024*1024)){
+   defaultHeroStatus('Choose a JPG, PNG or WebP image smaller than 5 MB.',true);return;
+ }
+ button.disabled=true;defaultHeroStatus('Saving the default hero…');
+ try{
+   const preflight=await sb.from('store_settings').select('id,hero_image_url').eq('id',1).maybeSingle();
+   if(preflight.error)throw new Error('Run the one-time default-hero SQL migration first. '+preflight.error.message);
+   let imageUrl=savedDefaultHeroImage||null;
+   if(file){
+     const ext={'image/jpeg':'jpg','image/png':'png','image/webp':'webp'}[file.type];
+     const path=crypto.randomUUID()+'.'+ext;
+     const uploaded=await sb.storage.from('hero-banners').upload(path,file,{contentType:file.type,upsert:false});
+     if(uploaded.error)throw uploaded.error;
+     imageUrl=sb.storage.from('hero-banners').getPublicUrl(path).data.publicUrl;
+   }
+   const payload={
+     id:1,hero_image_url:imageUrl,
+     hero_heading:$('defaultHeroHeading').value.trim()||null,
+     hero_subtitle:$('defaultHeroSubtitle').value.trim()||null,
+     updated_at:new Date().toISOString()
+   };
+   const {error}=await sb.from('store_settings').upsert(payload,{onConflict:'id'});
+   if(error)throw error;
+   savedDefaultHeroImage=imageUrl||'';
+   $('defaultHeroImage').value='';
+   if(localDefaultHeroPreview){URL.revokeObjectURL(localDefaultHeroPreview);localDefaultHeroPreview=''}
+   updateHeroPreview(savedDefaultHeroImage);
+   defaultHeroStatus('Default hero saved. It will appear when no scheduled promotion is active.');
+ }catch(error){defaultHeroStatus('Could not save default hero: '+error.message,true)}
+ finally{button.disabled=false}
+});
+$('defaultHeroReset').addEventListener('click',async()=>{
+ if(!confirm('Restore the original hero photo and default text? Scheduled promotions will remain untouched.'))return;
+ const button=$('defaultHeroReset');button.disabled=true;
+ try{
+   const {error}=await sb.from('store_settings').update({
+     hero_image_url:null,hero_heading:null,hero_subtitle:null,updated_at:new Date().toISOString()
+   }).eq('id',1);
+   if(error)throw error;
+   savedDefaultHeroImage='';
+   $('defaultHeroHeading').value='';$('defaultHeroSubtitle').value='';$('defaultHeroImage').value='';
+   if(localDefaultHeroPreview){URL.revokeObjectURL(localDefaultHeroPreview);localDefaultHeroPreview=''}
+   updateHeroPreview('');
+   defaultHeroStatus('Original default hero restored. Promotional banners were not changed.');
+ }catch(error){defaultHeroStatus('Could not restore default hero: '+error.message,true)}
+ finally{button.disabled=false}
+});
 
 /* Scheduled hero campaigns; admin authorization is enforced by Supabase RLS. */
 function nigeriaTimeToISO(value){return new Date(value+':00+01:00').toISOString()}
