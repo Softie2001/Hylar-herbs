@@ -139,6 +139,48 @@ main.wrap{padding-bottom:118px}
 .review-admin-row small{font-size:11px;color:var(--sub)}
 .review-admin-row .actions{margin-top:10px}
 @media(max-width:650px){.tabbar{gap:0}.tab{font-size:10px;padding:7px 1px}.tab svg{width:19px;height:19px}.reviews-admin-list{gap:9px}}
+
+/* Mobile-first login, centered independently of the dashboard layout. */
+#loginView.wrap{
+  max-width:none;width:100%;min-height:100vh;min-height:100dvh;
+  display:flex;align-items:center;justify-content:center;
+  padding:24px 18px;
+}
+#loginView .login{
+  width:100%;max-width:360px;margin:0 auto;padding:26px 24px 28px;
+  border-radius:18px;box-shadow:0 12px 36px rgba(10,50,24,.075);
+}
+#loginView .login-brand-logo{
+  display:block;width:58px;height:58px;object-fit:contain;
+  margin:0 auto 14px;border-radius:10px;
+}
+#loginView .login h2{text-align:center;font-size:25px;line-height:1.22;margin:0 0 7px}
+#loginView .login>.muted{text-align:center;font-size:12.5px;line-height:1.5;margin:0 0 22px}
+#loginView .login .field{margin-bottom:15px}
+#loginView .login .field input{font-size:16px;min-height:46px}
+#loginView .login #loginButton{min-height:46px}
+@media(max-width:650px){
+  #loginView.wrap{padding:20px 18px!important}
+  #loginView .login{max-width:350px!important;margin:0 auto!important;padding:23px 20px 24px!important;border-radius:18px!important}
+}
+/* Align admin checkboxes next to their labels; prevent iOS oversized controls. */
+.admin-checkbox-stack{display:flex!important;flex-direction:column;align-items:stretch;gap:12px;padding-top:6px}
+.admin-checkbox-stack label.option-check{
+  display:flex!important;align-items:center;justify-content:flex-start;
+  gap:10px;margin:0!important;font-size:13px;line-height:1.45;
+  font-weight:750;cursor:pointer;width:100%;min-height:27px;
+}
+.admin-checkbox-stack label.option-check span{display:inline-block;min-width:0;flex:1}
+.admin-checkbox-stack label.option-check small{font-size:11px;font-weight:500;color:var(--sub)}
+.admin-checkbox-stack .option-check input[type="checkbox"]{
+  appearance:checkbox!important;-webkit-appearance:checkbox!important;
+  display:block!important;flex:0 0 18px!important;
+  width:18px!important;height:18px!important;min-width:18px!important;min-height:18px!important;
+  max-width:18px!important;max-height:18px!important;
+  margin:0!important;padding:0!important;vertical-align:middle;accent-color:var(--brand);
+  border-radius:3px!important;box-shadow:none!important;
+}
+
 </style>
 </head>
 <body>
@@ -146,6 +188,7 @@ main.wrap{padding-bottom:118px}
 <!-- LOGIN -->
 <div id="loginView" class="wrap">
   <div class="panel login">
+    <img class="login-brand-logo" src="/hylar-herbs-logo.jpg" width="64" height="64" alt="Hylar Herbs logo">
     <h2>Hylar Herbs Admin</h2>
     <p class="muted">Sign in to manage products, orders and sales.</p>
     <div id="loginMsg"></div>
@@ -186,7 +229,7 @@ main.wrap{padding-bottom:118px}
     <div class="field"><label for="reviewName">Customer name</label><input id="reviewName" required maxlength="80" placeholder="e.g. Ada O."></div>
     <div class="field"><label for="reviewLocation">Location (optional)</label><input id="reviewLocation" maxlength="100" placeholder="e.g. Lagos"></div>
     <div class="field"><label for="reviewRating">Rating</label><select id="reviewRating"><option value="5">5 stars</option><option value="4">4 stars</option><option value="3">3 stars</option><option value="2">2 stars</option><option value="1">1 star</option></select></div>
-    <div class="field"><label><input id="reviewPublished" type="checkbox" checked> Show on website</label><label><input id="reviewVerified" type="checkbox"> Verified order (check only if confirmed)</label></div>
+    <div class="field admin-checkbox-stack"><label class="option-check" for="reviewPublished"><input id="reviewPublished" type="checkbox" checked><span>Show on website</span></label><label class="option-check" for="reviewVerified"><input id="reviewVerified" type="checkbox"><span>Verified order <small>(only if confirmed)</small></span></label></div>
     <div class="field" style="grid-column:1/-1"><label for="reviewText">Customer's review</label><textarea id="reviewText" required maxlength="1500" minlength="10" rows="4" placeholder="Enter the customer's actual feedback with permission to publish it."></textarea></div>
    </div>
    <div class="actions"><button id="saveReview" type="submit" class="btn btn-green"><i data-lucide="save"></i>Save review</button><button id="clearReview" type="button" class="btn btn-light">Clear</button></div>
@@ -200,7 +243,7 @@ main.wrap{padding-bottom:118px}
 <nav class="tabbar" aria-label="Main"><button class="tab active" data-view="dashboard"><i data-lucide="layout-dashboard"></i><span>Home</span></button><button class="tab" data-view="products"><i data-lucide="package"></i><span>Products</span></button><button class="tab" data-view="orders"><i data-lucide="shopping-bag"></i><span>Orders</span></button><button class="tab" data-view="analytics"><i data-lucide="trending-up"></i><span>Analytics</span></button><button class="tab" data-view="reviews"><i data-lucide="star"></i><span>Reviews</span></button><button class="tab" data-view="settings"><i data-lucide="settings"></i><span>Settings</span></button></nav>
 </div>
 
-<div id="productModal" class="modal hidden"><div class="modal-card"><div class="modal-head"><h2 id="productModalTitle">Add product</h2><button id="closeProductModal" type="button">×</button></div><form id="productForm"><input id="pid" type="hidden"><div class="grid2dash"><div class="field"><label>Product name</label><input id="pname" required></div><div class="field"><label>Category</label><select id="pcat"><option value="feminine">Feminine Wellness</option><option value="ttc">Fertility &amp; TTC</option><option value="infection">Infection Care</option><option value="men">Men's Vitality</option><option value="body">Body &amp; Weight</option></select></div><div class="field"><label>Regular price (₦)</label><input id="regular" type="number" min="0" step="0.01" required></div><div class="field"><label>Sale price (₦)</label><input id="sale" type="number" min="0" step="0.01"></div><div class="field"><label>Tag</label><select id="tag"><option value="">None</option><option value="Kit">Kit</option></select></div><div class="field"><label>Sort order</label><input id="sort" type="number" min="0" value="999"></div><div class="field"><label for="stockQty">Available quantity</label><input id="stockQty" type="number" inputmode="numeric" min="0" step="1" placeholder="Enter quantity when counted"><small class="muted">Leave blank to keep an uncounted product available. Enter the real number of units to enable stock limits; 0 means sold out.</small></div><div class="field"><label><input id="stock" type="checkbox" checked> In stock</label><label><input id="visible" type="checkbox" checked> Visible on shop</label><label><input id="best" type="checkbox"> Best seller</label></div><div class="field"><label>Product image</label><input id="image" type="file" accept="image/*"><div id="previewWrap"></div></div><div class="field full"><label>Description</label><textarea id="desc" placeholder="Describe the size, contents, ingredients (if verified), and label directions or precautions. Avoid unverified cure claims."></textarea><small class="muted">This text appears on the product page and helps search engines and customers understand the product. Keep it accurate, specific and medically responsible.</small></div></div><div style="display:flex;justify-content:flex-end;gap:8px"><button class="btn btn-light" type="button" id="cancelProduct">Cancel</button><button class="btn btn-green" type="submit">Save product</button></div></form></div></div>
+<div id="productModal" class="modal hidden"><div class="modal-card"><div class="modal-head"><h2 id="productModalTitle">Add product</h2><button id="closeProductModal" type="button">×</button></div><form id="productForm"><input id="pid" type="hidden"><div class="grid2dash"><div class="field"><label>Product name</label><input id="pname" required></div><div class="field"><label>Category</label><select id="pcat"><option value="feminine">Feminine Wellness</option><option value="ttc">Fertility &amp; TTC</option><option value="infection">Infection Care</option><option value="men">Men's Vitality</option><option value="body">Body &amp; Weight</option></select></div><div class="field"><label>Regular price (₦)</label><input id="regular" type="number" min="0" step="0.01" required></div><div class="field"><label>Sale price (₦)</label><input id="sale" type="number" min="0" step="0.01"></div><div class="field"><label>Tag</label><select id="tag"><option value="">None</option><option value="Kit">Kit</option></select></div><div class="field"><label>Sort order</label><input id="sort" type="number" min="0" value="999"></div><div class="field"><label for="stockQty">Available quantity</label><input id="stockQty" type="number" inputmode="numeric" min="0" step="1" placeholder="Enter quantity when counted"><small class="muted">Leave blank to keep an uncounted product available. Enter the real number of units to enable stock limits; 0 means sold out.</small></div><div class="field admin-checkbox-stack"><label class="option-check" for="stock"><input id="stock" type="checkbox" checked><span>In stock</span></label><label class="option-check" for="visible"><input id="visible" type="checkbox" checked><span>Visible on shop</span></label><label class="option-check" for="best"><input id="best" type="checkbox"><span>Best seller</span></label></div><div class="field"><label>Product image</label><input id="image" type="file" accept="image/*"><div id="previewWrap"></div></div><div class="field full"><label>Description</label><textarea id="desc" placeholder="Describe the size, contents, ingredients (if verified), and label directions or precautions. Avoid unverified cure claims."></textarea><small class="muted">This text appears on the product page and helps search engines and customers understand the product. Keep it accurate, specific and medically responsible.</small></div></div><div style="display:flex;justify-content:flex-end;gap:8px"><button class="btn btn-light" type="button" id="cancelProduct">Cancel</button><button class="btn btn-green" type="submit">Save product</button></div></form></div></div>
 
 <div id="orderModal" class="modal hidden"><div class="modal-card"><div class="modal-head"><h2>Order details</h2><button id="closeOrderModal" type="button">×</button></div><div id="orderDetail"></div></div></div>
 
