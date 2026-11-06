@@ -714,7 +714,23 @@
     .co-success{padding:22px 16px 18px;}
     .co-field input,.co-field textarea,.co-proof input{font-size:16px;}
   }
-  </style>
+  
+.brand-icon{width:21px!important;height:21px!important;display:block;flex:none}
+.nav-whatsapp-top .brand-icon{width:22px!important;height:22px!important}
+.footer-contact-icons .brand-icon{width:19px!important;height:19px!important}
+.cat-tiles{display:flex!important;gap:15px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding:6px 2px 12px}
+.cat-tiles::-webkit-scrollbar{display:none}
+.cat-tile{width:108px;flex:none;display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;transform:none!important;padding:2px!important}
+.cat-tile .emoji{width:62px;height:62px;border-radius:50%;margin:0 auto 6px;background:#EAF2E7;border:1px solid #DCE6D7}
+.cat-tile .emoji svg{width:25px;height:25px}
+.cat-tile strong,.cat-tile span{font-size:11px!important;line-height:1.35;text-align:center}
+.cat-tile.active .emoji,.cat-tile:hover .emoji{border-color:var(--brand);background:#DBF0DB}
+.about-grid>*{min-width:0}
+.about-grid p{overflow-wrap:anywhere}
+.about-stats{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media(max-width:760px){.cat-tiles{gap:10px}.cat-tile{width:84px}.cat-tile .emoji{width:56px;height:56px}
+.about-grid{padding-left:24px!important;padding-right:24px!important;gap:22px!important}.about-grid .about-stats{gap:7px}.about-grid .stat-box{padding:11px 8px}.about-grid .stat-box strong{font-size:18px}.about-grid .stat-box span{font-size:10px;overflow-wrap:anywhere}}
+</style>
   
 <!-- Organization Schema -->
 <script type="application/ld+json">
@@ -787,9 +803,7 @@
       <input type="text" id="searchInput" placeholder="Search products — e.g. detox, fertility, infection...">
     </div>
 
-    <a href="https://wa.me/2349090416306" class="nav-order-icon nav-whatsapp-top" target="_blank" rel="noopener noreferrer" aria-label="Chat on WhatsApp">
-      <i data-lucide="message-circle" aria-hidden="true"></i>
-    </a>
+    <a href="https://wa.me/2349090416306" class="nav-order-icon nav-whatsapp-top" target="_blank" rel="noopener noreferrer" aria-label="Chat on WhatsApp"><svg class="brand-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 0A11.96 11.96 0 0 0 1.7 18L0 24l6.18-1.62A12 12 0 1 0 12.04 0Zm0 21.9a9.9 9.9 0 0 1-5.05-1.38l-.36-.21-3.7.97.99-3.6-.23-.37a9.91 9.91 0 1 1 8.35 4.59Zm5.46-7.45c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.34.22-.64.07-.3-.15-1.28-.47-2.42-1.49-.89-.8-1.5-1.78-1.67-2.08-.17-.3-.02-.46.13-.61.14-.14.3-.35.45-.52.15-.18.2-.3.3-.5.1-.2.05-.38-.03-.53-.07-.15-.66-1.61-.91-2.21-.24-.57-.48-.5-.67-.51h-.57c-.2 0-.52.08-.79.38-.27.3-1.04 1.02-1.04 2.49s1.07 2.89 1.22 3.09c.15.2 2.12 3.24 5.13 4.54.72.31 1.28.5 1.72.64.72.23 1.38.2 1.9.12.58-.09 1.76-.72 2.02-1.42.25-.7.25-1.3.17-1.43-.07-.12-.27-.2-.56-.34Z"/></svg></a>
 
     <button class="mobile-search-btn" id="mobileSearchBtn" type="button" aria-label="Search products" aria-expanded="false">
       <i data-lucide="search" aria-hidden="true"></i>
@@ -870,7 +884,7 @@
 <section class="section">
   <div class="wrap">
     <div class="section-head">
-      <div><span class="eyebrow">Shop by Category</span><h2>What are you looking for today?</h2></div>
+      <div><span class="eyebrow">Shop by Category</span><h2>Explore categories</h2></div>
     </div>
     <div class="cat-tiles">
       <div class="cat-tile" data-cat="feminine"><div class="emoji"><i data-lucide="flower-2" aria-hidden="true"></i></div><strong>Feminine</strong><span>Wellness</span></div>
@@ -1031,20 +1045,16 @@
       </ul></div>
       <div class="footer-contact"><h5>Contact</h5>
         <div class="footer-contact-icons">
-          <a href="https://wa.me/2349090416306" aria-label="WhatsApp" title="WhatsApp"><i data-lucide="message-circle" aria-hidden="true"></i></a>
+          <a href="https://wa.me/2349090416306" aria-label="WhatsApp" title="WhatsApp"><svg class="brand-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 0A11.96 11.96 0 0 0 1.7 18L0 24l6.18-1.62A12 12 0 1 0 12.04 0Zm0 21.9a9.9 9.9 0 0 1-5.05-1.38l-.36-.21-3.7.97.99-3.6-.23-.37a9.91 9.91 0 1 1 8.35 4.59Zm5.46-7.45c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.34.22-.64.07-.3-.15-1.28-.47-2.42-1.49-.89-.8-1.5-1.78-1.67-2.08-.17-.3-.02-.46.13-.61.14-.14.3-.35.45-.52.15-.18.2-.3.3-.5.1-.2.05-.38-.03-.53-.07-.15-.66-1.61-.91-2.21-.24-.57-.48-.5-.67-.51h-.57c-.2 0-.52.08-.79.38-.27.3-1.04 1.02-1.04 2.49s1.07 2.89 1.22 3.09c.15.2 2.12 3.24 5.13 4.54.72.31 1.28.5 1.72.64.72.23 1.38.2 1.9.12.58-.09 1.76-.72 2.02-1.42.25-.7.25-1.3.17-1.43-.07-.12-.27-.2-.56-.34Z"/></svg></a>
           <a href="tel:+2348116695637" aria-label="Call" title="Call"><i data-lucide="phone" aria-hidden="true"></i></a>
-          <a href="https://www.instagram.com/hylarherbs/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" title="Instagram"><i data-lucide="instagram" aria-hidden="true"></i></a>
-          <a href="https://www.tiktok.com/@hylar_alagbo/" target="_blank" rel="noopener noreferrer" aria-label="TikTok" title="TikTok"><i data-lucide="music-2" aria-hidden="true"></i></a>
+          <a href="https://www.instagram.com/hylarherbs/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" title="Instagram"><svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a>
+          <a href="https://www.tiktok.com/@hylar_alagbo/" target="_blank" rel="noopener noreferrer" aria-label="TikTok" title="TikTok"><svg class="brand-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.61 0h-3.6v16.13a3.44 3.44 0 1 1-3.18-3.43V9.05a7.05 7.05 0 1 0 6.78 7.08V7.94A10.18 10.18 0 0 0 22 9.5V5.86A6.43 6.43 0 0 1 16.61 0Z"/></svg></a>
         </div>
       </div>
     </div>
     <div class="footer-bottom">
       <span>© 2026 Hylar Herbs & Body Wellness. All rights reserved.</span>
-      <div class="social-row">
-        <a href="https://www.instagram.com/hylarherbs/" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><i data-lucide="instagram" aria-hidden="true"></i></a>
-        <a href="https://www.tiktok.com/@hylar_alagbo/" target="_blank" rel="noopener noreferrer" aria-label="TikTok"><i data-lucide="music-2" aria-hidden="true"></i></a>
       </div>
-    </div>
   </div>
 </footer>
 
@@ -1812,7 +1822,6 @@
           <div class="product-label-row"><span class="cat-label">${label}</span>${hasSale ? `<span class="sale-percent">${Math.round((1-Number(p.salePrice)/Number(p.regularPrice))*100)}% OFF</span>` : ''}</div>
           <h3><a class="card-product-link" href="${productLink}">${escapeCatalogHtml(p.name)}</a></h3>
           <p class="desc">${escapeCatalogHtml(p.desc)}</p>
-          <a class="product-learn-link" href="${productLink}">View product details</a>
           ${!outOfStock&&p.stockQuantity!=null&&p.stockQuantity<=5?`<small class="card-stock">Only ${p.stockQuantity} left</small>`:''}
           <div class="card-foot">
             <div class="price-block">
