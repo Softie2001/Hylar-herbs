@@ -821,6 +821,23 @@ header.hero-cover .hero-inner{max-width:1220px;min-height:570px;padding:75px 38p
 }
 @media(max-width:365px){.hero-cover #heroHeading{font-size:28px}.hero-cover .hero-actions .btn{font-size:10px}}
 
+
+/* Hero refinements: more breathing room, concise headline, single CTA */
+header.hero-cover .hero-inner{padding-top:94px;padding-bottom:104px}
+.hero-cover .hero-copy{transform:translateY(20px)}
+.hero-cover #heroHeading{max-width:590px;line-height:1.13}
+.hero-cover .hero-actions{display:flex;justify-content:flex-start}
+.hero-cover .hero-actions .btn-accent{min-width:155px;justify-content:center}
+@media(max-width:760px){
+ header.hero-cover .hero-inner{padding-top:82px;padding-bottom:96px}
+ .hero-cover .hero-copy{transform:translateY(19px)}
+ .hero-cover #heroHeading{font-size:clamp(33px,8.4vw,44px);line-height:1.14;max-width:345px}
+ .hero-cover #heroSubtitle{font-size:13px;margin-bottom:20px}
+ .hero-cover .hero-actions{display:flex;justify-content:flex-start}
+ .hero-cover .hero-actions .btn-accent{width:auto;min-width:155px;padding:12px 17px;font-size:12px}
+ .hero-cover .hero-discovery{bottom:-29px}
+}
+
 </style>
   
 <!-- Organization Schema -->
@@ -944,17 +961,15 @@ header.hero-cover .hero-inner{max-width:1220px;min-height:570px;padding:75px 38p
   <div class="hero-cover-scrim" aria-hidden="true"></div>
   <div class="hero-inner">
     <div class="hero-copy">
-      <span class="hero-kicker"><i data-lucide="leaf" aria-hidden="true"></i> HYLAR HERBS &amp; BODY WELLNESS</span>
-      <h1 id="heroHeading">Explore herbal wellness products in Nigeria, <span>shopped the easy way.</span></h1>
-      <p id="heroSubtitle">Discover herbal wellness essentials, everyday care and thoughtfully selected kits from Hylar Herbs.</p>
+      <h1 id="heroHeading">Natural wellness, <span>made easy.</span></h1>
+      <p id="heroSubtitle">Explore herbal essentials for everyday care.</p>
       <div class="hero-actions">
         <a href="#shop" class="btn btn-accent"><i data-lucide="shopping-bag" aria-hidden="true"></i> Shop All Products</a>
-        <a href="https://wa.me/2349090416306" class="btn btn-outline-light" target="_blank" rel="noopener noreferrer"><i data-lucide="message-circle" aria-hidden="true"></i> Chat to Order</a>
       </div>
     </div>
   </div>
   <div id="heroCountdown" class="hero-promo-countdown" hidden aria-live="off"></div>
-  <div class="hero-discovery" aria-label="Explore products">
+  <div class="hero-discovery" role="search" aria-label="Search products by category">
     <div class="hero-discovery-prompt"><span>EXPLORE THE SHOP</span><strong>Find your wellness essentials</strong></div>
     <label class="hero-discovery-choose">
       <span class="sr-only">Choose a product category</span>
@@ -965,19 +980,9 @@ header.hero-cover .hero-inner{max-width:1220px;min-height:570px;padding:75px 38p
       </select>
       <i data-lucide="chevron-down" aria-hidden="true"></i>
     </label>
-    <button id="heroExploreButton" class="hero-discovery-button" type="button">Explore <i data-lucide="arrow-up-right" aria-hidden="true"></i></button>
+    <button id="heroExploreButton" class="hero-discovery-button" type="button">Search <i data-lucide="search" aria-hidden="true"></i></button>
   </div>
 </header>
-
-<!-- TRUST STRIP -->
-<div class="trust-strip">
-  <div class="wrap trust-inner">
-    <div class="trust-item"><div class="ic"><i data-lucide="leaf" aria-hidden="true"></i></div><div><strong>100% Natural</strong><span>No fillers or additives</span></div></div>
-    <div class="trust-item"><div class="ic"><i data-lucide="package" aria-hidden="true"></i></div><div><strong>Made to Order</strong><span>Freshly prepared batches</span></div></div>
-    <div class="trust-item"><div class="ic"><i data-lucide="truck" aria-hidden="true"></i></div><div><strong>Nationwide Delivery</strong><span>Shipped from Ede &amp; Lagos</span></div></div>
-    <div class="trust-item"><div class="ic"><i data-lucide="message-circle" aria-hidden="true"></i></div><div><strong>Real Support</strong><span>Talk to us on WhatsApp</span></div></div>
-  </div>
-</div>
 
 <!-- CATEGORY TILES -->
 <section class="section">
