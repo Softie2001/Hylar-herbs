@@ -178,7 +178,8 @@
   }
   .cat-strip a:hover{color:#fff; border-color:var(--accent);}
 
-  .hero-visual:not(.hero-ready){visibility:hidden}
+  /* Show the default hero immediately; campaign imagery updates asynchronously. */
+  .hero-visual{visibility:visible}
   /* ---------- HERO / PROMO BANNER ---------- */
   .hero{background:linear-gradient(120deg, var(--brand-deep) 0%, var(--brand-dark) 55%, var(--brand) 100%); position:relative; overflow:hidden;}
   .hero::after{
@@ -730,6 +731,18 @@
 .about-stats{grid-template-columns:repeat(3,minmax(0,1fr))}
 @media(max-width:760px){.cat-tiles{gap:10px}.cat-tile{width:84px}.cat-tile .emoji{width:56px;height:56px}
 .about-grid{padding-left:24px!important;padding-right:24px!important;gap:22px!important}.about-grid .about-stats{gap:7px}.about-grid .stat-box{padding:11px 8px}.about-grid .stat-box strong{font-size:18px}.about-grid .stat-box span{font-size:10px;overflow-wrap:anywhere}}
+
+
+  /* Keep headline and actions in view immediately on a phone; never reserve an empty image first. */
+  @media (max-width:760px){
+    .hero-inner{display:flex;flex-direction:column;align-items:stretch;gap:22px;padding:28px 20px 32px}
+    .hero-inner > div:first-child{order:0;min-width:0}
+    .hero-visual{order:1!important;width:100%;max-width:350px;margin:0 auto}
+    .hero-card{padding:10px;transform:none}
+    .hero-card img{height:auto;max-height:280px;aspect-ratio:1.35;object-fit:cover}
+    .hero-price-tag{bottom:-10px;left:0;padding:10px 13px;transform:none}
+    .hero h1{font-size:clamp(29px,7.5vw,38px);line-height:1.13}
+  }
 
 /* Nonstop review slideshow with native horizontal swipe */
 .review-marquee{overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none;scroll-behavior:auto;-webkit-overflow-scrolling:touch;touch-action:pan-x}
@@ -1977,42 +1990,70 @@
 
   // Keep the original three reviews in HTML; append reviews published by admin.
   // Two identical sets enable seamless scrolling, while the viewport remains swipeable.
-  (async function initReviewMarquee(){
+  (function initReviewMarquee(){
     const viewport=document.getElementById('reviewMarquee');
     const track=document.getElementById('reviewTrack');
     const first=document.getElementById('reviewGrid');
     if(!viewport||!track||!first)return;
+
+    // Paint and animate the three existing reviews immediately; do not await Supabase.
+    const mirror=first.cloneNode(true);
+    mirror.removeAttribute('id');
+    mirror.setAttribute('aria-hidden','true');
+    track.appendChild(mirror);
+
     const safe=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-    try{
-      if(supabaseClient){
+    const reduceMotion=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    let touchActive=false,lastFrame=0,virtualScroll=0;
+
+    // A focused/tapped review must not permanently pause the slideshow on iOS.
+    const touchStart=()=>{touchActive=true;virtualScroll=viewport.scrollLeft;};
+    const touchEnd=()=>{touchActive=false;virtualScroll=viewport.scrollLeft;};
+    viewport.addEventListener('touchstart',touchStart,{passive:true});
+    viewport.addEventListener('touchend',touchEnd,{passive:true});
+    viewport.addEventListener('touchcancel',touchEnd,{passive:true});
+    viewport.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse')touchStart();},{passive:true});
+    viewport.addEventListener('pointerup',touchEnd,{passive:true});
+    viewport.addEventListener('pointercancel',touchEnd,{passive:true});
+
+    function advance(now){
+      const delta=lastFrame?Math.min(now-lastFrame,70):0;
+      lastFrame=now;
+      if(!touchActive&&!document.hidden){
+        const cycle=first.getBoundingClientRect().width;
+        if(cycle>0){
+          // Use an accumulated fractional position (Safari can round scrollLeft writes).
+          virtualScroll=viewport.scrollLeft + delta*(reduceMotion?0.015:0.05);
+          if(virtualScroll>=cycle)virtualScroll%=cycle;
+          viewport.scrollLeft=virtualScroll;
+        }
+      }
+      window.requestAnimationFrame(advance);
+    }
+    window.requestAnimationFrame(advance);
+
+    // Load admin reviews independently; a slow network must never delay the marquee.
+    async function loadPublishedReviews(){
+      try{
+        if(!supabaseClient)return;
         const {data,error}=await supabaseClient.from('site_reviews')
           .select('id,reviewer_name,reviewer_location,review_text,rating,verified')
           .eq('is_visible',true).order('created_at',{ascending:true}).limit(100);
         if(error)throw error;
         for(const rev of data||[]){
-          const stars=Array.from({length:Math.max(1,Math.min(5,Number(rev.rating)||5))},()=>'<i data-lucide="star" aria-hidden="true"></i>').join('');
-          first.insertAdjacentHTML('beforeend','<div class="review"><div class="stars" aria-label="'+safe(rev.rating)+' out of 5 stars">'+stars+'</div><p>"'+safe(rev.review_text)+'"</p><div class="review-who"><div class="avatar">'+safe(String(rev.reviewer_name||'?').charAt(0).toUpperCase())+'</div><div><strong>'+safe(rev.reviewer_name)+'</strong><span>'+safe(rev.reviewer_location||'')+'</span>'+(rev.verified?'<div class="verified"><i data-lucide="badge-check" aria-hidden="true"></i>Verified order</div>':'')+'</div></div></div>');
+          const count=Math.max(1,Math.min(5,Number(rev.rating)||5));
+          const stars=Array.from({length:count},()=>'<i data-lucide="star" aria-hidden="true"></i>').join('');
+          first.insertAdjacentHTML('beforeend','<div class="review"><div class="stars" aria-label="'+count+' out of 5 stars">'+stars+'</div><p>"'+safe(rev.review_text)+'"</p><div class="review-who"><div class="avatar">'+safe(String(rev.reviewer_name||'?').charAt(0).toUpperCase())+'</div><div><strong>'+safe(rev.reviewer_name)+'</strong><span>'+safe(rev.reviewer_location||'')+'</span>'+(rev.verified?'<div class="verified"><i data-lucide="badge-check" aria-hidden="true"></i>Verified order</div>':'')+'</div></div></div>');
         }
+        if((data||[]).length){
+          mirror.innerHTML=first.innerHTML;
+          if(window.lucide)lucide.createIcons();
+        }
+      }catch(err){
+        console.info('Showing original customer reviews; optional review feed unavailable.');
       }
-    }catch(e){console.info('Review database not configured; original reviews remain visible.');}
-    if(window.lucide)lucide.createIcons();
-    const mirror=first.cloneNode(true);
-    mirror.removeAttribute('id');mirror.setAttribute('aria-hidden','true');
-    track.appendChild(mirror);
-    if(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return;
-    let pauseUntil=0,hovering=false,last=0;
-    for(const ev of ['pointerdown','touchstart'])viewport.addEventListener(ev,()=>{pauseUntil=performance.now()+2600;},{passive:true});
-    for(const ev of ['pointerup','touchend'])viewport.addEventListener(ev,()=>{pauseUntil=performance.now()+1600;},{passive:true});
-    viewport.addEventListener('mouseenter',()=>{hovering=true;});viewport.addEventListener('mouseleave',()=>{hovering=false;});
-    viewport.addEventListener('focusin',()=>{hovering=true;});viewport.addEventListener('focusout',()=>{hovering=false;});
-    function tick(now){
-      if(last&&!hovering&&now>pauseUntil&&!document.hidden){
-        const width=first.getBoundingClientRect().width;
-        if(width>0){viewport.scrollLeft+=Math.min(80,now-last)*.038;if(viewport.scrollLeft>=width)viewport.scrollLeft-=width;}
-      }
-      last=now;requestAnimationFrame(tick);
     }
-    requestAnimationFrame(tick);
+    loadPublishedReviews();
   })();
 
   // ---------- FAQ accordion ----------
