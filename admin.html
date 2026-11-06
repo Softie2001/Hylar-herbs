@@ -131,6 +131,14 @@ main.wrap{padding-bottom:118px}
   #paymentFilter,#deliveryFilter{flex:1 1 calc(50% - 4px);width:auto}
   #refreshOrders{display:none}
 }
+
+.reviews-admin-list{display:grid;gap:12px}
+.review-admin-row{padding:14px;border:1px solid var(--line);border-radius:12px;background:#FAFCF9}
+.review-admin-row strong{font-size:14px;color:var(--ink)}
+.review-admin-row p{font-size:12px;color:var(--ink);line-height:1.5;margin:8px 0}
+.review-admin-row small{font-size:11px;color:var(--sub)}
+.review-admin-row .actions{margin-top:10px}
+@media(max-width:650px){.tabbar{gap:0}.tab{font-size:10px;padding:7px 1px}.tab svg{width:19px;height:19px}.reviews-admin-list{gap:9px}}
 </style>
 </head>
 <body>
@@ -168,9 +176,28 @@ main.wrap{padding-bottom:118px}
 
 <section id="analyticsView" class="hidden"><div class="view-title"><div><h2>Analytics</h2><small class="muted">Sales generated through the Hylar Herbs website only.</small></div></div><div class="panel"><div class="analytics-controls"><div class="range-buttons"><button class="btn btn-light active" data-range="today">Today</button><button class="btn btn-light" data-range="week">This week</button><button class="btn btn-light" data-range="month">This month</button><button class="btn btn-light" data-range="year">This year</button><button class="btn btn-light" data-range="custom">Custom</button></div><div class="field hidden" id="customFromWrap"><label>From</label><input type="date" id="customFrom"></div><div class="field hidden" id="customToWrap"><label>To</label><input type="date" id="customTo"></div><button class="btn btn-primary hidden" id="applyCustom">Apply</button></div><div class="cards"><div class="stat"><div class="stat-top"><span>Revenue</span><span class="stat-icon"><i data-lucide="banknote"></i></span></div><strong id="anRevenue">₦0</strong><small>Paid orders only</small></div><div class="stat"><div class="stat-top"><span>Orders</span><span class="stat-icon"><i data-lucide="receipt"></i></span></div><strong id="anOrders">0</strong><small>Paid orders</small></div><div class="stat"><div class="stat-top"><span>Units sold</span><span class="stat-icon"><i data-lucide="boxes"></i></span></div><strong id="anUnits">0</strong><small>Total product quantity</small></div><div class="stat"><div class="stat-top"><span>Average order</span><span class="stat-icon"><i data-lucide="calculator"></i></span></div><strong id="anAverage">₦0</strong><small>Revenue ÷ paid orders</small></div></div><div class="panel"><div class="section-head"><h3 id="chartTitle">Sales today</h3></div><div class="chart" id="salesChart"></div></div><div style="height:14px"></div><div class="panel"><div class="section-head"><h3>Product performance</h3><span class="muted" style="font-size:11px">Units sold · revenue</span></div><div id="productAnalytics"></div></div></div></section>
 
+
+<section id="reviewsView" class="hidden" aria-labelledby="reviewsHeading">
+ <div class="view-title"><div><h2 id="reviewsHeading">Customer reviews</h2><small class="muted">Add and manage reviews shown in the moving slideshow. The three original reviews remain on the homepage.</small></div></div>
+ <div class="panel" style="margin-bottom:18px">
+  <div class="section-head"><h3>Add or edit a review</h3></div>
+  <form id="reviewForm"><input type="hidden" id="reviewId">
+   <div class="grid2dash">
+    <div class="field"><label for="reviewName">Customer name</label><input id="reviewName" required maxlength="80" placeholder="e.g. Ada O."></div>
+    <div class="field"><label for="reviewLocation">Location (optional)</label><input id="reviewLocation" maxlength="100" placeholder="e.g. Lagos"></div>
+    <div class="field"><label for="reviewRating">Rating</label><select id="reviewRating"><option value="5">5 stars</option><option value="4">4 stars</option><option value="3">3 stars</option><option value="2">2 stars</option><option value="1">1 star</option></select></div>
+    <div class="field"><label><input id="reviewPublished" type="checkbox" checked> Show on website</label><label><input id="reviewVerified" type="checkbox"> Verified order (check only if confirmed)</label></div>
+    <div class="field" style="grid-column:1/-1"><label for="reviewText">Customer's review</label><textarea id="reviewText" required maxlength="1500" minlength="10" rows="4" placeholder="Enter the customer's actual feedback with permission to publish it."></textarea></div>
+   </div>
+   <div class="actions"><button id="saveReview" type="submit" class="btn btn-green"><i data-lucide="save"></i>Save review</button><button id="clearReview" type="button" class="btn btn-light">Clear</button></div>
+  </form><p class="setting-note" id="reviewsStatus" role="status" aria-live="polite">Reviews will become editable after you run supabase/site-reviews-setup.sql in your Hylar Herbs Supabase project.</p>
+ </div>
+ <div class="panel"><div class="section-head"><h3>Reviews added by admin</h3><button id="refreshReviews" class="btn btn-light" type="button"><i data-lucide="refresh-cw"></i>Refresh</button></div><div id="reviewsRows" class="reviews-admin-list"><div class="muted">Open Reviews to load entries.</div></div><p class="setting-note">The original three homepage reviews are preserved separately. New reviews appear alongside them once published.</p></div>
+</section>
+
 <section id="settingsView" class="hidden"><div class="view-title"><div><h2>Store Settings</h2><small class="muted">Payment details customers see at checkout.</small></div></div><div class="panel"><form id="settingsForm"><div class="grid2dash"><div class="field"><label>Bank name</label><input id="bankName" placeholder="e.g. Moniepoint"></div><div class="field"><label>Account name</label><input id="accountName" placeholder="Account name"></div><div class="field"><label>Account number</label><input id="accountNumber" inputmode="numeric" placeholder="Account number"></div></div><p class="setting-note">These details are shown to customers during checkout. Never put secret keys or passwords here.</p><div style="margin-top:16px"><button class="btn btn-green" type="submit"><i data-lucide="save"></i>Save payment details</button></div></form></div><div class="panel" style="margin-top:18px"><div class="section-head"><h3>Homepage banners & scheduled promotions</h3></div><p class="setting-note">Upload a flyer or anniversary image. Set Nigeria start/end times. Active promotions temporarily replace the original three-bottle image; it returns automatically after the end time. Sales display a small countdown on the image.</p><form id="campaignForm"><div class="grid2dash"><div class="field"><label>Campaign name</label><input id="campaignName" required maxlength="100" placeholder="e.g. November sales"></div><div class="field"><label>Banner type</label><select id="campaignKind"><option value="sale">Sale (show countdown)</option><option value="occasion">Anniversary / general (no countdown)</option></select></div><div class="field"><label>Starts (Nigeria time)</label><input id="campaignStart" type="datetime-local" required></div><div class="field"><label>Ends (Nigeria time)</label><input id="campaignEnd" type="datetime-local" required></div><div class="field"><label>Upload flyer / image</label><input id="campaignImage" type="file" accept="image/jpeg,image/png,image/webp" required><small class="setting-note">JPEG, PNG or WebP, maximum 5 MB.</small></div></div><button type="submit" class="btn btn-green" id="campaignSave">Schedule banner</button></form><div id="campaignStatus" class="setting-note" role="status"></div><div id="campaignList" style="margin-top:14px"></div></div></section>
 </main>
-<nav class="tabbar" aria-label="Main"><button class="tab active" data-view="dashboard"><i data-lucide="layout-dashboard"></i><span>Home</span></button><button class="tab" data-view="products"><i data-lucide="package"></i><span>Products</span></button><button class="tab" data-view="orders"><i data-lucide="shopping-bag"></i><span>Orders</span></button><button class="tab" data-view="analytics"><i data-lucide="trending-up"></i><span>Analytics</span></button><button class="tab" data-view="settings"><i data-lucide="settings"></i><span>Settings</span></button></nav>
+<nav class="tabbar" aria-label="Main"><button class="tab active" data-view="dashboard"><i data-lucide="layout-dashboard"></i><span>Home</span></button><button class="tab" data-view="products"><i data-lucide="package"></i><span>Products</span></button><button class="tab" data-view="orders"><i data-lucide="shopping-bag"></i><span>Orders</span></button><button class="tab" data-view="analytics"><i data-lucide="trending-up"></i><span>Analytics</span></button><button class="tab" data-view="reviews"><i data-lucide="star"></i><span>Reviews</span></button><button class="tab" data-view="settings"><i data-lucide="settings"></i><span>Settings</span></button></nav>
 </div>
 
 <div id="productModal" class="modal hidden"><div class="modal-card"><div class="modal-head"><h2 id="productModalTitle">Add product</h2><button id="closeProductModal" type="button">×</button></div><form id="productForm"><input id="pid" type="hidden"><div class="grid2dash"><div class="field"><label>Product name</label><input id="pname" required></div><div class="field"><label>Category</label><select id="pcat"><option value="feminine">Feminine Wellness</option><option value="ttc">Fertility &amp; TTC</option><option value="infection">Infection Care</option><option value="men">Men's Vitality</option><option value="body">Body &amp; Weight</option></select></div><div class="field"><label>Regular price (₦)</label><input id="regular" type="number" min="0" step="0.01" required></div><div class="field"><label>Sale price (₦)</label><input id="sale" type="number" min="0" step="0.01"></div><div class="field"><label>Tag</label><select id="tag"><option value="">None</option><option value="Kit">Kit</option></select></div><div class="field"><label>Sort order</label><input id="sort" type="number" min="0" value="999"></div><div class="field"><label for="stockQty">Available quantity</label><input id="stockQty" type="number" inputmode="numeric" min="0" step="1" placeholder="Enter quantity when counted"><small class="muted">Leave blank to keep an uncounted product available. Enter the real number of units to enable stock limits; 0 means sold out.</small></div><div class="field"><label><input id="stock" type="checkbox" checked> In stock</label><label><input id="visible" type="checkbox" checked> Visible on shop</label><label><input id="best" type="checkbox"> Best seller</label></div><div class="field"><label>Product image</label><input id="image" type="file" accept="image/*"><div id="previewWrap"></div></div><div class="field full"><label>Description</label><textarea id="desc" placeholder="Describe the size, contents, ingredients (if verified), and label directions or precautions. Avoid unverified cure claims."></textarea><small class="muted">This text appears on the product page and helps search engines and customers understand the product. Keep it accurate, specific and medically responsible.</small></div></div><div style="display:flex;justify-content:flex-end;gap:8px"><button class="btn btn-light" type="button" id="cancelProduct">Cancel</button><button class="btn btn-green" type="submit">Save product</button></div></form></div></div>
@@ -212,7 +239,7 @@ document.querySelectorAll('[data-goto]').forEach(b=>b.onclick=()=>setView(b.data
 
 function setView(view){
   currentView=view;
-  ['dashboard','orders','products','analytics','settings'].forEach(v=>$(v+'View').classList.toggle('hidden',v!==view));
+  ['dashboard','orders','products','analytics','settings','reviews'].forEach(v=>$(v+'View').classList.toggle('hidden',v!==view));
   document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.view===view));
   window.scrollTo(0,0);
   msg('');
@@ -220,6 +247,7 @@ function setView(view){
   if(view==='orders')loadOrders();
   if(view==='products')loadProducts();
   if(view==='analytics')loadAnalytics();
+  if(view==='reviews')loadReviews();
   if(view==='settings'){loadSettings();loadCampaigns();}
 }
 
@@ -691,6 +719,78 @@ $('campaignForm').addEventListener('submit',async e=>{
  const {error}=await sb.from('hero_campaigns').insert({name:$('campaignName').value.trim(),kind:$('campaignKind').value,starts_at:start,ends_at:end,image_url:url,enabled:true});if(error)throw error;
  status.textContent='Banner scheduled successfully.';$('campaignForm').reset();loadCampaigns();
  }catch(err){status.textContent='Could not schedule banner: '+err.message}finally{btn.disabled=false}
+});
+
+
+/* =========================
+   ADMIN-MANAGED REVIEWS
+========================= */
+let adminReviews=[];
+const setReviewStatus=(message,error=false)=>{
+ const el=$('reviewsStatus');el.textContent=message;el.style.color=error?'#9B1C1C':'var(--sub)';
+};
+async function loadReviews(){
+ setReviewStatus('Loading reviews…');
+ const {data,error}=await sb.from('site_reviews').select('id,reviewer_name,reviewer_location,review_text,rating,verified,is_visible,created_at').order('created_at',{ascending:false}).limit(200);
+ if(error){
+  $('reviewsRows').innerHTML='<p class="muted">Reviews are not available yet.</p>';
+  setReviewStatus('Run the one-time supabase/site-reviews-setup.sql in Hylar Herbs Supabase first. '+error.message,true);
+  return;
+ }
+ adminReviews=data||[];
+ $('reviewsRows').innerHTML=adminReviews.length?adminReviews.map(rev=>
+  '<article class="review-admin-row"><strong>'+esc(rev.reviewer_name)+'</strong> <small>'+esc(rev.reviewer_location||'')+' · '+Number(rev.rating)+' / 5 stars · '+(rev.is_visible?'Published':'Hidden')+(rev.verified?' · Verified':'')+'</small><p>'+esc(rev.review_text)+'</p><div class="actions"><button type="button" class="btn btn-light" data-review-action="edit" data-id="'+esc(rev.id)+'">Edit</button><button type="button" class="btn btn-light" data-review-action="toggle" data-id="'+esc(rev.id)+'">'+(rev.is_visible?'Hide':'Show')+'</button><button type="button" class="btn btn-danger" data-review-action="delete" data-id="'+esc(rev.id)+'">Delete</button></div></article>'
+ ).join(''):'<p class="muted">No admin-added reviews yet. The original three homepage reviews remain visible.</p>';
+ setReviewStatus('Reviews loaded. Only published entries are displayed on the homepage.');
+}
+function resetReviewForm(){
+ $('reviewForm').reset();$('reviewId').value='';$('reviewRating').value='5';$('reviewPublished').checked=true;
+ $('saveReview').innerHTML='<i data-lucide="save"></i>Save review';icons();
+}
+$('clearReview').addEventListener('click',resetReviewForm);
+$('refreshReviews').addEventListener('click',loadReviews);
+$('reviewForm').addEventListener('submit',async event=>{
+ event.preventDefault();
+ const btn=$('saveReview');
+ const entry={
+  reviewer_name:$('reviewName').value.trim(),
+  reviewer_location:$('reviewLocation').value.trim(),
+  review_text:$('reviewText').value.trim(),
+  rating:Number($('reviewRating').value),
+  is_visible:$('reviewPublished').checked,
+  verified:$('reviewVerified').checked
+ };
+ if(entry.reviewer_name.length<1||entry.review_text.length<10){setReviewStatus('Enter a name and an actual customer review of at least 10 characters.',true);return;}
+ btn.disabled=true;
+ try{
+  const id=$('reviewId').value;
+  const result=id?await sb.from('site_reviews').update(entry).eq('id',id):await sb.from('site_reviews').insert(entry);
+  if(result.error)throw result.error;
+  resetReviewForm();await loadReviews();setReviewStatus('Review saved. Published reviews appear in the homepage slideshow.');
+ }catch(err){setReviewStatus('Could not save review: '+err.message,true)}
+ finally{btn.disabled=false}
+});
+$('reviewsRows').addEventListener('click',async event=>{
+ const btn=event.target.closest('[data-review-action]');
+ if(!btn)return;
+ const review=adminReviews.find(x=>String(x.id)===btn.dataset.id);
+ if(!review)return;
+ const action=btn.dataset.reviewAction;
+ if(action==='edit'){
+  $('reviewId').value=review.id;$('reviewName').value=review.reviewer_name;
+  $('reviewLocation').value=review.reviewer_location||'';$('reviewText').value=review.review_text;
+  $('reviewRating').value=String(review.rating);$('reviewPublished').checked=!!review.is_visible;$('reviewVerified').checked=!!review.verified;
+  $('saveReview').innerHTML='<i data-lucide="save"></i>Update review';icons();
+  $('reviewForm').scrollIntoView({behavior:'smooth',block:'start'});return;
+ }
+ if(action==='delete'&&!confirm('Permanently delete this admin-added review?'))return;
+ btn.disabled=true;
+ try{
+  const response=action==='delete'?await sb.from('site_reviews').delete().eq('id',review.id):
+    await sb.from('site_reviews').update({is_visible:!review.is_visible}).eq('id',review.id);
+  if(response.error)throw response.error;
+  await loadReviews();
+ }catch(err){setReviewStatus('Could not update review: '+err.message,true);btn.disabled=false}
 });
 
 /* =========================
