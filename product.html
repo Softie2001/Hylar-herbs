@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en-NG">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Product Details | Hylar Herbs &amp; Body Wellness</title>
+<meta name="description" content="View Hylar Herbs product information, current price and stock availability before ordering in Nigeria.">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<meta name="theme-color" content="#0A3D18">
+<link rel="icon" href="/favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:site_name" content="Hylar Herbs & Body Wellness">
+<meta property="og:type" content="product">
+<meta property="og:title" content="Hylar Herbs Product Details">
+<meta property="og:description" content="View product details and current availability at Hylar Herbs & Body Wellness.">
+<meta property="og:image" content="https://hylarherbs.com.ng/hylar-herbs-logo.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--green:#0A3D18;--light:#f4f7f1;--accent:#FF6B35;--ink:#162318;--muted:#58665b;--line:#e0e9dd}
+*{box-sizing:border-box}body{margin:0;background:var(--light);color:var(--ink);font:15px/1.7 Manrope,system-ui,sans-serif}
+a{color:var(--green);text-decoration:none}a:hover{text-decoration:underline}h1,h2{font-family:Sora,system-ui,sans-serif;line-height:1.25}
+.container{width:min(1100px,92%);margin:auto}.site-head{background:white;border-bottom:1px solid var(--line)}.head-inner{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:13px 0;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-family:Sora,sans-serif}.brand img{width:42px;height:42px;object-fit:cover;border-radius:9px}
+.head-links{display:flex;gap:20px;flex-wrap:wrap;font-size:13px;font-weight:700}.breadcrumbs{padding:26px 0 14px;font-size:13px;color:var(--muted)}.breadcrumbs a{font-weight:600}
+.product-wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.08fr);gap:36px;background:#fff;border:1px solid var(--line);border-radius:20px;padding:30px;margin-bottom:26px;box-shadow:0 10px 40px rgba(10,61,24,.045)}
+.visual{background:#f2f7ef;border-radius:15px;min-height:370px;display:grid;place-items:center;overflow:hidden}
+.visual img{width:100%;height:100%;max-height:520px;object-fit:contain;display:block}
+.eyebrow{font-size:12px;letter-spacing:.09em;text-transform:uppercase;font-weight:800;color:#2f713e}
+h1{font-size:clamp(27px,4vw,42px);margin:10px 0 16px}.desc{white-space:pre-line;color:#435548}.price{font-size:29px;font-weight:800;color:var(--green);margin:22px 0 7px}.stock{font-weight:800;color:#217539;margin-bottom:20px}.stock.soldout{color:#b42336}
+.cta{display:inline-flex;align-items:center;justify-content:center;border-radius:100px;background:var(--accent);color:#14140f;padding:12px 25px;font-weight:800;min-height:50px}.cta:hover{color:#14140f}
+.muted{color:var(--muted)}.small{font-size:13px}.note{margin-top:22px;padding:16px;border:1px solid #dce8db;background:#f8fbf6;border-radius:12px}.note h2{font-size:17px;margin:0 0 5px}.note p{margin:0}
+.more{background:#fff;border:1px solid var(--line);border-radius:15px;padding:24px;margin-bottom:32px}.more h2{font-size:19px}.more ul{padding-left:20px}.more li{margin-bottom:8px}
+footer{padding:26px 0 40px;text-align:center;color:var(--muted);font-size:13px}
+#status{padding:30px 0;color:var(--muted)}[hidden]{display:none!important}
+@media(max-width:740px){.product-wrap{grid-template-columns:1fr;padding:16px;gap:18px}.visual{min-height:260px}.head-links{gap:10px}.container{width:min(100% - 28px,1100px)}h1{font-size:30px}}
+</style>
+</head>
+<body>
+<header class="site-head"><div class="container head-inner">
+  <a class="brand" href="/"><img src="/hylar-herbs-logo.jpg" alt="Hylar Herbs logo"><span>Hylar Herbs &amp; Body Wellness</span></a>
+  <nav class="head-links" aria-label="Main navigation"><a href="/#shop">All Products</a><a href="/about.html">About</a><a href="/herbal-wellness-guide.html">Safety Guide</a></nav>
+</div></header>
+<main class="container">
+<nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/#shop">Products</a> / <span id="crumbName">Product details</span></nav>
+<div id="status" role="status" aria-live="polite">Loading current product details…</div>
+<article class="product-wrap" id="productArticle" hidden>
+  <div class="visual" id="visual"><img id="productImage" alt="" loading="eager" hidden><span id="noImage">Product photograph not available</span></div>
+  <div class="product-information">
+    <p class="eyebrow" id="category">Herbal wellness products</p>
+    <h1 id="productName">Product</h1>
+    <p class="desc" id="description"></p>
+    <div class="price" id="price"></div>
+    <p class="stock" id="stock" aria-live="polite"></p>
+    <a id="shopLink" class="cta" href="/#shop">View in shop &amp; add to order</a>
+    <p class="muted small">Prices are in Nigerian naira. Delivery fees are arranged separately and vary by location.</p>
+    <div class="note"><h2>Before you order</h2><p>Check the product label, ingredients, directions, warnings and suitability. Natural products can have side effects or interact with medicines. If you have a medical concern, speak with a qualified healthcare professional.</p></div>
+  </div>
+</article>
+<section class="more" aria-labelledby="moreTitle">
+  <h2 id="moreTitle">More about Hylar Herbs</h2>
+  <ul>
+   <li><a href="/about.html">About the brand, founder and locations in Nigeria</a></li>
+   <li><a href="/herbal-wellness-guide.html">How to choose herbal wellness products more safely</a></li>
+   <li><a href="/#shop">Browse all products and kit bundles</a></li>
+   <li><a href="https://wa.me/2349090416306" target="_blank" rel="noopener noreferrer">Ask about this product on WhatsApp</a></li>
+  </ul>
+</section>
+</main>
+<footer class="container">Hylar Herbs &amp; Body Wellness · Lagos and Ede, Osun State · <a href="tel:+2348116695637">08116695637</a></footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(function(){
+  'use strict';
+  const baseUrl = 'https://hylarherbs.com.ng/';
+  const id = new URLSearchParams(location.search).get('id');
+  const $ = (name) => document.getElementById(name);
+  const status = $('status');
+  const setMeta = (property,value,kind='name') => {
+    let tag = document.querySelector('meta['+kind+'="'+property+'"]');
+    if (!tag){tag=document.createElement('meta');tag.setAttribute(kind,property);document.head.appendChild(tag);}
+    tag.setAttribute('content',value);
+  };
+  const cleanText = (v) => String(v??'').replace(/\s+/g,' ').trim();
+  const productUrl = () => baseUrl+'product.html?id='+encodeURIComponent(id);
+  const absoluteImage = (value) => {
+    const src=cleanText(value);
+    if (!src || /^(data:|javascript:)/i.test(src)) return null;
+    try {
+      if(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.(?:jpe?g|png|webp)$/i.test(src)){
+        return 'https://wstpvrhjhscctekwbkcs.supabase.co/storage/v1/object/public/product-images/'+encodeURIComponent(src);
+      }
+      const url=new URL(src,baseUrl);
+      if(!['https:','http:'].includes(url.protocol)) return null;
+      return url.href;
+    }catch{return null;}
+  };
+  function renderProduct(p){
+    const name=cleanText(p.name), description=cleanText(p.description), category=cleanText(p.category).replace(/\s+/g,', ');
+    const regular=Number(p.regular_price), sale=p.sale_price==null?null:Number(p.sale_price);
+    const price=Number.isFinite(sale)&&sale>0&&sale<regular?sale:regular;
+    const stock=p.stock_quantity==null?null:Number(p.stock_quantity);
+    const available=p.in_stock!==false&&(stock===null||stock>0);
+    const imageUrl=absoluteImage(p.image_url);
+    $('productName').textContent=name;
+    $('crumbName').textContent=name;
+    $('category').textContent=category||'Herbal wellness products';
+    $('description').textContent=description||'Contact Hylar Herbs for ingredients, sizes and product-specific directions before ordering.';
+    $('price').textContent=Number.isFinite(price)&&price>0 ? '₦'+price.toLocaleString('en-NG') : 'Contact for price';
+    $('stock').textContent=!available?'Out of stock':stock===null?'Contact us for current quantity':stock<=5?'Only '+stock+' left in stock':'Available to order';
+    $('stock').classList.toggle('soldout',!available);
+    $('shopLink').href='/?product='+encodeURIComponent(id)+'#shop';
+    $('shopLink').textContent=available?'View in shop & add to order':'Browse other available products';
+    if(!available){$('shopLink').href='/#shop';}
+    if(imageUrl){$('productImage').src=imageUrl;$('productImage').alt=name+' — Hylar Herbs & Body Wellness';$('productImage').hidden=false;$('noImage').hidden=true;}
+    const title=name+' | Hylar Herbs & Body Wellness Nigeria';
+    const summary=(description && !description.endsWith('— Hylar Herbs & Body Wellness.')?description : 'Explore '+name+' at Hylar Herbs & Body Wellness. Check current stock, price and product information before ordering in Nigeria.').slice(0,160);
+    document.title=title;
+    setMeta('description',summary);
+    setMeta('og:title',title,'property');setMeta('og:description',summary,'property');
+    setMeta('og:url',productUrl(),'property');
+    if(imageUrl)setMeta('og:image',imageUrl,'property');
+    const canonical=document.createElement('link');canonical.rel='canonical';canonical.href=productUrl();document.head.appendChild(canonical);
+    const structured={
+      '@context':'https://schema.org',
+      '@graph':[
+        {'@type':'WebPage','@id':productUrl()+'#webpage',url:productUrl(),name:title,description:summary,isPartOf:{'@id':baseUrl+'#website'},inLanguage:'en-NG'},
+        {'@type':'Product','@id':productUrl()+'#product',name,sku:String(p.id),description:summary,brand:{'@type':'Brand',name:'Hylar Herbs & Body Wellness'},mainEntityOfPage:productUrl(),...(imageUrl?{image:imageUrl}:{}) ,
+        ...(Number.isFinite(price)&&price>0?{offers:{'@type':'Offer',url:productUrl(),priceCurrency:'NGN',price:price.toFixed(2),availability:available?'https://schema.org/InStock':'https://schema.org/OutOfStock',itemCondition:'https://schema.org/NewCondition',seller:{'@id':baseUrl+'#organization'}}}:{})},
+        {'@type':'BreadcrumbList',itemListElement:[
+          {'@type':'ListItem',position:1,name:'Home',item:baseUrl},
+          {'@type':'ListItem',position:2,name:'Products',item:baseUrl+'#shop'},
+          {'@type':'ListItem',position:3,name,item:productUrl()}
+        ]}
+      ]
+    };
+    const node=document.createElement('script');node.type='application/ld+json';node.textContent=JSON.stringify(structured).replace(/</g,'\\u003c');document.head.appendChild(node);
+    status.hidden=true;$('productArticle').hidden=false;
+  }
+  async function load(){
+    if(!id||!(/^[A-Za-z0-9_-]{1,100}$/.test(id))){status.textContent='No product was selected. Browse all products in the shop.';setMeta('robots','noindex,follow');return;}
+    try {
+      if(!window.supabase) throw new Error('Product service unavailable');
+      const client=window.supabase.createClient('https://wstpvrhjhscctekwbkcs.supabase.co','sb_publishable_XHxPBPuaGr1uMRZ8LwC8qw_Odhi8hMP');
+      const {data,error}=await client.from('products')
+        .select('id,name,description,category,image_url,regular_price,sale_price,in_stock,stock_quantity,visible')
+        .eq('id',id).eq('visible',true).maybeSingle();
+      if(error) throw error;
+      if(!data){status.textContent='This product is not available. Browse the current catalogue instead.';setMeta('robots','noindex,follow');return;}
+      renderProduct(data);
+    }catch(err){console.warn('Could not load product details',err);status.textContent='Product details are temporarily unavailable. Please visit the main shop or try again.';}
+  }
+  load();
+})();
+</script>
+</body>
+</html>

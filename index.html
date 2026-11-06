@@ -4,26 +4,57 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Hylar Herbs & Body Wellness | Natural & Herbal Wellness Brand in Nigeria</title>
+  <title>Hylar Herbs & Body Wellness | Herbal Products in Nigeria</title>
 
   <link rel="icon" type="image/png" href="/favicon.png?v=3">
   <link rel="shortcut icon" type="image/png" href="/favicon.png?v=3">
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 
-  <meta name="description" content="Hylar Herbs & Body Wellness is a Nigerian wellness brand offering natural and herbal wellness products for everyday wellbeing. Serving customers in Ede, Osun State, Lagos and beyond.">
+  <meta name="description" content="Shop Hylar Herbs & Body Wellness herbal products and kits in Nigeria. Browse prices, check availability and order online with delivery from Lagos and Ede, Osun State.">
 
   <link rel="canonical" href="https://hylarherbs.com.ng/">
+  <meta name="robots" content="index,follow,max-image-preview:large">
+  <meta name="theme-color" content="#0A3D18">
 
+  <script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://hylarherbs.com.ng/#website",
+      "url": "https://hylarherbs.com.ng/",
+      "name": "Hylar Herbs & Body Wellness",
+      "inLanguage": "en-NG",
+      "publisher": {
+        "@id": "https://hylarherbs.com.ng/#organization"
+      }
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://hylarherbs.com.ng/#webpage",
+      "url": "https://hylarherbs.com.ng/",
+      "name": "Hylar Herbs & Body Wellness | Herbal Products in Nigeria",
+      "description": "Shop Hylar Herbs herbal wellness products in Nigeria. Browse the catalogue, current prices and availability, and learn how to order.",
+      "isPartOf": {
+        "@id": "https://hylarherbs.com.ng/#website"
+      },
+      "about": {
+        "@id": "https://hylarherbs.com.ng/#organization"
+      },
+      "inLanguage": "en-NG"
+    }
+  ]
+}</script>
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Hylar Herbs & Body Wellness | Natural & Herbal Wellness Brand in Nigeria">
-  <meta property="og:description" content="Hylar Herbs & Body Wellness is a Nigerian wellness brand offering natural and herbal wellness products for everyday wellbeing. Serving customers in Ede, Osun State, Lagos and beyond.">
+  <meta property="og:title" content="Hylar Herbs & Body Wellness | Herbal Products in Nigeria">
+  <meta property="og:description" content="Shop Hylar Herbs & Body Wellness herbal products and kits in Nigeria. Browse prices, check availability and order online with delivery from Lagos and Ede, Osun State.">
   <meta property="og:url" content="https://hylarherbs.com.ng/">
   <meta property="og:image" content="https://hylarherbs.com.ng/hylar-herbs-logo.jpg">
   <meta property="og:image:alt" content="Hylar Herbs & Body Wellness logo">
   <meta property="og:site_name" content="Hylar Herbs & Body Wellness">
 
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="Hylar Herbs & Body Wellness | Natural & Herbal Wellness Brand in Nigeria">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Hylar Herbs & Body Wellness | Herbal Products in Nigeria">
   <meta name="twitter:description" content="Hylar Herbs & Body Wellness is a Nigerian wellness brand offering natural and herbal wellness products for everyday wellbeing.">
   <meta name="twitter:image" content="https://hylarherbs.com.ng/hylar-herbs-logo.jpg">
 
@@ -32,6 +63,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
+  .seo-about-links{font-size:13.5px;color:#0A3D18;margin:14px 0;line-height:1.8}
+  .seo-about-links a{text-decoration:underline;text-underline-offset:2px}
+  .card-product-link{display:inline-block;text-decoration:none;color:inherit}
+  .card-product-link:hover,.card-product-link:focus-visible{text-decoration:underline;text-underline-offset:2px}
+  .product-learn-link{font-size:12px;color:#0F5C24;text-decoration:underline;text-underline-offset:2px;font-weight:700;display:inline-block;margin-top:8px}
   :root{
     --brand:#1E8E3E;
     --brand-dark:#0F5C24;
@@ -111,6 +147,8 @@
     background:var(--chip); border-radius:10px; font-size:18px; transition:background .2s ease;
   }
   .nav-order-icon:hover{background:var(--brand); color:#fff;}
+  .nav-whatsapp-top{color:var(--brand);}
+  .nav-whatsapp-top:hover{background:var(--brand); color:#fff;}
   .nav-order-badge{
     position:absolute; top:-6px; right:-6px; background:var(--accent); color:#fff; font-size:10.5px;
     font-weight:800; min-width:19px; height:19px; border-radius:50%; display:flex; align-items:center;
@@ -213,28 +251,29 @@
   .see-all:hover{color:var(--brand-dark);}
 
   /* ---------- CATEGORY TILES ---------- */
-  .cat-tiles{display:grid; grid-template-columns:repeat(5,1fr); gap:16px;}
+  .cat-tiles{display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:14px;}
   .cat-tile{
-    background:var(--surface); border:1.5px solid var(--line); border-radius:var(--radius); padding:20px 16px;
+    background:transparent; border:1.5px solid #DCE5D7; border-radius:14px; padding:16px 12px;
     text-align:center; transition:all .2s ease; cursor:pointer;
   }
-  .cat-tile:hover, .cat-tile.active{border-color:var(--brand); background:var(--chip); transform:translateY(-3px); box-shadow:var(--shadow-sm);}
+  .cat-tile:hover, .cat-tile.active{border-color:var(--brand); background:rgba(238,243,234,0.9); transform:translateY(-2px); box-shadow:var(--shadow-sm);}
   .cat-tile .emoji{width:48px; height:48px; margin:0 auto 10px; border-radius:12px; background:var(--chip); color:var(--brand); display:flex; align-items:center; justify-content:center;} .cat-tile .emoji svg{width:26px; height:26px;}
   .cat-tile strong{display:block; font-size:13px; font-weight:800; color:var(--ink);}
   .cat-tile span{font-size:11px; color:var(--sub);}
 
   /* ---------- FILTER BAR ---------- */
   .filter-bar{
-    display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:24px; padding-bottom:20px;
-    border-bottom:1px solid var(--line);
+    display:flex; gap:10px; flex-wrap:nowrap; align-items:center; margin-bottom:24px; padding-bottom:14px;
+    border-bottom:1px solid var(--line); overflow-x:auto; scrollbar-width:none; -webkit-overflow-scrolling:touch;
   }
+  .filter-bar::-webkit-scrollbar{display:none;}
   .filter-btn{
-    padding:9px 16px; border-radius:8px; border:1.5px solid var(--line); background:var(--surface);
-    font-weight:700; font-size:13px; color:var(--ink); transition:all 0.2s ease;
+    padding:9px 16px; border-radius:999px; border:1.5px solid var(--line); background:var(--surface);
+    font-weight:700; font-size:13px; color:var(--ink); transition:all 0.2s ease; white-space:nowrap; flex:0 0 auto;
   }
   .filter-btn:hover{border-color:var(--brand);}
   .filter-btn.active{background:var(--brand); border-color:var(--brand); color:#fff;}
-  .result-count{margin-left:auto; font-size:12.5px; color:var(--sub); font-weight:600;}
+  .result-count{margin-left:4px; font-size:12.5px; color:var(--sub); font-weight:700; white-space:nowrap; flex:0 0 auto;}
 
   /* ---------- PRODUCT GRID ---------- */
   .grid{display:grid; grid-template-columns:repeat(4, 1fr); gap:18px;}
@@ -381,9 +420,10 @@
   footer ul a{font-size:13px; transition:color 0.2s ease;}
   footer ul a:hover{color:#fff;}
   .footer-bottom{border-top:1px solid rgba(255,255,255,0.12); padding-top:20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; font-size:12px;}
-  .social-row{display:flex; gap:9px;}
-  .social-row a{width:33px; height:33px; border-radius:8px; border:1px solid rgba(255,255,255,0.25); display:flex; align-items:center; justify-content:center; font-size:13px; transition:all 0.2s ease;}
-  .social-row a:hover{background:var(--accent); border-color:var(--accent);}
+  .footer-contact{display:flex; flex-direction:column; gap:14px;}
+  .footer-contact-icons,.social-row{display:flex; gap:9px; flex-wrap:wrap;}
+  .footer-contact-icons a,.social-row a{width:40px; height:40px; border-radius:999px; border:1px solid rgba(255,255,255,0.25); display:flex; align-items:center; justify-content:center; font-size:13px; transition:all 0.2s ease; color:#fff;}
+  .footer-contact-icons a:hover,.social-row a:hover{background:var(--accent); border-color:var(--accent); transform:translateY(-1px);}
 
   /* ---------- ORDER TRAY (cart-style) ---------- */
   .order-tray{
@@ -403,6 +443,10 @@
   .tray-count{background:var(--accent); font-size:11px; font-weight:800; padding:2px 8px; border-radius:100px;}
   .tray-body{max-height:320px; overflow-y:auto; padding:10px 18px;}
   .tray-empty{padding:24px 0; text-align:center; color:var(--sub); font-size:13px;}
+  .tray-stock-notice{padding:9px 15px; font-size:12px; font-weight:650; color:#7f260b; background:#fff0e2; border-top:1px solid #f6d3ba;}
+  .qty-btn:disabled{opacity:.35;cursor:not-allowed;}
+  .ti-remaining{font-size:11px;color:var(--sub);}
+  .card-stock{display:block; font-size:11px; font-weight:750; color:#a55318; padding-top:4px;}
   .tray-item{display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--line);}
   .tray-item img{width:44px; height:44px; border-radius:8px; object-fit:cover; flex-shrink:0;}
   .tray-item .ti-name{font-size:12.5px; font-weight:700; flex:1; line-height:1.3;}
@@ -444,14 +488,7 @@
   .payment-success{display:none;margin:18px auto;padding:14px 16px;border-radius:10px;background:#e8f7ec;color:#145c27;border:1px solid #bfe6c8;max-width:720px;font-size:13px;font-weight:700;} .payment-success.show{display:block;}
   .co-foot{padding:4px 20px 20px;}
 
-  .wa-float{
-    position:fixed; bottom:24px; left:24px; z-index:200; background:var(--brand); color:#fff;
-    width:56px; height:56px; border-radius:50%; display:flex; align-items:center; justify-content:center;
-    font-size:25px; box-shadow:0 12px 28px rgba(30,142,62,0.5); transition:transform 0.2s ease;
-  }
-  .wa-float:hover{transform:scale(1.08);}
-  .wa-float svg{width:24px;height:24px;}
-  .btn svg,.nav-cta svg,.nav-order-icon svg,.tray-head svg,.contact-method .ic svg,.verified svg,.faq-q .icon svg{width:17px;height:17px;flex-shrink:0;}
+  .btn svg,.nav-cta svg,.nav-order-icon svg,.tray-head svg,.contact-method .ic svg,.verified svg,.faq-q .icon svg,.footer-contact-icons svg,.social-row svg{width:17px;height:17px;flex-shrink:0;}
   .hero-badge-row svg{width:14px;height:14px;vertical-align:middle;}
   .stars{display:flex;gap:2px;color:var(--accent);}
   .stars svg{width:15px;height:15px;fill:currentColor;}
@@ -544,6 +581,8 @@
     .review-grid{grid-template-columns:1fr;}
     .contact-inner{grid-template-columns:1fr;}
     .footer-grid{grid-template-columns:1fr 1fr;}
+    .footer-grid > :first-child{grid-column:1 / -1;}
+    .footer-contact{grid-column:1 / -1;}
     .section{padding:40px 0;}
     .order-tray{right:0; margin-right:12px; width:calc(100vw - 24px);}
     .utility-links{display:none;}
@@ -552,6 +591,9 @@
   }
   @media (max-width:480px){
     .grid{grid-template-columns:repeat(2,1fr); gap:12px;}
+    .hero-actions{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+    .hero-actions .btn{width:100%; justify-content:center; padding:13px 12px; font-size:12.5px;}
+    .cat-tile{padding:14px 10px;}
     .card-foot{gap:7px;}
     .add-btn.disabled{
       font-size:10px;
@@ -576,7 +618,9 @@
       overflow:visible;
     }
     .cat-tiles{grid-template-columns:repeat(2,1fr);}
-    .footer-grid{grid-template-columns:1fr;}
+    .footer-grid{grid-template-columns:1fr 1fr; gap:24px 18px;}
+    .footer-grid > :first-child{grid-column:1 / -1;}
+    .footer-contact{grid-column:1 / -1;}
     .card-body h3{min-height:auto;}
   }
   
@@ -743,6 +787,10 @@
       <input type="text" id="searchInput" placeholder="Search products — e.g. detox, fertility, infection...">
     </div>
 
+    <a href="https://wa.me/2349090416306" class="nav-order-icon nav-whatsapp-top" target="_blank" rel="noopener noreferrer" aria-label="Chat on WhatsApp">
+      <i data-lucide="message-circle" aria-hidden="true"></i>
+    </a>
+
     <button class="mobile-search-btn" id="mobileSearchBtn" type="button" aria-label="Search products" aria-expanded="false">
       <i data-lucide="search" aria-hidden="true"></i>
     </button>
@@ -789,12 +837,7 @@
 <header class="hero" id="top">
   <div class="hero-inner">
     <div>
-      <div class="hero-badge-row">
-        <span><i data-lucide="leaf" aria-hidden="true"></i>100% Natural</span>
-        <span><i data-lucide="package-check" aria-hidden="true"></i>Prepared to Order</span>
-        <span><i data-lucide="truck" aria-hidden="true"></i>Nationwide Delivery</span>
-      </div>
-      <h1>Natural herbal remedies, <span>shopped the easy way.</span></h1>
+      <h1>Explore herbal wellness products in Nigeria, <span>shopped the easy way.</span></h1>
       
       <div class="hero-actions">
         <a href="#shop" class="btn btn-accent"><i data-lucide="shopping-bag" aria-hidden="true"></i>Shop All Products</a>
@@ -843,7 +886,7 @@
 <section class="section" id="shop">
   <div class="wrap">
     <div class="section-head">
-      <div><span class="eyebrow">Full Catalog</span><h2>All Products</h2><p>Prices shown in Naira. Add products to your order tray, then checkout and pay by bank transfer.</p></div>
+      <div><span class="eyebrow">Full Catalog</span><h2>All Products</h2></div>
     </div>
 
     <div class="filter-bar" id="filterRow">
@@ -862,7 +905,7 @@
       <div>
         <span class="eyebrow">Bundle &amp; Save</span>
         <h3>Complete kits for focused care.</h3>
-        <p>Some conditions need more than one product working together. Our kits combine the full routine — cleanser, flusher and support formula — into one order.</p>
+        <p>Explore Hylar Herbs product bundles and compare what each kit includes. Check the product label, usage information and suitability before ordering.</p>
         <a href="https://wa.me/2349090416306?text=Hi%20Hylar%20Herbs%2C%20I%27d%20like%20to%20ask%20about%20your%20kits." class="btn btn-accent">Ask About Kits</a>
       </div>
       <ul class="kit-list">
@@ -886,6 +929,7 @@
     <div>
       <span class="eyebrow" style="color:var(--brand); font-size:12px; font-weight:800; letter-spacing:0.08em; text-transform:uppercase;">About Us</span>
       <p style="color:var(--sub); font-size:14.5px; margin-top:14px; max-width:480px; line-height:1.65;">Hylar Herbs &amp; Body Wellness is a Nigerian wellness brand owned by Olumade Ruqoyyah Ajoke, it's dedicated to providing natural and herbal wellness products designed to support healthier lifestyles and everyday wellbeing.<br><br>Founded with a passion for natural wellness, Hylar Herbs &amp; Body Wellness serves customers in Nigeria through its locations in Ede, Osun State and Lagos, while making its products accessible to customers beyond these locations.<br><br>The brand offers a range of wellness products across areas including feminine wellness, fertility and TTC support, men’s wellness, infection care, body wellness and other herbal wellness solutions.<br><br>Hylar Herbs &amp; Body Wellness is committed to combining traditional knowledge of natural herbs with carefully developed wellness products and a customer-focused approach.</p>
+      <p class="seo-about-links"><a href="/about.html">Meet Hylar Herbs &amp; Body Wellness and our founder</a> · <a href="/herbal-wellness-guide.html">Read the herbal product safety guide</a></p>
       <div class="about-stats">
         <div class="stat-box"><strong>80</strong><span>Herbal formulas</span></div>
         <div class="stat-box"><strong>100%</strong><span>Natural ingredients</span></div>
@@ -960,43 +1004,6 @@
   </div>
 </section>
 
-<!-- CONTACT -->
-<section class="contact-band" id="contact">
-  <div class="wrap contact-inner">
-    <div>
-      <span class="eyebrow">Get In Touch</span>
-      <h2>Ready to start your wellness routine?</h2>
-      <p class="lede">Reach us on WhatsApp for the fastest response, or call directly. Follow @HylarHerbs on socials for tips and restock alerts.</p>
-      <div class="contact-methods">
-        <a href="https://wa.me/2349090416306" class="contact-method"><div class="ic"></div><div><strong>WhatsApp Orders</strong><span>09090416306</span></div></a>
-        <a href="tel:+2348116695637" class="contact-method"><div class="ic"></div><div><strong>Call Us</strong><span>08116695637</span></div></a>
-        <a href="https://www.instagram.com/hylarherbs/" class="contact-method" target="_blank" rel="noopener noreferrer"><div class="ic"></div><div><strong>Instagram</strong><span>@HylarHerbs</span></div></a>
-        <a href="https://www.tiktok.com/@hylar_alagbo/" class="contact-method" target="_blank" rel="noopener noreferrer"><div class="ic"></div><div><strong>TikTok</strong><span>@hylar_alagbo</span></div></a>
-      </div>
-    </div>
-    <div class="contact-card">
-      <h3>Send an order enquiry</h3>
-      <p>Fill this in and we'll open WhatsApp with your details pre-filled — just hit send.</p>
-      <form id="orderForm">
-        <div class="form-row"><label for="name">Your name</label><input type="text" id="name" placeholder="e.g. Bisi Adeyemi" required></div>
-        <div class="form-row">
-          <label for="product">Product / kit interested in</label>
-          <select id="product">
-            <option>Feminine Wellness Product</option>
-            <option>TTC / Fertility Kit</option>
-            <option>Infection Care Product</option>
-            <option>Men's Vitality Product</option>
-            <option>Body Detox / Weight Product</option>
-            <option>Not sure — please recommend</option>
-          </select>
-        </div>
-        <div class="form-row"><label for="msg">Message</label><textarea id="msg" rows="3" placeholder="Tell us a bit about what you need..."></textarea></div>
-        <button type="submit" class="btn btn-accent"><i data-lucide="message-circle" aria-hidden="true"></i>Continue on WhatsApp</button>
-      </form>
-    </div>
-  </div>
-</section>
-
 <!-- FOOTER -->
 <footer>
   <div class="wrap">
@@ -1007,13 +1014,13 @@
           <span>Hylar Herbs &amp; Body Wellness</span>
         </div>
         <p class="desc">
-          Find a way to be healed through natural herbs. 100% natural remedies, prepared and shipped with care.
+          Explore the Hylar Herbs catalogue, contact our team for product information, and review labels and directions before use.
         </p>
       </div>
       <div><h5>Shop</h5><ul>
         <li><a href="#shop">All Products</a></li>
         <li><a href="#kits">Kit Bundles</a></li>
-        <li><a href="#about">Our Story</a></li>
+        <li><a href="/about.html">Our Story</a></li>
         <li><a href="#faq">FAQ</a></li>
       </ul></div>
       <div><h5>Categories</h5><ul>
@@ -1022,23 +1029,24 @@
         <li><a href="#shop" data-scroll-filter="infection">Infection Care</a></li>
         <li><a href="#shop" data-scroll-filter="men">Men's Vitality</a></li>
       </ul></div>
-      <div><h5>Contact</h5><ul>
-        <li><a href="https://wa.me/2349090416306">WhatsApp: 09090416306</a></li>
-        <li><a href="tel:+2348116695637">Call: 08116695637</a></li>
-        <li><a href="#">@HylarHerbs</a></li>
-      </ul></div>
+      <div class="footer-contact"><h5>Contact</h5>
+        <div class="footer-contact-icons">
+          <a href="https://wa.me/2349090416306" aria-label="WhatsApp" title="WhatsApp"><i data-lucide="message-circle" aria-hidden="true"></i></a>
+          <a href="tel:+2348116695637" aria-label="Call" title="Call"><i data-lucide="phone" aria-hidden="true"></i></a>
+          <a href="https://www.instagram.com/hylarherbs/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" title="Instagram"><i data-lucide="instagram" aria-hidden="true"></i></a>
+          <a href="https://www.tiktok.com/@hylar_alagbo/" target="_blank" rel="noopener noreferrer" aria-label="TikTok" title="TikTok"><i data-lucide="music-2" aria-hidden="true"></i></a>
+        </div>
+      </div>
     </div>
     <div class="footer-bottom">
       <span>© 2026 Hylar Herbs & Body Wellness. All rights reserved.</span>
       <div class="social-row">
-        <a href="https://www.instagram.com/hylarherbs/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">ig</a>
-        <a href="https://www.tiktok.com/@hylar_alagbo/" target="_blank" rel="noopener noreferrer" aria-label="TikTok">tt</a>
+        <a href="https://www.instagram.com/hylarherbs/" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><i data-lucide="instagram" aria-hidden="true"></i></a>
+        <a href="https://www.tiktok.com/@hylar_alagbo/" target="_blank" rel="noopener noreferrer" aria-label="TikTok"><i data-lucide="music-2" aria-hidden="true"></i></a>
       </div>
     </div>
   </div>
 </footer>
-
-<a href="https://wa.me/2349090416306" class="wa-float" target="_blank" rel="noopener noreferrer" aria-label="Chat on WhatsApp"><i data-lucide="message-circle" aria-hidden="true"></i></a>
 
 <div class="payment-success" id="paymentSuccess"></div>
 
@@ -1051,6 +1059,7 @@
   <div class="tray-body" id="trayBody">
     <div class="tray-empty">Your order tray is empty. Add products to get started.</div>
   </div>
+  <div id="trayStockNotice" class="tray-stock-notice" role="status" aria-live="polite" hidden></div>
   <div class="tray-foot" id="trayFoot" style="display:none;">
     <div class="tray-total-row"><span>Estimated Total</span><strong id="trayTotal">₦0</strong></div>
     <a href="#" class="btn btn-accent" id="sendOrderBtn">Proceed to Checkout <i data-lucide="arrow-right" aria-hidden="true"></i></a>
@@ -1269,23 +1278,24 @@
    { id:"p80", name:"Libido Booster", price:3000, cat:"feminine", tag:"", img:"image_80.jpeg", desc:"Libido Booster — Hylar Herbs & Body Wellness.", num:80 },
   ];
 
-  // Live products are loaded from Supabase. The existing catalogue remains as a
-  // fallback so the shop still renders if the database is temporarily unavailable.
-  let products = fallbackProducts.slice();
+  // Stock must come from the live database. Never offer the built-in sample
+  // catalogue for sale when the inventory service is unavailable.
+  let products = [];
+  let catalogueUnavailable = false;
   const SUPABASE_URL = "https://wstpvrhjhscctekwbkcs.supabase.co";
   const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_XHxPBPuaGr1uMRZ8LwC8qw_Odhi8hMP";
   let supabaseClient = null;
   try{
     supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
   }catch(err){
-    console.warn("Supabase library did not load; showing the built-in catalogue.", err);
+    console.warn("Supabase library did not load; checkout is unavailable.", err);
   }
 
   function mapSupabaseProduct(row){
     return {
       id: row.id,
       name: row.name || "Untitled product",
-      price: Number(row.sale_price ?? row.regular_price ?? 0),
+      price: (Number(row.sale_price) > 0 && Number(row.sale_price) < Number(row.regular_price)) ? Number(row.sale_price) : Number(row.regular_price ?? 0),
       regularPrice: Number(row.regular_price ?? 0),
       salePrice: row.sale_price == null ? null : Number(row.sale_price),
       cat: row.category || "body",
@@ -1293,78 +1303,59 @@
       img: row.image_url || "",
       desc: row.description || "",
       best: !!row.best_seller,
-      inStock: row.in_stock !== false,
+      stockQuantity: row.stock_quantity == null ? null : Number(row.stock_quantity),
+      inStock: row.in_stock !== false && (row.stock_quantity == null || Number(row.stock_quantity) > 0),
       visible: row.visible !== false,
       num: Number(row.sort_order || 0)
     };
   }
 
-  function updateCatalogueStructuredData(items){
-    try {
-      const catalogue = items.filter(p => p.visible !== false && p.name && p.id);
-      const elements = catalogue.map((p, index) => {
-        const item = {
-          '@type': 'Product',
-          name: String(p.name),
-          sku: String(p.id),
-          brand: {'@type':'Brand',name:'Hylar Herbs & Body Wellness'}
-        };
-        if(p.img){
-          const src = resolveImage(p.img);
-          if(src) item.image = new URL(src, window.location.origin).href;
-        }
-        if(Number.isFinite(p.price) && p.price > 0){
-          item.offers = {
-            '@type':'Offer',
-            priceCurrency:'NGN',
-            price:p.price,
-            availability:p.inStock === false ? 'https://schema.org/OutOfStock' : 'https://schema.org/InStock',
-            seller:{'@type':'Organization',name:'Hylar Herbs & Body Wellness'}
-          };
-        }
-        return {'@type':'ListItem',position:index+1,item};
-      });
-      const existing = document.getElementById('hylar-live-catalogue-jsonld');
-      if(!elements.length){ if(existing) existing.remove(); return; }
-      const node = existing || document.createElement('script');
-      node.id = 'hylar-live-catalogue-jsonld';
-      node.type = 'application/ld+json';
-      node.textContent = JSON.stringify({
-        '@context':'https://schema.org',
-        '@type':'ItemList',
-        name:'Hylar Herbs live product catalogue',
-        numberOfItems:elements.length,
-        itemListElement:elements
-      }).replace(/</g,'\u003c');
-      if(!existing) document.head.appendChild(node);
-    }catch(err){ console.warn('Catalogue structured data unavailable',err); }
+  function productDetailsUrl(id){
+    return '/product.html?id=' + encodeURIComponent(String(id));
   }
+  function escapeCatalogHtml(value){
+    return String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+  // Collection pages use ItemList. Product/Offer schema belongs on a single-product URL.
+  function updateCatalogueStructuredData(items){
+    try{
+      const catalogue = items.filter(p => p.visible !== false && p.name && p.id);
+      const elements = catalogue.map((p,index) => ({
+        '@type':'ListItem',position:index+1,
+        name:String(p.name),
+        url:new URL(productDetailsUrl(p.id),'https://hylarherbs.com.ng/').href
+      }));
+      let node = document.getElementById('hylar-live-catalogue-jsonld');
+      if(!elements.length){if(node) node.remove();return;}
+      if(!node){node=document.createElement('script');node.id='hylar-live-catalogue-jsonld';node.type='application/ld+json';document.head.appendChild(node);}
+      node.textContent=JSON.stringify({'@context':'https://schema.org','@type':'ItemList',name:'Hylar Herbs product catalogue',numberOfItems:elements.length,itemListElement:elements}).replace(/</g,'\u003c');
+    }catch(err){console.warn('Catalogue structured data unavailable',err);}
+  }
+
+  function productCanBuy(p){return !!p && p.inStock!==false && (p.stockQuantity==null||p.stockQuantity>0);}
 
   async function loadProductsFromSupabase(){
     try{
+      if(!supabaseClient) throw new Error("Inventory service unavailable");
       const { data, error } = await supabaseClient
         .from("products")
-        .select("id,name,description,category,tag,image_url,regular_price,sale_price,in_stock,visible,best_seller,sort_order")
+        .select("id,name,description,category,tag,image_url,regular_price,sale_price,in_stock,stock_quantity,visible,best_seller,sort_order")
         .eq("visible", true)
         .order("sort_order", { ascending:true });
 
       if(error) throw error;
 
-      if(Array.isArray(data) && data.length){
-        products = data.map(mapSupabaseProduct);
-        // GEO Phase 2B: describe only products confirmed by the live database.
-        // This is supplementary machine-readable catalogue data, not a replacement
-        // for independently crawlable product pages (planned after DB verification).
-        updateCatalogueStructuredData(products);
-      } else {
-        products = fallbackProducts.slice();
-      }
+      products = Array.isArray(data) ? data.map(mapSupabaseProduct) : [];
+      catalogueUnavailable = false;
+      updateCatalogueStructuredData(products);
       renderProducts();
       lucide.createIcons();
       return true;
     }catch(error){
-      console.warn("Supabase product loading failed; using existing catalogue.", error);
-      products = fallbackProducts.slice();
+      console.warn("Supabase product loading failed; shop inventory unavailable.", error);
+      catalogueUnavailable = true;
+      products = [];
+      updateCatalogueStructuredData(products);
       renderProducts();
       lucide.createIcons();
       return false;
@@ -1387,6 +1378,39 @@
 
   function cartTotal(){ return order.reduce((s,o) => s + (o.price||0) * o.qty, 0); }
   function cartCount(){ return order.reduce((s,o) => s + o.qty, 0); }
+
+  function stockNotice(message){
+    const note=document.getElementById('trayStockNotice');
+    note.textContent=message||'';
+    note.hidden=!message;
+    if(message) document.getElementById('orderTray').classList.add('open');
+  }
+
+  // Check current stock again from Supabase; cart limits alone are not sufficient
+  // when two customers order at the same time.
+  async function checkCurrentStock(){
+    if(!order.length)throw new Error('Your order tray is empty.');
+    if(!supabaseClient)throw new Error('Live stock is unavailable. Please try again later.');
+    const {data,error}=await supabaseClient.from('products')
+      .select('id,name,regular_price,sale_price,in_stock,stock_quantity,visible')
+      .in('id',order.map(p=>p.id));
+    if(error)throw new Error('Could not verify available stock. Please try again.');
+    const current=new Map((data||[]).map(p=>[p.id,p]));
+    let priceChanged=false;
+    for(const p of order){
+      const live=current.get(p.id);
+      if(!live||live.visible===false)throw new Error(`${p.name} is no longer available. Remove it from your order.`);
+      const available=live.stock_quantity==null?null:Number(live.stock_quantity);
+      if(live.in_stock===false||available===0)throw new Error(`${p.name} is now out of stock. Remove it from your order.`);
+      if(available!==null&&p.qty>available)throw new Error(`Only ${available} unit${available===1?'':'s'} of ${p.name} remain. Reduce your quantity to continue.`);
+      const price=Number(live.sale_price??live.regular_price??0);
+      if(price!==p.price){p.price=price;priceChanged=true;}
+      p.stockQuantity=available;
+      p.inStock=true;
+    }
+    updateTray();
+    if(priceChanged)throw new Error('Some prices have changed. Your order total has been updated; please review it before checkout.');
+  }
 
   function resolveImage(src){
     if(!src) return '';
@@ -1420,8 +1444,9 @@
           <div class="ti-qty">
             <button class="qty-btn" type="button" data-idx="${i}" data-d="-1" aria-label="Decrease quantity"><i data-lucide="minus" aria-hidden="true"></i></button>
             <span>${p.qty}</span>
-            <button class="qty-btn" type="button" data-idx="${i}" data-d="1" aria-label="Increase quantity"><i data-lucide="plus" aria-hidden="true"></i></button>
+            <button class="qty-btn" type="button" data-idx="${i}" data-d="1" aria-label="Increase quantity" ${p.stockQuantity!=null&&p.qty>=p.stockQuantity?'disabled title="Maximum available quantity"':''}><i data-lucide="plus" aria-hidden="true"></i></button>
           </div>
+          ${p.stockQuantity!=null?`<small class="ti-remaining">${p.stockQuantity} available</small>`:''}
         </div>
         <div style="text-align:right;">
           <div class="ti-price">${p.price ? money(p.price * p.qty) : 'POA'}</div>
@@ -1433,9 +1458,18 @@
   }
 
   function addToOrder(p, btnEl){
+    if(!productCanBuy(p)){
+      stockNotice(`${p.name} is out of stock.`);
+      return;
+    }
     const existing = order.find(o => o.id === p.id);
-    if(existing){ existing.qty += 1; }
-    else{ order.push({ id:p.id, name:p.name, price:p.price, img:p.img, qty:1 }); }
+    if(existing && p.stockQuantity!=null && existing.qty>=p.stockQuantity){
+      stockNotice(`Only ${p.stockQuantity} unit${p.stockQuantity===1?'':'s'} of ${p.name} available.`);
+      return;
+    }
+    if(existing){ existing.qty += 1; existing.stockQuantity=p.stockQuantity; }
+    else{ order.push({ id:p.id, name:p.name, price:p.price, img:p.img, qty:1, stockQuantity:p.stockQuantity }); }
+    stockNotice('');
     updateTray();
     document.getElementById('orderTray').classList.add('open');
     if(btnEl){
@@ -1448,8 +1482,17 @@
     const qtyBtn = e.target.closest('.qty-btn');
     if(qtyBtn){
       const idx = Number(qtyBtn.dataset.idx);
-      order[idx].qty += Number(qtyBtn.dataset.d);
-      if(order[idx].qty <= 0) order.splice(idx, 1);
+      const item=order[idx];
+      if(!item)return;
+      const delta=Number(qtyBtn.dataset.d);
+      const live=products.find(p=>p.id===item.id);
+      if(delta>0 && (!productCanBuy(live) || (live.stockQuantity!=null&&item.qty>=live.stockQuantity))){
+        stockNotice(!productCanBuy(live)?`${item.name} is currently out of stock.`:`Only ${live.stockQuantity} unit${live.stockQuantity===1?'':'s'} of ${item.name} available.`);
+        return;
+      }
+      item.qty += delta;
+      if(item.qty <= 0)order.splice(idx,1);
+      stockNotice('');
       updateTray();
       return;
     }
@@ -1648,7 +1691,16 @@
     lucide.createIcons();
   }
 
-  coEl('sendOrderBtn').addEventListener('click', (e) => { e.preventDefault(); openCheckoutModal(); });
+  coEl('sendOrderBtn').addEventListener('click', async (e) => {
+    e.preventDefault();
+    const btn=coEl('sendOrderBtn');
+    if(btn.dataset.checking==='1')return;
+    btn.dataset.checking='1';
+    btn.setAttribute('aria-disabled','true');
+    try{await checkCurrentStock();stockNotice('');openCheckoutModal();}
+    catch(err){stockNotice(err.message||'Could not verify stock. Please retry.');}
+    finally{delete btn.dataset.checking;btn.removeAttribute('aria-disabled');}
+  });
   coEl('coClose').addEventListener('click', closeCheckoutModal);
   coEl('coBackdrop').addEventListener('click', closeCheckoutModal);
   coEl('coDoneBtn').addEventListener('click', closeCheckoutModal);
@@ -1691,6 +1743,7 @@
     lucide.createIcons();
 
     try{
+      await checkCurrentStock();
       const fd = new FormData();
       fd.append('name', coEl('coName').value.trim());
       fd.append('whatsapp', coEl('coPhone').value.trim());
@@ -1708,6 +1761,7 @@
       checkoutOrderNumber = '';
       coEl('checkoutForm').reset();
       coClearProof(); coShowProofError('');
+      await loadProductsFromSupabase();
     }catch(err){
       errBox.textContent = (err && err.message) || 'Could not submit your order. Please check your connection and try again.';
       errBox.classList.add('show');
@@ -1722,18 +1776,19 @@
   // ---------- Render products ----------
   let currentFilter = 'all';
   let currentSearch = '';
+  let spotlightProductId = new URLSearchParams(location.search).get('product');
   function renderProducts(){
     const grid = document.getElementById('productGrid');
     const filtered = products.filter(p => {
       const matchesFilter = currentFilter === 'all' || p.cat.split(" ").includes(currentFilter);
       const haystack = `${p.name} ${p.desc} ${p.cat} ${p.tag}`.toLowerCase();
       const matchesSearch = !currentSearch || haystack.includes(currentSearch);
-      return matchesFilter && matchesSearch;
+      return matchesFilter && matchesSearch && (!spotlightProductId || String(p.id) === spotlightProductId);
     });
     document.getElementById('resultCount').textContent = `${filtered.length} product${filtered.length !== 1 ? 's' : ''}`;
     grid.innerHTML = "";
     if(filtered.length === 0){
-      grid.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:var(--sub); padding:40px 0;">No products match your search. Try a different term or category.</p>';
+      grid.innerHTML = catalogueUnavailable ? '<p role="alert" style="grid-column:1/-1; text-align:center; color:var(--sub); padding:40px 0;">Live product availability is temporarily unavailable. Please refresh to try again. Ordering is paused until stock can be verified.</p>' : '<p style="grid-column:1/-1; text-align:center; color:var(--sub); padding:40px 0;">No products match your search. Try a different term or category.</p>';
       return;
     }
     filtered.forEach((p) => {
@@ -1742,25 +1797,28 @@
       const activePrice = Number(p.price || 0);
       const priceDisplay = activePrice ? `₦${activePrice.toLocaleString('en-NG')}` : "Contact for price";
       const imgSrc = p.img ? resolveImage(p.img) : null;
-      const outOfStock = p.inStock === false;
+      const outOfStock = !productCanBuy(p);
       const card = document.createElement('div');
+      const productLink = productDetailsUrl(p.id);
       card.className = 'card';
       card.innerHTML = `
         <div class="card-media">
-          ${imgSrc ? `<img src="${imgSrc}" alt="${p.name} — Hylar Herbs" loading="lazy" onerror="this.style.display='none';">` : `<div class="no-photo"><i data-lucide="image-off" aria-hidden="true"></i><span>Photo coming soon</span></div>`}
+          ${imgSrc ? `<img src="${imgSrc}" alt="${escapeCatalogHtml(p.name)} — Hylar Herbs" loading="lazy" onerror="this.style.display='none';">` : `<div class="no-photo"><i data-lucide="image-off" aria-hidden="true"></i><span>Photo coming soon</span></div>`}
           <div class="badge-row">
             <span class="badge ${outOfStock ? 'badge-cat' : (p.tag === 'Kit' ? 'badge-kit' : (p.best ? 'badge-best' : 'badge-cat'))}">${outOfStock ? 'Out of Stock' : (p.tag === 'Kit' ? 'Kit Deal' : (p.best ? 'Best Seller' : label))}</span>
           </div>
         </div>
         <div class="card-body">
           <div class="product-label-row"><span class="cat-label">${label}</span>${hasSale ? `<span class="sale-percent">${Math.round((1-Number(p.salePrice)/Number(p.regularPrice))*100)}% OFF</span>` : ''}</div>
-          <h3>${p.name}</h3>
-          <p class="desc">${p.desc}</p>
+          <h3><a class="card-product-link" href="${productLink}">${escapeCatalogHtml(p.name)}</a></h3>
+          <p class="desc">${escapeCatalogHtml(p.desc)}</p>
+          <a class="product-learn-link" href="${productLink}">View product details</a>
+          ${!outOfStock&&p.stockQuantity!=null&&p.stockQuantity<=5?`<small class="card-stock">Only ${p.stockQuantity} left</small>`:''}
           <div class="card-foot">
             <div class="price-block">
               ${hasSale ? `<strong style="color:var(--sale)">${priceDisplay}</strong><small><del>₦${Number(p.regularPrice).toLocaleString('en-NG')}</del> · Sale price</small>` : `<strong>${priceDisplay}</strong>${activePrice ? '<small>Naira</small>' : ''}`}
             </div>
-            <button class="add-btn${outOfStock ? ' disabled' : ''}" type="button" aria-label="${outOfStock ? 'Out of stock' : `Add ${p.name} to order`}" ${outOfStock ? 'disabled' : ''}>
+            <button class="add-btn${outOfStock ? ' disabled' : ''}" type="button" aria-label="${outOfStock ? 'Out of stock' : `Add ${escapeCatalogHtml(p.name)} to order`}" ${outOfStock ? 'disabled' : ''}>
               ${outOfStock ? '<span>Out of Stock</span>' : '<i data-lucide="plus" aria-hidden="true"></i>'}
             </button>
           </div>
@@ -1782,6 +1840,7 @@
     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     currentFilter = btn.dataset.filter;
+    spotlightProductId = null;
     renderProducts();
   });
 
@@ -1790,6 +1849,7 @@
       const cat = tile.dataset.cat;
       document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.filter === cat));
       currentFilter = cat;
+      spotlightProductId = null;
       renderProducts();
       document.getElementById('shop').scrollIntoView({behavior:'smooth', block:'start'});
     });
@@ -1799,6 +1859,7 @@
     link.addEventListener('click', (e) => {
       const cat = link.dataset.scrollFilter;
       currentFilter = cat;
+      spotlightProductId = null;
       document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.filter === cat));
       setTimeout(renderProducts, 0);
     });
@@ -1806,6 +1867,7 @@
 
   document.getElementById('searchInput').addEventListener('input', (e) => {
     currentSearch = e.target.value.trim().toLowerCase();
+    spotlightProductId = null;
     renderProducts();
     if(currentSearch){
       requestAnimationFrame(() => {
@@ -1907,7 +1969,7 @@
   });
 
   // ---------- Contact form -> WhatsApp ----------
-  document.getElementById('orderForm').addEventListener('submit', (e) => {
+  document.getElementById('orderForm')?.addEventListener('submit', (e) => {
     e.preventDefault();
     const name = document.getElementById('name').value.trim();
     const product = document.getElementById('product').value;
@@ -1917,7 +1979,7 @@
   });
   
   // --------- Contact form -> Supabase Edge Function ---------
-document.getElementById('contactForm').addEventListener('submit', async (e) => {
+document.getElementById('contactForm')?.addEventListener('submit', async (e) => {
   e.preventDefault();
   
   const name = document.getElementById('name').value.trim();
