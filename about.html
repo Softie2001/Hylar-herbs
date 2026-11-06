@@ -126,7 +126,7 @@
     }
 
     .container {
-      width: min(1120px, 92%);
+      width: min(1120px, calc(100% - 40px));
       margin: 0 auto;
     }
 
@@ -489,7 +489,29 @@
         gap: 30px;
       }
     }
-  </style>
+  
+/* Accessible mobile menu and more comfortable content gutters */
+.about-menu-toggle{display:none;width:42px;height:42px;border:1px solid #e4e8df;border-radius:12px;background:#fff;flex:none;cursor:pointer;padding:9px}
+.about-menu-toggle span{display:block;height:2px;width:21px;margin:5px auto;border-radius:2px;background:#172016}
+main .section-grid > *{min-width:0;overflow-wrap:anywhere}
+@media(max-width:760px){
+ .container{width:calc(100% - 40px);max-width:calc(100% - 40px)}
+ .nav{position:relative;gap:12px}
+ .brand{min-width:0;flex:1;line-height:1.25}
+ .brand span{font-size:12.5px;overflow-wrap:normal}
+ .about-menu-toggle{display:block}
+ nav#aboutNav{display:none;position:absolute;top:calc(100% + 7px);right:0;width:min(280px,calc(100vw - 40px));background:#fff;border:1px solid #e5e9e2;border-radius:14px;padding:13px;box-shadow:0 12px 30px rgba(0,0,0,.13);z-index:130;flex-direction:column;align-items:stretch;gap:2px}
+ nav#aboutNav.open{display:flex}
+ nav#aboutNav a,nav#aboutNav a:not(.nav-cta){display:block!important;padding:10px 12px;border-radius:9px}
+ nav#aboutNav .nav-cta{text-align:center;margin-top:5px}
+ .hero{padding:55px 0 45px}
+ .hero h1{font-size:clamp(28px,8.5vw,38px);letter-spacing:-1px}
+ main.container{padding-top:45px;padding-bottom:60px}
+ .section{margin-bottom:55px}
+ .section-grid{gap:18px}
+ .section-grid p,main p{overflow-wrap:anywhere}
+}
+</style>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -524,11 +546,12 @@
         <span>Hylar Herbs & Body Wellness</span>
       </a>
 
-      <nav>
+      <button class="about-menu-toggle" id="aboutMenuToggle" type="button" aria-label="Open navigation" aria-controls="aboutNav" aria-expanded="false"><span></span><span></span><span></span></button>
+      <nav id="aboutNav">
         <a href="/">Home</a>
         <a href="/about.html">About</a>
         <a href="/#shop">Shop</a>
-        <a href="/#contact">Contact</a>
+        <a href="https://wa.me/2349090416306">Contact</a>
         <a href="https://wa.me/2349090416306" class="nav-cta">
           WhatsApp
         </a>
@@ -879,7 +902,7 @@
           </p>
 
           <div class="social-row">
-            <a href="https://www.instagram.com/hylar_herbs" aria-label="Instagram" target="_blank" rel="noopener noreferrer">ig</a>
+            <a href="https://www.instagram.com/hylarherbs/" aria-label="Instagram" target="_blank" rel="noopener noreferrer">ig</a>
             <a href="https://www.tiktok.com/@hylar_alagbo/" aria-label="TikTok" target="_blank" rel="noopener noreferrer">tt</a>
           </div>
         </div>
@@ -894,5 +917,18 @@
 
   </footer>
 
+
+<script>
+(function(){
+ const toggle=document.getElementById('aboutMenuToggle');
+ const menu=document.getElementById('aboutNav');
+ if(!toggle||!menu)return;
+ function close(){menu.classList.remove('open');toggle.setAttribute('aria-expanded','false');toggle.setAttribute('aria-label','Open navigation');}
+ toggle.addEventListener('click',()=>{const open=menu.classList.toggle('open');toggle.setAttribute('aria-expanded',String(open));toggle.setAttribute('aria-label',open?'Close navigation':'Open navigation');});
+ menu.addEventListener('click',event=>{if(event.target.closest('a'))close()});
+ document.addEventListener('click',event=>{if(!menu.contains(event.target)&&!toggle.contains(event.target))close()});
+ document.addEventListener('keydown',event=>{if(event.key==='Escape')close()});
+})();
+</script>
 </body>
 </html>
