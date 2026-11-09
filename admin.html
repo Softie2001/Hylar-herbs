@@ -314,6 +314,58 @@ main.wrap{padding-bottom:118px}
  .stock-inline-input{width:105px}
 }
 
+
+/* Compact order-review sheet: receipt preview and grouped actions, especially on mobile. */
+#orderModal .modal-card{width:min(610px,100%);max-height:92dvh;padding:19px 19px 22px;overscroll-behavior:contain}
+#orderModal .modal-head{position:sticky;top:-19px;z-index:2;background:#fff;padding:8px 0 13px;border-bottom:1px solid var(--line);margin-bottom:17px}
+#orderModal .modal-head h2{font-family:'Manrope',sans-serif;font-size:19px;font-weight:800;color:var(--deep)}
+#orderDetail .detail-grid{gap:8px;grid-template-columns:repeat(2,minmax(0,1fr))}
+#orderDetail .detail{min-width:0;background:#F7FAF6;border:1px solid #E8EDE7;padding:11px 12px;border-radius:11px}
+#orderDetail .detail.full{grid-column:1/-1}
+#orderDetail .detail small{font-size:10.5px;color:var(--sub);margin-bottom:3px}
+#orderDetail .detail strong{font-size:12px;line-height:1.5;overflow-wrap:anywhere}
+#orderDetail .items{margin:15px 0 0;border:1px solid #E4ECE4;border-radius:14px;background:#fff;padding:14px 14px 9px}
+#orderDetail .items>strong{display:block;color:var(--deep);font-size:13px;margin-bottom:5px}
+#orderDetail .item-row{font-size:12px;line-height:1.5;align-items:flex-start;padding:9px 0;min-width:0}
+#orderDetail .item-row span{min-width:0;flex:1;overflow-wrap:anywhere}
+#orderDetail .item-row strong{text-align:right;white-space:nowrap;flex:none}
+#orderDetail .items .item-row:last-child{border-bottom:0;margin-top:3px;padding:11px 0 5px;color:var(--deep);font-size:13px}
+#orderDetail .order-receipt-card{display:grid;grid-template-columns:minmax(0,1fr) 103px;align-items:center;gap:13px;border:1px solid #DCE9DF;border-radius:14px;background:#F8FBF8;padding:12px 13px;margin-top:13px}
+#orderDetail .order-receipt-info{display:flex;flex-direction:column;align-items:flex-start;gap:7px;min-width:0}
+#orderDetail .order-receipt-info strong{font-size:13px;color:var(--deep)}
+#orderDetail .order-receipt-info small{font-size:11px;line-height:1.45;color:var(--sub)}
+#orderDetail .order-receipt-open{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:800;color:var(--brand);text-decoration:none}
+#orderDetail .order-receipt-open svg{width:14px;height:14px}
+#orderDetail .order-receipt-preview{display:block;width:103px;height:116px;border-radius:10px;overflow:hidden;border:1px solid #D6E3D7;background:#EAF3EC}
+#orderDetail .order-receipt-preview img{display:block;width:100%;height:100%;object-fit:cover;object-position:top center;border:0;border-radius:0;margin:0;max-height:none}
+#orderDetail .order-management{margin-top:14px;border:1px solid #E6EBE6;border-radius:14px;background:#fff;padding:13px}
+#orderDetail .order-management-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}
+#orderDetail .order-management-head h3{font-size:13px;font-weight:800;color:var(--deep);margin:0}
+#orderDetail .order-management-head .status{font-size:10px;max-width:62%;text-align:center}
+#orderDetail .order-actions-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+#orderDetail .order-actions-grid .btn{display:flex;align-items:center;justify-content:center;gap:5px;min-width:0;width:100%;min-height:44px;margin:0;font-size:11.2px;line-height:1.2;font-weight:800;padding:10px 5px;text-align:center;border-radius:10px;white-space:normal}
+#orderDetail .order-actions-grid .btn svg{width:15px;height:15px;flex:none}
+#orderDetail .order-actions-grid .btn:disabled{opacity:.46;cursor:not-allowed}
+#orderDetail .order-actions-grid .order-action-secondary{background:#F0F6F0;border:1px solid #E1EBE1;color:var(--deep)}
+#orderDetail .order-delivery-row{display:flex;align-items:center;gap:12px;margin-top:14px;border-top:1px solid var(--line);padding-top:13px}
+#orderDetail .order-delivery-row label{font-weight:800;font-size:12px;color:var(--deep);flex:0 0 auto}
+#orderDetail .order-delivery-row select{min-width:0;flex:1;width:100%;min-height:42px;border-radius:10px;border:1px solid #CFDECE;padding:7px 10px;background:#fff;color:var(--ink);font-size:16px}
+@media(max-width:650px){
+  #orderModal .modal{padding:0}
+  #orderModal .modal-card{width:100%;max-height:90dvh;border-radius:20px 20px 0 0;padding:14px 14px calc(20px + env(safe-area-inset-bottom))}
+  #orderModal .modal-head{top:-14px;padding:6px 0 12px;margin-bottom:13px}
+  #orderDetail .detail-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+  #orderDetail .detail.full{grid-column:1/-1}
+  #orderDetail .detail{padding:9px 10px}
+  #orderDetail .items{padding:12px 12px 7px;margin-top:12px}
+  #orderDetail .order-receipt-card{grid-template-columns:minmax(0,1fr) 88px;gap:11px;padding:11px}
+  #orderDetail .order-receipt-preview{width:88px;height:103px}
+  #orderDetail .order-management{margin-top:12px;padding:11px}
+  #orderDetail .order-actions-grid .btn{min-height:43px;font-size:10.5px;padding:9px 5px}
+  #orderDetail .order-actions-grid .btn svg{width:14px;height:14px}
+  #orderDetail .order-delivery-row{display:grid;grid-template-columns:1fr;gap:7px}
+}
+
 </style>
 </head>
 <body>
@@ -663,7 +715,7 @@ async function viewOrder(id){
   let proof='';
   if(o.payment_proof_path){
     const {data}=await sb.storage.from('payment-proofs').createSignedUrl(o.payment_proof_path,3600);
-    if(data?.signedUrl)proof=`<div class="proof"><strong>Payment proof</strong><div style="height:8px"></div><a href="${esc(data.signedUrl)}" target="_blank" rel="noopener"><img src="${esc(data.signedUrl)}" alt="Payment proof"></a></div>`;
+    if(data?.signedUrl)proof=`<section class="order-receipt-card" aria-label="Payment proof"><div class="order-receipt-info"><strong>Payment proof</strong><small>Preview the customer’s receipt before confirming payment.</small><a class="order-receipt-open" href="${esc(data.signedUrl)}" target="_blank" rel="noopener noreferrer" aria-label="Open the full payment receipt in a new tab"><i data-lucide="external-link" aria-hidden="true"></i>View full receipt</a></div><a class="order-receipt-preview" href="${esc(data.signedUrl)}" target="_blank" rel="noopener noreferrer" aria-label="Open full payment receipt"><img src="${esc(data.signedUrl)}" loading="lazy" alt="Customer payment receipt preview"></a></section>`;
   }
 
   const chatType=o.payment_status==='paid'?'confirmed':o.payment_status==='not_received'?'not_received':'awaiting';
@@ -672,13 +724,15 @@ async function viewOrder(id){
 
   $('orderDetail').innerHTML=`<div class="detail-grid"><div class="detail"><small>Order</small><strong>${esc(o.order_number)}</strong></div><div class="detail"><small>Payment</small><strong>${esc(paymentLabel(o.payment_status))}</strong></div><div class="detail"><small>Customer</small><strong>${esc(o.customer_name)}</strong></div><div class="detail"><small>WhatsApp</small><strong>${esc(o.customer_phone)}</strong></div><div class="detail full"><small>Delivery address</small><strong>${esc(o.delivery_address)}</strong></div><div class="detail full"><small>Preferred delivery location</small><strong>${esc(o.delivery_location)}</strong></div><div class="detail"><small>Products total</small><strong>${money(o.subtotal)}</strong></div><div class="detail"><small>Delivery</small><strong>Fee negotiated separately</strong></div></div>
 <div class="items"><strong>Products ordered</strong>${items.map(i=>`<div class="item-row"><span>${esc(i.product_name)} × ${Number(i.quantity)}</span><strong>${money(i.line_total)}</strong></div>`).join('')}<div class="item-row"><strong>Total</strong><strong>${money(o.total_amount)}</strong></div></div>${proof}
-<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px">
-<button class="btn btn-green" ${o.payment_status==='paid'?'disabled':''} onclick="confirmPayment('${o.id}')"><i data-lucide="circle-check"></i>Confirm Payment</button>
-<button class="btn btn-danger" ${o.payment_status==='not_received'?'disabled':''} onclick="paymentNotReceived('${o.id}')"><i data-lucide="circle-x"></i>Payment Not Received</button>
-<button class="btn btn-light" data-wa="${esc(wa)}" onclick="openWhatsApp(this.dataset.wa)"><i data-lucide="message-circle"></i>Chat Customer</button>
-<button class="btn btn-light" data-wa="${esc(deliveryWa)}" onclick="openWhatsApp(this.dataset.wa)"><i data-lucide="truck"></i>Dispatch Message</button>
+<section class="order-management" aria-label="Manage payment and delivery">
+<div class="order-management-head"><h3>Payment &amp; delivery</h3><span class="status ${statusClass(o.payment_status)}">${esc(paymentLabel(o.payment_status))}</span></div>
+<div class="order-actions-grid">
+<button type="button" class="btn btn-green" aria-label="Confirm payment" ${o.payment_status==='paid'?'disabled':''} onclick="confirmPayment('${o.id}')"><i data-lucide="circle-check" aria-hidden="true"></i><span>Confirm payment</span></button>
+<button type="button" class="btn btn-danger" aria-label="Mark payment not received" ${o.payment_status==='not_received'?'disabled':''} onclick="paymentNotReceived('${o.id}')"><i data-lucide="circle-x" aria-hidden="true"></i><span>Not received</span></button>
+<button type="button" class="btn btn-light order-action-secondary" data-wa="${esc(wa)}" onclick="openWhatsApp(this.dataset.wa)"><i data-lucide="message-circle" aria-hidden="true"></i><span>Chat customer</span></button>
+<button type="button" class="btn btn-light order-action-secondary" data-wa="${esc(deliveryWa)}" onclick="openWhatsApp(this.dataset.wa)"><i data-lucide="truck" aria-hidden="true"></i><span>Dispatch message</span></button>
 </div>
-<div style="display:flex;gap:8px;align-items:center;margin-top:12px"><label style="font-size:11px;font-weight:800">Delivery status</label><select onchange="updateDelivery('${o.id}',this.value)" style="padding:8px;border:1px solid var(--line);border-radius:8px"><option value="pending" ${o.delivery_status==='pending'?'selected':''}>Pending</option><option value="processing" ${o.delivery_status==='processing'?'selected':''}>Processing</option><option value="sent" ${o.delivery_status==='sent'?'selected':''}>Sent</option><option value="delivered" ${o.delivery_status==='delivered'?'selected':''}>Delivered</option><option value="cancelled" ${o.delivery_status==='cancelled'?'selected':''}>Cancelled</option></select></div>`;
+<div class="order-delivery-row"><label for="orderDeliveryState">Delivery status</label><select id="orderDeliveryState" onchange="updateDelivery('${o.id}',this.value)"><option value="pending" ${o.delivery_status==='pending'?'selected':''}>Pending</option><option value="processing" ${o.delivery_status==='processing'?'selected':''}>Processing</option><option value="sent" ${o.delivery_status==='sent'?'selected':''}>Sent</option><option value="delivered" ${o.delivery_status==='delivered'?'selected':''}>Delivered</option><option value="cancelled" ${o.delivery_status==='cancelled'?'selected':''}>Cancelled</option></select></div></section>`;
 
   $('orderModal').classList.remove('hidden');
   icons();
