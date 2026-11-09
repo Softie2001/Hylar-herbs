@@ -314,6 +314,33 @@ main.wrap{padding-bottom:118px}
  .stock-inline-input{width:105px}
 }
 
+
+/* Order details: clear sections and compact mobile actions */
+#orderModal .modal-card{max-width:680px}
+#orderDetail .order-section-title{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;margin-bottom:11px}
+#orderDetail .order-section-title strong{font-size:13px;font-weight:800;color:#173a27}
+#orderDetail .order-section-title span{font-size:11px;font-weight:600;color:var(--sub)}
+#orderDetail .order-proof-section{padding:14px;border:1px solid #e4ebe2;background:#f8fbf8;border-radius:14px;margin-top:16px}
+#orderDetail .order-proof-preview{display:flex;align-items:center;gap:14px;text-decoration:none;min-width:0}
+#orderDetail .order-proof-preview img{display:block;width:100px;height:112px;max-width:36%;object-fit:contain;object-position:center;border-radius:9px;border:1px solid #dce8dc;background:#fff;flex:none}
+#orderDetail .order-proof-open{display:inline-flex;gap:7px;align-items:center;color:#166237;font-size:12px;font-weight:800}
+#orderDetail .order-proof-open svg{width:16px;height:16px}
+#orderDetail .order-action-section{margin-top:17px}
+#orderDetail .order-decision-actions,#orderDetail .order-contact-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+#orderDetail .order-decision-actions .btn,#orderDetail .order-contact-actions .btn{width:100%;min-height:43px;padding:10px 9px;font-size:11.5px;line-height:1.3;white-space:normal;display:flex;justify-content:center;align-items:center;gap:6px;border-radius:10px}
+#orderDetail .order-decision-actions .btn svg,#orderDetail .order-contact-actions .btn svg{flex:none;width:15px;height:15px}
+#orderDetail .order-delivery-field{display:grid;grid-template-columns:minmax(105px,1fr) minmax(0,2fr);align-items:center;gap:12px;margin-top:17px;padding-top:16px;border-top:1px solid #e5ebe4}
+#orderDetail .order-delivery-field label{font-size:12px;font-weight:800;color:#173a27}
+#orderDetail .order-delivery-field select{width:100%;min-width:0;min-height:42px;padding:9px 12px;background:#fff;border:1px solid #d9e4d9;border-radius:10px;font-size:16px;color:var(--ink)}
+@media(max-width:480px){
+  #orderModal .modal-card{padding:16px 15px calc(17px + env(safe-area-inset-bottom));max-height:92dvh}
+  #orderDetail .order-proof-section{padding:11px}
+  #orderDetail .order-proof-preview img{width:88px;height:102px}
+  #orderDetail .order-decision-actions .btn,#orderDetail .order-contact-actions .btn{font-size:11px;padding:9px 5px;gap:4px;min-height:44px}
+  #orderDetail .order-decision-actions .btn svg,#orderDetail .order-contact-actions .btn svg{width:14px;height:14px}
+  #orderDetail .order-delivery-field{grid-template-columns:1fr;gap:7px}
+}
+
 </style>
 </head>
 <body>
@@ -663,7 +690,7 @@ async function viewOrder(id){
   let proof='';
   if(o.payment_proof_path){
     const {data}=await sb.storage.from('payment-proofs').createSignedUrl(o.payment_proof_path,3600);
-    if(data?.signedUrl)proof=`<div class="proof"><strong>Payment proof</strong><div style="height:8px"></div><a href="${esc(data.signedUrl)}" target="_blank" rel="noopener"><img src="${esc(data.signedUrl)}" alt="Payment proof"></a></div>`;
+    if(data?.signedUrl)proof=`<section class="order-proof-section" aria-label="Payment proof"><div class="order-section-title"><strong>Payment proof</strong><span>Tap to view full image</span></div><a class="order-proof-preview" href="${esc(data.signedUrl)}" target="_blank" rel="noopener noreferrer" aria-label="Open full payment proof in new tab"><img src="${esc(data.signedUrl)}" alt="Customer payment proof" loading="lazy"><span class="order-proof-open"><i data-lucide="external-link" aria-hidden="true"></i>View receipt</span></a></section>`;
   }
 
   const chatType=o.payment_status==='paid'?'confirmed':o.payment_status==='not_received'?'not_received':'awaiting';
@@ -672,13 +699,21 @@ async function viewOrder(id){
 
   $('orderDetail').innerHTML=`<div class="detail-grid"><div class="detail"><small>Order</small><strong>${esc(o.order_number)}</strong></div><div class="detail"><small>Payment</small><strong>${esc(paymentLabel(o.payment_status))}</strong></div><div class="detail"><small>Customer</small><strong>${esc(o.customer_name)}</strong></div><div class="detail"><small>WhatsApp</small><strong>${esc(o.customer_phone)}</strong></div><div class="detail full"><small>Delivery address</small><strong>${esc(o.delivery_address)}</strong></div><div class="detail full"><small>Preferred delivery location</small><strong>${esc(o.delivery_location)}</strong></div><div class="detail"><small>Products total</small><strong>${money(o.subtotal)}</strong></div><div class="detail"><small>Delivery</small><strong>Fee negotiated separately</strong></div></div>
 <div class="items"><strong>Products ordered</strong>${items.map(i=>`<div class="item-row"><span>${esc(i.product_name)} × ${Number(i.quantity)}</span><strong>${money(i.line_total)}</strong></div>`).join('')}<div class="item-row"><strong>Total</strong><strong>${money(o.total_amount)}</strong></div></div>${proof}
-<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px">
-<button class="btn btn-green" ${o.payment_status==='paid'?'disabled':''} onclick="confirmPayment('${o.id}')"><i data-lucide="circle-check"></i>Confirm Payment</button>
-<button class="btn btn-danger" ${o.payment_status==='not_received'?'disabled':''} onclick="paymentNotReceived('${o.id}')"><i data-lucide="circle-x"></i>Payment Not Received</button>
-<button class="btn btn-light" data-wa="${esc(wa)}" onclick="openWhatsApp(this.dataset.wa)"><i data-lucide="message-circle"></i>Chat Customer</button>
-<button class="btn btn-light" data-wa="${esc(deliveryWa)}" onclick="openWhatsApp(this.dataset.wa)"><i data-lucide="truck"></i>Dispatch Message</button>
+<section class="order-action-section" aria-label="Payment actions">
+<div class="order-section-title"><strong>Payment verification</strong><span>Choose one action</span></div>
+<div class="order-decision-actions">
+<button class="btn btn-green" ${o.payment_status==='paid'?'disabled':''} onclick="confirmPayment('${o.id}')"><i data-lucide="circle-check"></i>Confirm payment</button>
+<button class="btn btn-danger" ${o.payment_status==='not_received'?'disabled':''} onclick="paymentNotReceived('${o.id}')"><i data-lucide="circle-x"></i>Not received</button>
 </div>
-<div style="display:flex;gap:8px;align-items:center;margin-top:12px"><label style="font-size:11px;font-weight:800">Delivery status</label><select onchange="updateDelivery('${o.id}',this.value)" style="padding:8px;border:1px solid var(--line);border-radius:8px"><option value="pending" ${o.delivery_status==='pending'?'selected':''}>Pending</option><option value="processing" ${o.delivery_status==='processing'?'selected':''}>Processing</option><option value="sent" ${o.delivery_status==='sent'?'selected':''}>Sent</option><option value="delivered" ${o.delivery_status==='delivered'?'selected':''}>Delivered</option><option value="cancelled" ${o.delivery_status==='cancelled'?'selected':''}>Cancelled</option></select></div>`;
+</section>
+<section class="order-action-section" aria-label="Customer communication">
+<div class="order-section-title"><strong>Customer communication</strong></div>
+<div class="order-contact-actions">
+<button class="btn btn-light" data-wa="${esc(wa)}" onclick="openWhatsApp(this.dataset.wa)"><i data-lucide="message-circle"></i>Chat customer</button>
+<button class="btn btn-light" data-wa="${esc(deliveryWa)}" onclick="openWhatsApp(this.dataset.wa)"><i data-lucide="truck"></i>Dispatch message</button>
+</div>
+</section>
+<div class="order-delivery-field"><label for="orderDeliveryStatus">Delivery status</label><select id="orderDeliveryStatus" onchange="updateDelivery('${o.id}',this.value)"><option value="pending" ${o.delivery_status==='pending'?'selected':''}>Pending</option><option value="processing" ${o.delivery_status==='processing'?'selected':''}>Processing</option><option value="sent" ${o.delivery_status==='sent'?'selected':''}>Sent</option><option value="delivered" ${o.delivery_status==='delivered'?'selected':''}>Delivered</option><option value="cancelled" ${o.delivery_status==='cancelled'?'selected':''}>Cancelled</option></select></div>`;
 
   $('orderModal').classList.remove('hidden');
   icons();
