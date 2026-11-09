@@ -1491,6 +1491,24 @@ body.cart-keyboard-active #orderTray.order-tray{display:none!important;}
     console.warn("Supabase library did not load; checkout is unavailable.", err);
   }
 
+  // Before the new SQL runs, retain the legacy always-limited behavior.
+  // After migration, the admin's two independent switches control enforcement and display.
+  let stockLimitsEnabled=true,showStockQuantities=true,stockControlsReady=false;
+  async function refreshInventoryPreferences(){
+    if(!supabaseClient)throw new Error('Inventory settings are temporarily unavailable.');
+    const {data,error}=await supabaseClient.from('store_settings').select('*').eq('id',1).maybeSingle();
+    if(error)throw new Error('Could not verify shop availability settings. Please retry.');
+    stockControlsReady=!!data && typeof data.limits_enabled==='boolean' && typeof data.show_quantities==='boolean';
+    stockLimitsEnabled=stockControlsReady?data.limits_enabled:true;
+    showStockQuantities=stockControlsReady?data.show_quantities:true;
+  }
+  function effectiveRemaining(p){
+    return stockLimitsEnabled?p.stockQuantity:null;
+  }
+  function customerStockMessage(name,available,quantity){
+    if(showStockQuantities && Number.isInteger(available))return `Only ${available} unit${available===1?'':'s'} of ${name} available.`;
+    return `Not enough stock available for ${name}. Please reduce the quantity.`;
+  }
   function mapSupabaseProduct(row){
     return {
       id: row.id,
@@ -1504,7 +1522,7 @@ body.cart-keyboard-active #orderTray.order-tray{display:none!important;}
       desc: row.description || "",
       best: !!row.best_seller,
       stockQuantity: row.stock_quantity == null ? null : Number(row.stock_quantity),
-      inStock: row.in_stock !== false && (row.stock_quantity == null || Number(row.stock_quantity) > 0),
+      inStock: row.in_stock !== false,
       visible: row.visible !== false,
       num: Number(row.sort_order || 0)
     };
@@ -1532,11 +1550,14 @@ body.cart-keyboard-active #orderTray.order-tray{display:none!important;}
     }catch(err){console.warn('Catalogue structured data unavailable',err);}
   }
 
-  function productCanBuy(p){return !!p && p.inStock!==false && (p.stockQuantity==null||p.stockQuantity>0);}
+  function productCanBuy(p){
+    return !!p && p.inStock!==false && (!stockLimitsEnabled || (p.stockQuantity==null?!stockControlsReady:p.stockQuantity>0));
+  }
 
   async function loadProductsFromSupabase(){
     try{
       if(!supabaseClient) throw new Error("Inventory service unavailable");
+      await refreshInventoryPreferences();
       const { data, error } = await supabaseClient
         .from("products")
         .select("id,name,description,category,tag,image_url,regular_price,sale_price,in_stock,stock_quantity,visible,best_seller,sort_order")
@@ -1592,6 +1613,7 @@ body.cart-keyboard-active #orderTray.order-tray{display:none!important;}
   async function checkCurrentStock(){
     if(!order.length)throw new Error('Your order tray is empty.');
     if(!supabaseClient)throw new Error('Live stock is unavailable. Please try again later.');
+    await refreshInventoryPreferences();
     const {data,error}=await supabaseClient.from('products')
       .select('id,name,regular_price,sale_price,in_stock,stock_quantity,visible')
       .in('id',order.map(p=>p.id));
@@ -1600,10 +1622,13 @@ body.cart-keyboard-active #orderTray.order-tray{display:none!important;}
     let priceChanged=false;
     for(const p of order){
       const live=current.get(p.id);
-      if(!live||live.visible===false)throw new Error(`${p.name} is no longer available. Remove it from your order.`);
+      if(!live||live.visible===false||live.in_stock===false)throw new Error(`${p.name} is no longer available. Remove it from your order.`);
       const available=live.stock_quantity==null?null:Number(live.stock_quantity);
-      if(live.in_stock===false||available===0)throw new Error(`${p.name} is now out of stock. Remove it from your order.`);
-      if(available!==null&&p.qty>available)throw new Error(`Only ${available} unit${available===1?'':'s'} of ${p.name} remain. Reduce your quantity to continue.`);
+      if(stockLimitsEnabled){
+        if(available===null && stockControlsReady)throw new Error(`${p.name} has not been counted for limited sales. Remove it from your order.`);
+        if(available===0)throw new Error(`${p.name} is now out of stock. Remove it from your order.`);
+        if(available!==null && p.qty>available)throw new Error(customerStockMessage(p.name,available,p.qty));
+      }
       const price=Number(live.sale_price??live.regular_price??0);
       if(price!==p.price){p.price=price;priceChanged=true;}
       p.stockQuantity=available;
@@ -1645,9 +1670,9 @@ body.cart-keyboard-active #orderTray.order-tray{display:none!important;}
           <div class="ti-qty">
             <button class="qty-btn" type="button" data-idx="${i}" data-d="-1" aria-label="Decrease quantity"><i data-lucide="minus" aria-hidden="true"></i></button>
             <span>${p.qty}</span>
-            <button class="qty-btn" type="button" data-idx="${i}" data-d="1" aria-label="Increase quantity" ${p.stockQuantity!=null&&p.qty>=p.stockQuantity?'disabled title="Maximum available quantity"':''}><i data-lucide="plus" aria-hidden="true"></i></button>
+            <button class="qty-btn" type="button" data-idx="${i}" data-d="1" aria-label="Increase quantity" ${stockLimitsEnabled&&p.stockQuantity!=null&&p.qty>=p.stockQuantity?'disabled title="Maximum available quantity"':''}><i data-lucide="plus" aria-hidden="true"></i></button>
           </div>
-          ${p.stockQuantity!=null?`<small class="ti-remaining">${p.stockQuantity} available</small>`:''}
+          ${stockLimitsEnabled&&showStockQuantities&&p.stockQuantity!=null?`<small class="ti-remaining">${p.stockQuantity} units available</small>`:''}
         </div>
         <div style="text-align:right;">
           <div class="ti-price">${p.price ? money(p.price * p.qty) : 'POA'}</div>
@@ -1664,8 +1689,8 @@ body.cart-keyboard-active #orderTray.order-tray{display:none!important;}
       return;
     }
     const existing = order.find(o => o.id === p.id);
-    if(existing && p.stockQuantity!=null && existing.qty>=p.stockQuantity){
-      stockNotice(`Only ${p.stockQuantity} unit${p.stockQuantity===1?'':'s'} of ${p.name} available.`);
+    if(existing && stockLimitsEnabled && p.stockQuantity!=null && existing.qty>=p.stockQuantity){
+      stockNotice(customerStockMessage(p.name,p.stockQuantity,existing.qty+1));
       return;
     }
     if(existing){ existing.qty += 1; existing.stockQuantity=p.stockQuantity; }
@@ -1687,8 +1712,8 @@ body.cart-keyboard-active #orderTray.order-tray{display:none!important;}
       if(!item)return;
       const delta=Number(qtyBtn.dataset.d);
       const live=products.find(p=>p.id===item.id);
-      if(delta>0 && (!productCanBuy(live) || (live.stockQuantity!=null&&item.qty>=live.stockQuantity))){
-        stockNotice(!productCanBuy(live)?`${item.name} is currently out of stock.`:`Only ${live.stockQuantity} unit${live.stockQuantity===1?'':'s'} of ${item.name} available.`);
+      if(delta>0 && (!productCanBuy(live) || (stockLimitsEnabled&&live.stockQuantity!=null&&item.qty>=live.stockQuantity))){
+        stockNotice(!productCanBuy(live)?`${item.name} is currently out of stock.`:customerStockMessage(item.name,live.stockQuantity,item.qty+1));
         return;
       }
       item.qty += delta;
@@ -2076,7 +2101,7 @@ body.cart-keyboard-active #orderTray.order-tray{display:none!important;}
           <div class="product-label-row"><span class="cat-label">${label}</span>${hasSale ? `<span class="sale-percent">${Math.round((1-Number(p.salePrice)/Number(p.regularPrice))*100)}% OFF</span>` : ''}</div>
           <h3><a class="card-product-link" href="${productLink}">${escapeCatalogHtml(p.name)}</a></h3>
           <p class="desc">${escapeCatalogHtml(p.desc)}</p>
-          ${!outOfStock&&p.stockQuantity!=null&&p.stockQuantity<=5?`<small class="card-stock">Only ${p.stockQuantity} left</small>`:''}
+          ${!outOfStock&&stockLimitsEnabled&&showStockQuantities&&p.stockQuantity!=null?`<small class="card-stock">${p.stockQuantity} unit${p.stockQuantity===1?'':'s'} available</small>`:''}
           <div class="card-foot">
             <div class="price-block">
               ${hasSale ? `<strong style="color:var(--sale)">${priceDisplay}</strong><small><del>₦${Number(p.regularPrice).toLocaleString('en-NG')}</del> · Sale price</small>` : `<strong>${priceDisplay}</strong>${activePrice ? '<small>Naira</small>' : ''}`}
