@@ -909,7 +909,7 @@ $('saveAllQuantities').addEventListener('click',async()=>{
     if(!p){pendingStockEdits.delete(id);continue;}
     const limited=inventoryPerProductReady?p.stock_limited===true:inventoryLimitsEnabled;
     if(!limited){msg('Unlimited products do not need a stock count. Edit the product to switch to Limited.',true);return;}
-    if(!/^\\d+$/.test(value) || !Number.isSafeInteger(Number(value)) || Number(value)>2147483647){
+    if(!/^\d+$/.test(value) || !Number.isSafeInteger(Number(value)) || Number(value)>2147483647){
       msg('Enter whole numbers of 0 or more for Limited products.',true);return;
     }
   }
@@ -940,8 +940,38 @@ async function loadProducts(){
     const {data,error}=await sb.from('products').select('*').order('sort_order',{ascending:true}).order('created_at',{ascending:true});
     if(error)throw error;
     allProducts=data||[];
+    inventoryPerProductReady=allProducts.length
+      ? Object.prototype.hasOwnProperty.call(allProducts[0],'stock_limited')
+      : !(await sb.from('products').select('stock_limited').limit(1)).error;
+    if(!inventoryPerProductReady) {
+      $('inventorySettingsMessage').textContent='Run supabase/per-product-inventory-modes.sql in Hylar Supabase to activate per-product stock settings.';
+    }else{
+      $('inventorySettingsMessage').textContent='Each product sets its own limit. The display switch above controls numbers on Limited products only.';
+    }
+    renderInventoryControls();
     renderProducts();
   }catch(e){msg(e.message,true)}
+}
+
+function productModeIsLimited(p){
+  return inventoryPerProductReady ? p.stock_limited===true : inventoryLimitsEnabled;
+}
+
+// Render each product mode directly in the list; counts only appear for Limited.
+function renderAvailabilityCell(p,canBuy,qtyLabel,availableQty){
+  const limited=productModeIsLimited(p);
+  const id=esc(String(p.id)),name=esc(p.name);
+  const change=inventoryPerProductReady
+    ? '<select class="stock-mode-select" data-id="'+id+'" aria-label="Inventory type for '+name+'">'
+      +'<option value="unlimited"'+(!limited?' selected':'')+'>Unlimited</option>'
+      +'<option value="limited"'+(limited?' selected':'')+'>Limited</option></select>'
+    : '<small class="stock-unlimited-note">Per-product options need SQL setup</small>';
+  const qtyInput=(limited||!inventoryPerProductReady)
+    ? '<input class="stock-inline-input'+(pendingStockEdits.has(String(p.id))?' is-edited':'')+'" data-id="'+id+'" type="number" inputmode="numeric" step="1" min="0" max="2147483647" value="'+esc(pendingStockEdits.has(String(p.id))?pendingStockEdits.get(String(p.id)):availableQty??'')+'" placeholder="Units" aria-label="Available quantity for '+name+'">'
+    : '<small class="stock-unlimited-note">No quantity deducted or displayed</small>';
+  return '<div class="stock-availability-cell">'
+    +'<span class="status '+(canBuy?'paid':'not_received')+'">'+(canBuy?'In stock':'Out of stock')+'</span>'
+    +change+'<small class="muted">'+esc(qtyLabel)+'</small>'+qtyInput+'</div>';
 }
 
 function renderProducts(){
@@ -952,9 +982,10 @@ function renderProducts(){
     const sale=p.sale_price!=null&&Number(p.sale_price)>0;
     const img=imageUrl(p.image_url);
     const availableQty=p.stock_quantity==null?null:Number(p.stock_quantity);
-    const canBuy=p.in_stock!==false && (!inventoryLimitsEnabled || (availableQty===null?!inventorySettingsReady:availableQty>0));
-    const qtyLabel=availableQty===null?'Quantity not set':inventoryLimitsEnabled?`${availableQty.toLocaleString('en-NG')} available`:`${availableQty.toLocaleString('en-NG')} saved`;
-    return `<tr><td><div style="display:flex;align-items:center;gap:9px">${img?`<img src="${esc(img)}" style="width:42px;height:42px;border-radius:8px;object-fit:cover;background:#eee" alt="">`:''}<div><strong>${esc(p.name)}</strong><br><small class="muted">${esc(p.tag||'')}</small></div></div></td><td data-label="Category">${esc(p.category)}</td><td data-label="Price">${sale?`<del class="muted">${money(p.regular_price)}</del><br><strong>${money(p.sale_price)}</strong>`:money(p.regular_price)}</td><td data-label="Stock"><span class="status ${canBuy?'paid':'not_received'}">${canBuy?'In stock':'Out of stock'}</span><br><small class="muted">${qtyLabel}</small><br><input class="stock-inline-input${pendingStockEdits.has(String(p.id))?' is-edited':''}" data-id="${esc(p.id)}" type="number" inputmode="numeric" step="1" min="0" max="2147483647" value="${pendingStockEdits.has(String(p.id))?esc(pendingStockEdits.get(String(p.id))):availableQty??''}" placeholder="Count" aria-label="Available quantity for ${esc(p.name)}"></td><td data-label="Visible">${p.visible?'Yes':'No'}</td><td><div class="actions"><button class="btn btn-light" onclick="editProduct('${p.id}')">Edit</button><button class="btn btn-light" onclick="toggleStock('${p.id}',${!p.in_stock})">${p.in_stock?'Out of stock':'In stock'}</button><button class="btn btn-light" onclick="toggleVisible('${p.id}',${!p.visible})">${p.visible?'Hide':'Show'}</button><button class="btn btn-danger" onclick="deleteProduct('${p.id}')">Delete</button></div></td></tr>`;
+    const limited=productModeIsLimited(p);
+    const canBuy=p.in_stock!==false && (!limited || (availableQty===null?!inventorySettingsReady:availableQty>0));
+    const qtyLabel=!limited?'Unlimited (no stock count)':availableQty===null?'Set available units':`${availableQty.toLocaleString('en-NG')} available`;
+    return `<tr><td><div style="display:flex;align-items:center;gap:9px">${img?`<img src="${esc(img)}" style="width:42px;height:42px;border-radius:8px;object-fit:cover;background:#eee" alt="">`:''}<div><strong>${esc(p.name)}</strong><br><small class="muted">${esc(p.tag||'')}</small></div></div></td><td data-label="Category">${esc(p.category)}</td><td data-label="Price">${sale?`<del class="muted">${money(p.regular_price)}</del><br><strong>${money(p.sale_price)}</strong>`:money(p.regular_price)}</td><td data-label="Stock">${renderAvailabilityCell(p,canBuy,qtyLabel,availableQty)}</td><td data-label="Visible">${p.visible?'Yes':'No'}</td><td><div class="actions"><button class="btn btn-light" onclick="editProduct('${p.id}')">Edit</button><button class="btn btn-light" onclick="toggleStock('${p.id}',${!p.in_stock})">${p.in_stock?'Out of stock':'In stock'}</button><button class="btn btn-light" onclick="toggleVisible('${p.id}',${!p.visible})">${p.visible?'Hide':'Show'}</button><button class="btn btn-danger" onclick="deleteProduct('${p.id}')">Delete</button></div></td></tr>`;
   }).join(''):'<tr><td colspan="6" class="empty">No products found.</td></tr>';
 }
 
