@@ -39,6 +39,7 @@ footer{padding:26px 0 40px;text-align:center;color:var(--muted);font-size:13px}
 .back-to-shop{display:inline-flex;align-items:center;gap:7px;font-size:13.5px;font-weight:800;margin:13px 0 0;padding:8px 12px;background:#e9f2e7;border-radius:999px;min-height:42px}
 .back-to-shop:hover{background:#d9ebd7;text-decoration:none}
 @media(max-width:740px){.back-to-shop{margin-top:12px;margin-bottom:4px}.breadcrumbs{padding:14px 0}}
+#stock[hidden]{display:none!important}
 </style>
 </head>
 <body>
@@ -128,7 +129,9 @@ footer{padding:26px 0 40px;text-align:center;color:var(--muted);font-size:13px}
     const price=Number.isFinite(sale)&&sale>0&&sale<regular?sale:regular;
     const stock=p.stock_quantity==null?null:Number(p.stock_quantity);
     const configured=settings && typeof settings.limits_enabled==='boolean';
-    const limitsEnabled=configured?settings.limits_enabled:true; // preserve legacy when migration is pending
+    const limitsEnabled=typeof p.stock_limited==='boolean'
+      ? p.stock_limited
+      : configured?settings.limits_enabled:true; // legacy fallback before SQL migration
     const showQuantities=configured?settings.show_quantities===true:true;
     const available=p.in_stock!==false && (!limitsEnabled || (stock===null?!configured:stock>0));
     const imageUrl=absoluteImage(p.image_url);
@@ -137,10 +140,12 @@ footer{padding:26px 0 40px;text-align:center;color:var(--muted);font-size:13px}
     $('category').textContent=category||'Herbal wellness products';
     $('description').textContent=description||'Contact Hylar Herbs for ingredients, sizes and product-specific directions before ordering.';
     $('price').textContent=Number.isFinite(price)&&price>0 ? '₦'+price.toLocaleString('en-NG') : 'Contact for price';
+    // Unlimited products have NO inventory label or numerical availability.
+    // Limited products show numbers only if the admin enabled the display.
+    const showStockLabel=!available || (limitsEnabled && showQuantities && stock!==null);
+    $('stock').hidden=!showStockLabel;
     $('stock').textContent=!available?'Out of stock':
-      (!limitsEnabled||!showQuantities)?'Available to order':
-      stock===null?'Available to order':
-      stock+' unit'+(stock===1?'':'s')+' available';
+      showStockLabel ? stock+' unit'+(stock===1?'':'s')+' available' : '';
     $('stock').classList.toggle('soldout',!available);
     $('shopLink').href=returnUrl;
     $('shopLink').textContent=available?'Back to shop & add to order':'Back to products';
@@ -174,10 +179,18 @@ footer{padding:26px 0 40px;text-align:center;color:var(--muted);font-size:13px}
     try {
       if(!window.supabase) throw new Error('Product service unavailable');
       const client=window.supabase.createClient('https://wstpvrhjhscctekwbkcs.supabase.co','sb_publishable_XHxPBPuaGr1uMRZ8LwC8qw_Odhi8hMP');
+      const baseFields='id,name,description,category,image_url,regular_price,sale_price,in_stock,stock_quantity,visible';
+      const fetchProduct=async()=>{
+        let result=await client.from('products').select(baseFields+',stock_limited')
+          .eq('id',id).eq('visible',true).maybeSingle();
+        if(result.error && /stock_limited/i.test(result.error.message||'')){
+          result=await client.from('products').select(baseFields)
+            .eq('id',id).eq('visible',true).maybeSingle();
+        }
+        return result;
+      };
       const [productsResult,settingsResult]=await Promise.all([
-        client.from('products')
-          .select('id,name,description,category,image_url,regular_price,sale_price,in_stock,stock_quantity,visible')
-          .eq('id',id).eq('visible',true).maybeSingle(),
+        fetchProduct(),
         client.from('store_settings').select('*').eq('id',1).maybeSingle()
       ]);
       if(productsResult.error)throw productsResult.error;

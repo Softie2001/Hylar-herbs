@@ -347,6 +347,16 @@ main.wrap{padding-bottom:118px}
 #orderDetail .order-phone-link{color:var(--brand);text-decoration:underline;text-underline-offset:2px}
 #orderDetail .order-contact-actions a.btn{text-decoration:none}
 
+/* Independent product inventory modes; stock is only editable on Limited products. */
+.inventory-control-panel .inventory-switches{grid-template-columns:minmax(0,1fr);max-width:560px}
+.stock-mode-select{width:148px;max-width:100%;min-height:37px;border:1px solid #cfdbce;background:#fff;color:var(--ink);border-radius:9px;padding:6px 9px;font-size:12px;font-weight:700}
+.stock-mode-select:focus-visible{outline:2px solid #228243;outline-offset:1px}
+.stock-mode-select:disabled{opacity:.55}
+.stock-availability-cell{display:flex;flex-direction:column;align-items:flex-start;gap:6px;min-width:145px}
+.stock-unlimited-note{font-size:11px;color:var(--sub)}
+#stockQtyField[hidden]{display:none!important}
+#stockModeHelp{display:block;line-height:1.5}
+@media(max-width:720px){.stock-mode-select{font-size:13px;width:145px}.stock-availability-cell{min-width:130px}}
 </style>
 </head>
 <body>
@@ -468,21 +478,19 @@ main.wrap{padding-bottom:118px}
 
 <section id="ordersView" class="hidden"><div class="view-title"><div><h2>Orders</h2><small class="muted">Review submitted payments, products and delivery details.</small></div><button class="btn btn-light" id="downloadCsv"><i data-lucide="download"></i>Download CSV</button></div><div class="panel"><div class="toolbar"><div class="toolbar-left"><input id="orderSearch" placeholder="Search order or customer…"><select id="paymentFilter"><option value="">All payment</option><option value="awaiting_confirmation">Awaiting confirmation</option><option value="paid">Paid</option><option value="not_received">Not received</option></select><select id="deliveryFilter"><option value="">All delivery</option><option value="pending">Pending</option><option value="processing">Processing</option><option value="sent">Sent</option><option value="delivered">Delivered</option><option value="cancelled">Cancelled</option></select></div><button class="btn btn-light" id="refreshOrders"><i data-lucide="refresh-cw"></i>Refresh</button></div><div class="table-wrap"><table class="table"><thead><tr><th>Order</th><th>Customer</th><th>Total</th><th>Payment</th><th>Delivery</th><th>Date</th><th></th></tr></thead><tbody id="orderRows"></tbody></table></div></div></section>
 
-<section id="productsView" class="hidden"><div class="view-title"><div><h2>Products</h2><small class="muted">Manage products and prepare limited quantities for sales. Everyday selling remains unlimited when stock limits are off.</small></div><button class="btn btn-green" id="addProduct"><i data-lucide="plus"></i>Add product</button></div>
+<section id="productsView" class="hidden"><div class="view-title"><div><h2>Products</h2><small class="muted">Choose Unlimited or Limited for each product. Only Limited products use stock counts.</small></div><button class="btn btn-green" id="addProduct"><i data-lucide="plus"></i>Add product</button></div>
 <div class="panel inventory-control-panel">
- <div class="section-head"><h3>Product availability controls</h3><span class="inventory-mode" id="inventoryMode">Loading…</span></div>
- <p class="setting-note">Turn on limits when you need to sell only a certain number of units. Turn them off for normal made-to-order selling.</p>
+ <div class="section-head"><h3>Product inventory</h3><span class="inventory-mode" id="inventoryMode">Loading…</span></div>
+ <p class="setting-note">Each product has its own Unlimited or Limited stock setting. Unlimited products show no stock number. Limited products stop selling at zero.</p>
  <div class="inventory-switches">
-  <label class="option-check inventory-switch" for="limitsEnabled"><input id="limitsEnabled" type="checkbox"><span><strong>Enable stock limits</strong><small>Require available quantities and stop accepting orders when they reach zero.</small></span></label>
-  <label class="option-check inventory-switch" for="showQuantities"><input id="showQuantities" type="checkbox"><span><strong>Show remaining units to customers</strong><small>Display numbers on storefronts only while limits are enabled.</small></span></label>
+  <label class="option-check inventory-switch" for="showQuantities"><input id="showQuantities" type="checkbox"><span><strong>Show remaining units to customers</strong><small>Only displays a number for Limited products with stock above zero. It never displays numbers for Unlimited products.</small></span></label>
  </div>
- <button class="btn btn-green" type="button" id="saveInventorySettings"><i data-lucide="save"></i>Save availability settings</button>
- <p id="inventorySettingsMessage" class="setting-note" role="status" aria-live="polite">Existing products will stay available with limits disabled. Quantities can be prepared below.</p>
+ <button class="btn btn-green" type="button" id="saveInventorySettings"><i data-lucide="save"></i>Save display setting</button>
+ <p id="inventorySettingsMessage" class="setting-note" role="status" aria-live="polite">Choose each product’s inventory mode in the product list or Edit Product.</p>
 </div>
 <div class="panel">
- <div class="inventory-bulk-head"><div><h3>Product quantities</h3><p class="setting-note">Enter quantities directly beside products; save all edited numbers together. Leave blank to mark a quantity as not yet counted.</p></div><button class="btn btn-green" type="button" id="saveAllQuantities" disabled><i data-lucide="save"></i>Save edited quantities</button></div>
- <div class="toolbar"><input id="productSearch" placeholder="Search products…"><span class="muted" id="productCount"></span></div><div class="table-wrap"><table class="table"><thead><tr><th>Product</th><th>Category</th><th>Price</th><th>Stock</th><th>Visible</th><th>Actions</th></tr></thead><tbody id="productRows"></tbody></table></div></div></section>
-
+ <div class="inventory-bulk-head"><div><h3>Limited product quantities</h3><p class="setting-note">Set or update available units for Limited products here. Unlimited products have no counted stock on the storefront.</p></div><button class="btn btn-green" type="button" id="saveAllQuantities" disabled><i data-lucide="save"></i>Save edited quantities</button></div>
+ <div class="toolbar"><input id="productSearch" placeholder="Search products…"><span class="muted" id="productCount"></span></div><div class="table-wrap"><table class="table"><thead><tr><th>Product</th><th>Category</th><th>Price</th><th>Availability</th><th>Visible</th><th>Actions</th></tr></thead><tbody id="productRows"></tbody></table></div></div></section>
 <section id="analyticsView" class="hidden"><div class="view-title"><div><h2>Analytics</h2><small class="muted">Sales generated through the Hylar Herbs website only.</small></div></div><div class="panel"><div class="analytics-controls"><div class="range-buttons"><button class="btn btn-light active" data-range="today">Today</button><button class="btn btn-light" data-range="week">This week</button><button class="btn btn-light" data-range="month">This month</button><button class="btn btn-light" data-range="year">This year</button><button class="btn btn-light" data-range="custom">Custom</button></div><div class="field hidden" id="customFromWrap"><label>From</label><input type="date" id="customFrom"></div><div class="field hidden" id="customToWrap"><label>To</label><input type="date" id="customTo"></div><button class="btn btn-primary hidden" id="applyCustom">Apply</button></div><div class="cards"><div class="stat"><div class="stat-top"><span>Revenue</span><span class="stat-icon"><i data-lucide="banknote"></i></span></div><strong id="anRevenue">₦0</strong><small>Paid orders only</small></div><div class="stat"><div class="stat-top"><span>Orders</span><span class="stat-icon"><i data-lucide="receipt"></i></span></div><strong id="anOrders">0</strong><small>Paid orders</small></div><div class="stat"><div class="stat-top"><span>Units sold</span><span class="stat-icon"><i data-lucide="boxes"></i></span></div><strong id="anUnits">0</strong><small>Total product quantity</small></div><div class="stat"><div class="stat-top"><span>Average order</span><span class="stat-icon"><i data-lucide="calculator"></i></span></div><strong id="anAverage">₦0</strong><small>Revenue ÷ paid orders</small></div></div><div class="panel"><div class="section-head"><h3 id="chartTitle">Sales today</h3></div><div class="chart" id="salesChart"></div></div><div style="height:14px"></div><div class="panel"><div class="section-head"><h3>Product performance</h3><span class="muted" style="font-size:11px">Units sold · revenue</span></div><div id="productAnalytics"></div></div></div></section>
 
 
@@ -530,7 +538,7 @@ main.wrap{padding-bottom:118px}
 <nav class="tabbar" aria-label="Main"><button class="tab active" data-view="dashboard"><i data-lucide="layout-dashboard"></i><span>Home</span></button><button class="tab" data-view="products"><i data-lucide="package"></i><span>Products</span></button><button class="tab" data-view="orders"><i data-lucide="shopping-bag"></i><span>Orders</span></button><button class="tab" data-view="analytics"><i data-lucide="trending-up"></i><span>Analytics</span></button><button class="tab" data-view="reviews"><i data-lucide="star"></i><span>Reviews</span></button><button class="tab" data-view="settings"><i data-lucide="settings"></i><span>Settings</span></button></nav>
 </div>
 
-<div id="productModal" class="modal hidden"><div class="modal-card"><div class="modal-head"><h2 id="productModalTitle">Add product</h2><button id="closeProductModal" type="button">×</button></div><form id="productForm"><input id="pid" type="hidden"><div class="grid2dash"><div class="field"><label>Product name</label><input id="pname" required></div><div class="field"><label>Category</label><select id="pcat"><option value="feminine">Feminine Wellness</option><option value="ttc">Fertility &amp; TTC</option><option value="infection">Infection Care</option><option value="men">Men's Vitality</option><option value="body">Body &amp; Weight</option></select></div><div class="field"><label>Regular price (₦)</label><input id="regular" type="number" min="0" step="0.01" required></div><div class="field"><label>Sale price (₦)</label><input id="sale" type="number" min="0" step="0.01"></div><div class="field"><label>Tag</label><select id="tag"><option value="">None</option><option value="Kit">Kit</option></select></div><div class="field"><label>Sort order</label><input id="sort" type="number" min="0" value="999"></div><div class="field"><label for="stockQty">Available quantity</label><input id="stockQty" type="number" inputmode="numeric" min="0" step="1" placeholder="Number of units available"><small class="muted">Save counts any time. Limits only apply while the global stock-limit switch is enabled. A counted quantity of 0 means sold out when limits are on.</small></div><div class="field admin-checkbox-stack"><label class="option-check" for="stock"><input id="stock" type="checkbox" checked><span>In stock</span></label><label class="option-check" for="visible"><input id="visible" type="checkbox" checked><span>Visible on shop</span></label><label class="option-check" for="best"><input id="best" type="checkbox"><span>Best seller</span></label></div><div class="field"><label>Product image</label><input id="image" type="file" accept="image/*"><div id="previewWrap"></div></div><div class="field full"><label>Description</label><textarea id="desc" placeholder="Describe the size, contents, ingredients (if verified), and label directions or precautions. Avoid unverified cure claims."></textarea><small class="muted">This text appears on the product page and helps search engines and customers understand the product. Keep it accurate, specific and medically responsible.</small></div></div><div style="display:flex;justify-content:flex-end;gap:8px"><button class="btn btn-light" type="button" id="cancelProduct">Cancel</button><button class="btn btn-green" type="submit">Save product</button></div></form></div></div>
+<div id="productModal" class="modal hidden"><div class="modal-card"><div class="modal-head"><h2 id="productModalTitle">Add product</h2><button id="closeProductModal" type="button">×</button></div><form id="productForm"><input id="pid" type="hidden"><div class="grid2dash"><div class="field"><label>Product name</label><input id="pname" required></div><div class="field"><label>Category</label><select id="pcat"><option value="feminine">Feminine Wellness</option><option value="ttc">Fertility &amp; TTC</option><option value="infection">Infection Care</option><option value="men">Men's Vitality</option><option value="body">Body &amp; Weight</option></select></div><div class="field"><label>Regular price (₦)</label><input id="regular" type="number" min="0" step="0.01" required></div><div class="field"><label>Sale price (₦)</label><input id="sale" type="number" min="0" step="0.01"></div><div class="field"><label>Tag</label><select id="tag"><option value="">None</option><option value="Kit">Kit</option></select></div><div class="field"><label>Sort order</label><input id="sort" type="number" min="0" value="999"></div><div class="field"><label for="stockMode">Inventory type</label><select id="stockMode"><option value="unlimited">Unlimited availability</option><option value="limited">Limited availability</option></select><small class="muted" id="stockModeHelp">Unlimited products receive orders without a quantity cap.</small></div><div class="field" id="stockQtyField"><label for="stockQty">Available units (Limited only)</label><input id="stockQty" type="number" inputmode="numeric" min="0" step="1" placeholder="e.g. 10"><small class="muted">Enter a whole number. Zero means Out of Stock; numbers appear to customers only when enabled globally.</small></div><div class="field admin-checkbox-stack"><label class="option-check" for="stock"><input id="stock" type="checkbox" checked><span>In stock</span></label><label class="option-check" for="visible"><input id="visible" type="checkbox" checked><span>Visible on shop</span></label><label class="option-check" for="best"><input id="best" type="checkbox"><span>Best seller</span></label></div><div class="field"><label>Product image</label><input id="image" type="file" accept="image/*"><div id="previewWrap"></div></div><div class="field full"><label>Description</label><textarea id="desc" placeholder="Describe the size, contents, ingredients (if verified), and label directions or precautions. Avoid unverified cure claims."></textarea><small class="muted">This text appears on the product page and helps search engines and customers understand the product. Keep it accurate, specific and medically responsible.</small></div></div><div style="display:flex;justify-content:flex-end;gap:8px"><button class="btn btn-light" type="button" id="cancelProduct">Cancel</button><button class="btn btn-green" type="submit">Save product</button></div></form></div></div>
 
 <div id="orderModal" class="modal hidden"><div class="modal-card"><div class="modal-head"><h2>Order details</h2><button id="closeOrderModal" type="button">×</button></div><div id="orderDetail"></div></div></div>
 
@@ -829,50 +837,49 @@ $('downloadCsv').onclick=()=>{
 };
 
 
-/* Separate global stock enforcement from the customer-facing quantity display. */
+/* Product-level inventory enforcement; store-wide switch controls number display ONLY. */
 let inventoryLimitsEnabled=false, inventoryShowQuantities=false, inventorySettingsReady=false;
+let inventoryPerProductReady=false;
 const pendingStockEdits=new Map();
 function renderInventoryControls(){
-  $('limitsEnabled').checked=inventoryLimitsEnabled;
   $('showQuantities').checked=inventoryShowQuantities;
-  $('inventoryMode').textContent=inventoryLimitsEnabled?'Limits enabled':'Unlimited selling';
-  $('inventoryMode').classList.toggle('is-limited',inventoryLimitsEnabled);
-  $('limitsEnabled').disabled=!inventorySettingsReady;
+  $('inventoryMode').textContent=inventoryPerProductReady?'Per-product controls active':'SQL setup required';
+  $('inventoryMode').classList.toggle('is-limited',!inventoryPerProductReady);
   $('showQuantities').disabled=!inventorySettingsReady;
   $('saveInventorySettings').disabled=!inventorySettingsReady;
 }
 async function loadInventorySettings(){
   const {data,error}=await sb.from('store_settings').select('*').eq('id',1).maybeSingle();
-  const usable=!error && data && typeof data.limits_enabled==='boolean' && typeof data.show_quantities==='boolean';
+  const usable=!error && data && typeof data.show_quantities==='boolean';
   inventorySettingsReady=!!usable;
   if(usable){
-    inventoryLimitsEnabled=data.limits_enabled;
-    inventoryShowQuantities=data.show_quantities;
-    $('inventorySettingsMessage').textContent='Stock limits apply only when enabled. Quantities remain saved while limits are off.';
+    inventoryLimitsEnabled=data.limits_enabled===true; // only for legacy fallback before SQL setup
+    inventoryShowQuantities=data.show_quantities===true;
+    $('inventorySettingsMessage').textContent=inventoryPerProductReady
+      ? 'Each product sets its own limit. This switch only shows or hides Limited product quantities.'
+      : 'Apply supabase/per-product-inventory-modes.sql to enable Unlimited or Limited for each product.';
   }else{
-    // Do not allow misleading changes until the matching SQL and backend guards are installed.
     inventoryLimitsEnabled=true;inventoryShowQuantities=true;
-    $('inventorySettingsMessage').textContent='Availability controls are not ready. Run supabase/optional-stock-limits.sql in the Hylar Herbs database first.';
+    $('inventorySettingsMessage').textContent='Store settings are unavailable. Existing inventory safeguards remain active.';
   }
   renderInventoryControls();
 }
 $('saveInventorySettings').addEventListener('click',async()=>{
   if(!inventorySettingsReady)return;
-  const enabled=$('limitsEnabled').checked,show=$('showQuantities').checked;
+  const show=$('showQuantities').checked;
   const button=$('saveInventorySettings');button.disabled=true;
-  $('inventorySettingsMessage').textContent='Saving store availability settings…';
+  $('inventorySettingsMessage').textContent='Saving quantity-display setting…';
   try{
     const {error}=await sb.from('store_settings').update({
-      limits_enabled:enabled,show_quantities:show,updated_at:new Date().toISOString()
+      show_quantities:show,updated_at:new Date().toISOString()
     }).eq('id',1);
     if(error)throw error;
-    inventoryLimitsEnabled=enabled;inventoryShowQuantities=show;
-    $('inventorySettingsMessage').textContent=enabled
-      ? 'Stock limits enabled. Only counted products with available units can be ordered.'
-      : 'Unlimited selling enabled. Customers can order normally; saved counts are retained.';
-    if(show && !enabled)$('inventorySettingsMessage').textContent+=' Quantity display applies when limits are enabled.';
-    renderInventoryControls();renderProducts();msg('Availability settings saved.');
-  }catch(e){$('inventorySettingsMessage').textContent='Could not save settings: '+e.message;renderInventoryControls();}
+    inventoryShowQuantities=show;
+    $('inventorySettingsMessage').textContent=show
+      ? 'Only Limited products show their remaining units. Unlimited products stay unlabelled.'
+      : 'Unit counts are hidden. Limited products still become Out of Stock at zero.';
+    renderInventoryControls();renderProducts();msg('Quantity display setting saved.');
+  }catch(e){$('inventorySettingsMessage').textContent='Could not save setting: '+e.message;renderInventoryControls();}
   finally{button.disabled=!inventorySettingsReady;}
 });
 function updateEditedStockButton(){
@@ -887,6 +894,7 @@ $('productRows').addEventListener('input',event=>{
   if(!id)return;
   const existing=allProducts.find(p=>String(p.id)===id);
   if(!existing)return;
+  if(inventoryPerProductReady && existing.stock_limited!==true)return;
   const raw=input.value.trim();
   const original=existing.stock_quantity==null?'':String(existing.stock_quantity);
   if(raw===original){pendingStockEdits.delete(id);input.classList.remove('is-edited');}
@@ -897,33 +905,33 @@ $('saveAllQuantities').addEventListener('click',async()=>{
   const changes=[...pendingStockEdits.entries()];
   if(!changes.length)return;
   for(const [id,value] of changes){
-    if(value!=='' && (!/^\d+$/.test(value) || !Number.isSafeInteger(Number(value)) || Number(value)>2147483647)){
-      msg('Use whole numbers of 0 or more for available quantities.',true);return;
-    }
-    if(inventoryLimitsEnabled && value===''){
-      msg('Enter a number for each edited product while stock limits are enabled.',true);return;
+    const p=allProducts.find(row=>String(row.id)===id);
+    if(!p){pendingStockEdits.delete(id);continue;}
+    const limited=inventoryPerProductReady?p.stock_limited===true:inventoryLimitsEnabled;
+    if(!limited){msg('Unlimited products do not need a stock count. Edit the product to switch to Limited.',true);return;}
+    if(!/^\d+$/.test(value) || !Number.isSafeInteger(Number(value)) || Number(value)>2147483647){
+      msg('Enter whole numbers of 0 or more for Limited products.',true);return;
     }
   }
   const button=$('saveAllQuantities');button.disabled=true;button.textContent='Saving quantities…';
   let completed=0;
   try{
     for(const [id,value] of changes){
-      const qty=value===''?null:Number(value);
-      const {error}=await sb.from('products').update({
+      const qty=Number(value);
+      const {data,error}=await sb.from('products').update({
         stock_quantity:qty,updated_at:new Date().toISOString()
-      }).eq('id',id);
-      if(error)throw error;
+      }).eq('id',id).select('id,stock_quantity').single();
+      if(error||!data||Number(data.stock_quantity)!==qty)throw error||new Error('Quantity update was not saved.');
       pendingStockEdits.delete(id);
       completed++;
     }
     await loadProducts();
-    msg(completed+' product quantities saved successfully.');
+    msg(completed+' Limited product quantities saved successfully.');
   }catch(e){
     await loadProducts();
     msg(completed+' saved. Some quantities could not be saved: '+e.message,true);
   }finally{updateEditedStockButton();}
 });
-
 /* =========================
    PRODUCTS
 ========================= */
@@ -932,8 +940,38 @@ async function loadProducts(){
     const {data,error}=await sb.from('products').select('*').order('sort_order',{ascending:true}).order('created_at',{ascending:true});
     if(error)throw error;
     allProducts=data||[];
+    inventoryPerProductReady=allProducts.length
+      ? Object.prototype.hasOwnProperty.call(allProducts[0],'stock_limited')
+      : !(await sb.from('products').select('stock_limited').limit(1)).error;
+    if(!inventoryPerProductReady) {
+      $('inventorySettingsMessage').textContent='Run supabase/per-product-inventory-modes.sql in Hylar Supabase to activate per-product stock settings.';
+    }else{
+      $('inventorySettingsMessage').textContent='Each product sets its own limit. The display switch above controls numbers on Limited products only.';
+    }
+    renderInventoryControls();
     renderProducts();
   }catch(e){msg(e.message,true)}
+}
+
+function productModeIsLimited(p){
+  return inventoryPerProductReady ? p.stock_limited===true : inventoryLimitsEnabled;
+}
+
+// Render each product mode directly in the list; counts only appear for Limited.
+function renderAvailabilityCell(p,canBuy,qtyLabel,availableQty){
+  const limited=productModeIsLimited(p);
+  const id=esc(String(p.id)),name=esc(p.name);
+  const change=inventoryPerProductReady
+    ? '<select class="stock-mode-select" data-id="'+id+'" aria-label="Inventory type for '+name+'">'
+      +'<option value="unlimited"'+(!limited?' selected':'')+'>Unlimited</option>'
+      +'<option value="limited"'+(limited?' selected':'')+'>Limited</option></select>'
+    : '<small class="stock-unlimited-note">Per-product options need SQL setup</small>';
+  const qtyInput=(limited||!inventoryPerProductReady)
+    ? '<input class="stock-inline-input'+(pendingStockEdits.has(String(p.id))?' is-edited':'')+'" data-id="'+id+'" type="number" inputmode="numeric" step="1" min="0" max="2147483647" value="'+esc(pendingStockEdits.has(String(p.id))?pendingStockEdits.get(String(p.id)):availableQty??'')+'" placeholder="Units" aria-label="Available quantity for '+name+'">'
+    : '<small class="stock-unlimited-note">No quantity deducted or displayed</small>';
+  return '<div class="stock-availability-cell">'
+    +'<span class="status '+(canBuy?'paid':'not_received')+'">'+(canBuy?'In stock':'Out of stock')+'</span>'
+    +change+'<small class="muted">'+esc(qtyLabel)+'</small>'+qtyInput+'</div>';
 }
 
 function renderProducts(){
@@ -944,9 +982,10 @@ function renderProducts(){
     const sale=p.sale_price!=null&&Number(p.sale_price)>0;
     const img=imageUrl(p.image_url);
     const availableQty=p.stock_quantity==null?null:Number(p.stock_quantity);
-    const canBuy=p.in_stock!==false && (!inventoryLimitsEnabled || (availableQty===null?!inventorySettingsReady:availableQty>0));
-    const qtyLabel=availableQty===null?'Quantity not set':inventoryLimitsEnabled?`${availableQty.toLocaleString('en-NG')} available`:`${availableQty.toLocaleString('en-NG')} saved`;
-    return `<tr><td><div style="display:flex;align-items:center;gap:9px">${img?`<img src="${esc(img)}" style="width:42px;height:42px;border-radius:8px;object-fit:cover;background:#eee" alt="">`:''}<div><strong>${esc(p.name)}</strong><br><small class="muted">${esc(p.tag||'')}</small></div></div></td><td data-label="Category">${esc(p.category)}</td><td data-label="Price">${sale?`<del class="muted">${money(p.regular_price)}</del><br><strong>${money(p.sale_price)}</strong>`:money(p.regular_price)}</td><td data-label="Stock"><span class="status ${canBuy?'paid':'not_received'}">${canBuy?'In stock':'Out of stock'}</span><br><small class="muted">${qtyLabel}</small><br><input class="stock-inline-input${pendingStockEdits.has(String(p.id))?' is-edited':''}" data-id="${esc(p.id)}" type="number" inputmode="numeric" step="1" min="0" max="2147483647" value="${pendingStockEdits.has(String(p.id))?esc(pendingStockEdits.get(String(p.id))):availableQty??''}" placeholder="Count" aria-label="Available quantity for ${esc(p.name)}"></td><td data-label="Visible">${p.visible?'Yes':'No'}</td><td><div class="actions"><button class="btn btn-light" onclick="editProduct('${p.id}')">Edit</button><button class="btn btn-light" onclick="toggleStock('${p.id}',${!p.in_stock})">${p.in_stock?'Out of stock':'In stock'}</button><button class="btn btn-light" onclick="toggleVisible('${p.id}',${!p.visible})">${p.visible?'Hide':'Show'}</button><button class="btn btn-danger" onclick="deleteProduct('${p.id}')">Delete</button></div></td></tr>`;
+    const limited=productModeIsLimited(p);
+    const canBuy=p.in_stock!==false && (!limited || (availableQty===null?!inventorySettingsReady:availableQty>0));
+    const qtyLabel=!limited?'Unlimited (no stock count)':availableQty===null?'Set available units':`${availableQty.toLocaleString('en-NG')} available`;
+    return `<tr><td><div style="display:flex;align-items:center;gap:9px">${img?`<img src="${esc(img)}" style="width:42px;height:42px;border-radius:8px;object-fit:cover;background:#eee" alt="">`:''}<div><strong>${esc(p.name)}</strong><br><small class="muted">${esc(p.tag||'')}</small></div></div></td><td data-label="Category">${esc(p.category)}</td><td data-label="Price">${sale?`<del class="muted">${money(p.regular_price)}</del><br><strong>${money(p.sale_price)}</strong>`:money(p.regular_price)}</td><td data-label="Stock">${renderAvailabilityCell(p,canBuy,qtyLabel,availableQty)}</td><td data-label="Visible">${p.visible?'Yes':'No'}</td><td><div class="actions"><button class="btn btn-light" onclick="editProduct('${p.id}')">Edit</button><button class="btn btn-light" onclick="toggleStock('${p.id}',${!p.in_stock})">${p.in_stock?'Out of stock':'In stock'}</button><button class="btn btn-light" onclick="toggleVisible('${p.id}',${!p.visible})">${p.visible?'Hide':'Show'}</button><button class="btn btn-danger" onclick="deleteProduct('${p.id}')">Delete</button></div></td></tr>`;
   }).join(''):'<tr><td colspan="6" class="empty">No products found.</td></tr>';
 }
 
@@ -961,14 +1000,71 @@ function openProductModal(p=null){
   $('desc').value=p?.description||'';
   $('tag').value=p?.tag||'';
   $('sort').value=p?.sort_order??999;
+  $('stockMode').value=inventoryPerProductReady?(p?.stock_limited===true?'limited':'unlimited')
+    :(inventoryLimitsEnabled?'limited':'unlimited');
+  $('stockMode').disabled=!inventoryPerProductReady;
+  $('stockMode').dataset.last=$('stockMode').value;
   $('stockQty').value=p?.stock_quantity==null?'':Number(p.stock_quantity);
+  updateModalInventoryMode();
   $('stock').checked=p?.in_stock!==false;
   $('visible').checked=p?.visible!==false;
   $('best').checked=!!p?.best_seller;
   $('image').value='';
   $('previewWrap').innerHTML=p?.image_url?`<img src="${esc(imageUrl(p.image_url))}" style="width:80px;height:80px;object-fit:cover;border-radius:9px;margin-top:7px" alt="">`:'';
 }
-function closeProductModal(){$('productModal').classList.add('hidden')}
+function closeProductModal(){
+  $('productModal').classList.add('hidden');
+  renderProducts(); // reset a pending table mode choice if the editor was cancelled
+}
+function updateModalInventoryMode(){
+  const limited=$('stockMode').value==='limited';
+  $('stockQtyField').hidden=inventoryPerProductReady&&!limited;
+  $('stockQty').required=inventoryPerProductReady&&limited;
+  $('stockModeHelp').textContent=!inventoryPerProductReady
+    ? 'Run the per-product inventory SQL migration to enable these options.'
+    : limited
+      ? 'Only this product will be quantity-limited; zero means Out of Stock.'
+      : 'No inventory number is shown or deducted. Customers can order normally.';
+}
+$('stockMode').addEventListener('change',()=>{
+  const previous=$('stockMode').dataset.last;
+  if(inventoryPerProductReady && previous!=='limited' && $('stockMode').value==='limited'){
+    $('stockQty').value=''; // fresh count is required when enabling a previously Unlimited product
+  }
+  $('stockMode').dataset.last=$('stockMode').value;
+  updateModalInventoryMode();
+});
+$('productRows').addEventListener('change',event=>{
+  const select=event.target.closest('.stock-mode-select');
+  if(select)changeProductStockMode(select.dataset.id,select.value);
+});
+window.changeProductStockMode=async(id,mode)=>{
+  const product=allProducts.find(p=>String(p.id)===String(id));
+  if(!product||!inventoryPerProductReady){renderProducts();return;}
+  if(mode==='limited'){
+    openProductModal(product);
+    $('stockMode').value='limited';
+    $('stockMode').dataset.last='limited';
+    $('stockQty').value='';
+    updateModalInventoryMode();
+    $('stockQty').focus();
+    return;
+  }
+  if(mode!=='unlimited'){renderProducts();return;}
+  try{
+    const {data,error}=await sb.from('products').update({
+      stock_limited:false,updated_at:new Date().toISOString()
+    }).eq('id',id).select('id,stock_limited').single();
+    if(error||!data||data.stock_limited!==false)throw error||new Error('Inventory change was not saved.');
+    pendingStockEdits.delete(String(id));
+    await loadProducts();
+    updateEditedStockButton();
+    msg('Unlimited availability saved for this product.');
+  }catch(err){
+    await loadProducts();
+    msg('Could not change inventory mode: '+err.message,true);
+  }
+};
 
 window.editProduct=id=>openProductModal(allProducts.find(p=>p.id===id));
 window.toggleStock=async(id,v)=>{
@@ -1006,14 +1102,15 @@ $('productForm').addEventListener('submit',async e=>{
     const sale=$('sale').value.trim()===''?null:Number($('sale').value);
     if(sale!==null&&(sale<=0||sale>=regular))throw new Error('Sale price must be greater than 0 and lower than the regular price.');
     const quantityText=$('stockQty').value.trim();
-    let availableQty=null; // NULL means stock not counted yet, not sold out.
+    const limited=inventoryPerProductReady ? $('stockMode').value==='limited' : inventoryLimitsEnabled;
+    let availableQty=null; // NULL = uncounted; zero = sold out for Limited products.
     if(quantityText!==''){
       if(!/^\d+$/.test(quantityText))throw new Error('Available quantity must be a whole number.');
       availableQty=Number(quantityText);
       if(!Number.isSafeInteger(availableQty)||availableQty>2147483647)throw new Error('Enter a valid available quantity.');
     }
-    if(inventoryLimitsEnabled && inventorySettingsReady && availableQty===null){
-      throw new Error('Set an available quantity to save products while stock limits are enabled.');
+    if(limited && (inventoryPerProductReady||inventorySettingsReady) && availableQty===null){
+      throw new Error('Enter the number of available units for this Limited product (use 0 for sold out).');
     }
     const payload={
       id,
@@ -1031,6 +1128,7 @@ $('productForm').addEventListener('submit',async e=>{
       sort_order:Number($('sort').value)||999,
       updated_at:new Date().toISOString()
     };
+    if(inventoryPerProductReady)payload.stock_limited=limited;
     const {error}=await sb.from('products').upsert(payload,{onConflict:'id'});
     if(error)throw error;
     closeProductModal();
