@@ -837,50 +837,49 @@ $('downloadCsv').onclick=()=>{
 };
 
 
-/* Separate global stock enforcement from the customer-facing quantity display. */
+/* Product-level inventory enforcement; store-wide switch controls number display ONLY. */
 let inventoryLimitsEnabled=false, inventoryShowQuantities=false, inventorySettingsReady=false;
+let inventoryPerProductReady=false;
 const pendingStockEdits=new Map();
 function renderInventoryControls(){
-  $('limitsEnabled').checked=inventoryLimitsEnabled;
   $('showQuantities').checked=inventoryShowQuantities;
-  $('inventoryMode').textContent=inventoryLimitsEnabled?'Limits enabled':'Unlimited selling';
-  $('inventoryMode').classList.toggle('is-limited',inventoryLimitsEnabled);
-  $('limitsEnabled').disabled=!inventorySettingsReady;
+  $('inventoryMode').textContent=inventoryPerProductReady?'Per-product controls active':'SQL setup required';
+  $('inventoryMode').classList.toggle('is-limited',!inventoryPerProductReady);
   $('showQuantities').disabled=!inventorySettingsReady;
   $('saveInventorySettings').disabled=!inventorySettingsReady;
 }
 async function loadInventorySettings(){
   const {data,error}=await sb.from('store_settings').select('*').eq('id',1).maybeSingle();
-  const usable=!error && data && typeof data.limits_enabled==='boolean' && typeof data.show_quantities==='boolean';
+  const usable=!error && data && typeof data.show_quantities==='boolean';
   inventorySettingsReady=!!usable;
   if(usable){
-    inventoryLimitsEnabled=data.limits_enabled;
-    inventoryShowQuantities=data.show_quantities;
-    $('inventorySettingsMessage').textContent='Stock limits apply only when enabled. Quantities remain saved while limits are off.';
+    inventoryLimitsEnabled=data.limits_enabled===true; // only for legacy fallback before SQL setup
+    inventoryShowQuantities=data.show_quantities===true;
+    $('inventorySettingsMessage').textContent=inventoryPerProductReady
+      ? 'Each product sets its own limit. This switch only shows or hides Limited product quantities.'
+      : 'Apply supabase/per-product-inventory-modes.sql to enable Unlimited or Limited for each product.';
   }else{
-    // Do not allow misleading changes until the matching SQL and backend guards are installed.
     inventoryLimitsEnabled=true;inventoryShowQuantities=true;
-    $('inventorySettingsMessage').textContent='Availability controls are not ready. Run supabase/optional-stock-limits.sql in the Hylar Herbs database first.';
+    $('inventorySettingsMessage').textContent='Store settings are unavailable. Existing inventory safeguards remain active.';
   }
   renderInventoryControls();
 }
 $('saveInventorySettings').addEventListener('click',async()=>{
   if(!inventorySettingsReady)return;
-  const enabled=$('limitsEnabled').checked,show=$('showQuantities').checked;
+  const show=$('showQuantities').checked;
   const button=$('saveInventorySettings');button.disabled=true;
-  $('inventorySettingsMessage').textContent='Saving store availability settings…';
+  $('inventorySettingsMessage').textContent='Saving quantity-display setting…';
   try{
     const {error}=await sb.from('store_settings').update({
-      limits_enabled:enabled,show_quantities:show,updated_at:new Date().toISOString()
+      show_quantities:show,updated_at:new Date().toISOString()
     }).eq('id',1);
     if(error)throw error;
-    inventoryLimitsEnabled=enabled;inventoryShowQuantities=show;
-    $('inventorySettingsMessage').textContent=enabled
-      ? 'Stock limits enabled. Only counted products with available units can be ordered.'
-      : 'Unlimited selling enabled. Customers can order normally; saved counts are retained.';
-    if(show && !enabled)$('inventorySettingsMessage').textContent+=' Quantity display applies when limits are enabled.';
-    renderInventoryControls();renderProducts();msg('Availability settings saved.');
-  }catch(e){$('inventorySettingsMessage').textContent='Could not save settings: '+e.message;renderInventoryControls();}
+    inventoryShowQuantities=show;
+    $('inventorySettingsMessage').textContent=show
+      ? 'Only Limited products show their remaining units. Unlimited products stay unlabelled.'
+      : 'Unit counts are hidden. Limited products still become Out of Stock at zero.';
+    renderInventoryControls();renderProducts();msg('Quantity display setting saved.');
+  }catch(e){$('inventorySettingsMessage').textContent='Could not save setting: '+e.message;renderInventoryControls();}
   finally{button.disabled=!inventorySettingsReady;}
 });
 function updateEditedStockButton(){
@@ -895,6 +894,7 @@ $('productRows').addEventListener('input',event=>{
   if(!id)return;
   const existing=allProducts.find(p=>String(p.id)===id);
   if(!existing)return;
+  if(inventoryPerProductReady && existing.stock_limited!==true)return;
   const raw=input.value.trim();
   const original=existing.stock_quantity==null?'':String(existing.stock_quantity);
   if(raw===original){pendingStockEdits.delete(id);input.classList.remove('is-edited');}
@@ -905,18 +905,19 @@ $('saveAllQuantities').addEventListener('click',async()=>{
   const changes=[...pendingStockEdits.entries()];
   if(!changes.length)return;
   for(const [id,value] of changes){
-    if(value!=='' && (!/^\d+$/.test(value) || !Number.isSafeInteger(Number(value)) || Number(value)>2147483647)){
-      msg('Use whole numbers of 0 or more for available quantities.',true);return;
-    }
-    if(inventoryLimitsEnabled && value===''){
-      msg('Enter a number for each edited product while stock limits are enabled.',true);return;
+    const p=allProducts.find(row=>String(row.id)===id);
+    if(!p){pendingStockEdits.delete(id);continue;}
+    const limited=inventoryPerProductReady?p.stock_limited===true:inventoryLimitsEnabled;
+    if(!limited){msg('Unlimited products do not need a stock count. Edit the product to switch to Limited.',true);return;}
+    if(!/^\\d+$/.test(value) || !Number.isSafeInteger(Number(value)) || Number(value)>2147483647){
+      msg('Enter whole numbers of 0 or more for Limited products.',true);return;
     }
   }
   const button=$('saveAllQuantities');button.disabled=true;button.textContent='Saving quantities…';
   let completed=0;
   try{
     for(const [id,value] of changes){
-      const qty=value===''?null:Number(value);
+      const qty=Number(value);
       const {error}=await sb.from('products').update({
         stock_quantity:qty,updated_at:new Date().toISOString()
       }).eq('id',id);
@@ -925,13 +926,12 @@ $('saveAllQuantities').addEventListener('click',async()=>{
       completed++;
     }
     await loadProducts();
-    msg(completed+' product quantities saved successfully.');
+    msg(completed+' Limited product quantities saved successfully.');
   }catch(e){
     await loadProducts();
     msg(completed+' saved. Some quantities could not be saved: '+e.message,true);
   }finally{updateEditedStockButton();}
 });
-
 /* =========================
    PRODUCTS
 ========================= */
