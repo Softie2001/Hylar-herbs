@@ -1000,6 +1000,22 @@ body.cart-keyboard-active #orderTray.order-tray{display:none!important;}
   color:var(--sub,#58725c);
 }
 @media(max-width:760px){#checkoutModal #coPhone{font-size:16px!important}}
+
+/* Checkout: independent, accessible calling and WhatsApp inputs. */
+#checkoutModal .co-contact-choice{margin-bottom:12px}
+#checkoutModal .co-contact-label{font-size:12px;font-weight:850;margin:0 0 9px;color:var(--ink,#193b26)}
+#checkoutModal .co-contact-tabs{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:5px;background:#EFF4EC;border-radius:13px;margin-bottom:11px}
+#checkoutModal .co-contact-tabs button{display:flex;align-items:center;justify-content:center;gap:6px;min-height:43px;padding:10px 6px;border:1px solid transparent;border-radius:10px;color:#4b6352;background:transparent;font-weight:750;font-size:12px;cursor:pointer}
+#checkoutModal .co-contact-tabs button.is-active{background:#fff;color:#13652e;border-color:#d5e7d6;box-shadow:0 2px 8px rgba(7,56,24,.08)}
+#checkoutModal .co-contact-tabs button:focus-visible{outline:2px solid #258748;outline-offset:2px}
+#checkoutModal .co-contact-tabs svg{width:16px;height:16px;flex:none}
+#checkoutModal .co-contact-panel[hidden]{display:none!important}
+#checkoutModal .co-contact-panel .co-field{margin-bottom:4px}
+#checkoutModal .co-contact-hint{margin:8px 1px 0;font-size:11px;line-height:1.5;color:var(--sub,#5d7464)}
+#checkoutModal .co-contact-save-notice{font-size:12px;line-height:1.5;padding:10px 12px;border-radius:10px;background:#FFF3DC;color:#6a4c1a}
+#checkoutModal .co-contact-save-notice[hidden]{display:none!important}
+@media(max-width:760px){#checkoutModal #coPhone,#checkoutModal #coWhatsApp{font-size:16px!important}}
+
 </style>
   
 <!-- Organization Schema -->
@@ -1363,11 +1379,27 @@ body.cart-keyboard-active #orderTray.order-tray{display:none!important;}
             <input type="text" id="coName" placeholder="e.g. Bisi Adeyemi" autocomplete="name">
             <p class="co-error">Please enter your name.</p>
           </div>
-          <div class="co-field">
-            <label for="coPhone">Contact phone number</label>
-            <input type="tel" id="coPhone" placeholder="e.g. 0803 123 4567" autocomplete="tel" inputmode="tel" required aria-describedby="coPhoneHint">
-            <p id="coPhoneHint" class="co-contact-hint">A regular calling number is fine. You do not need WhatsApp to order.</p>
-            <p class="co-error">Please enter a valid calling or WhatsApp number (7–15 digits).</p>
+          <div class="co-contact-choice">
+            <p class="co-contact-label">Contact numbers</p>
+            <div class="co-contact-tabs" role="tablist" aria-label="Customer contact numbers">
+              <button type="button" id="coCallingTab" role="tab" aria-selected="true" aria-controls="coCallingPanel" class="is-active"><i data-lucide="phone" aria-hidden="true"></i>Calling number</button>
+              <button type="button" id="coWhatsAppTab" role="tab" aria-selected="false" aria-controls="coWhatsAppPanel" tabindex="-1"><i data-lucide="message-circle" aria-hidden="true"></i>WhatsApp number</button>
+            </div>
+            <div class="co-contact-panel" id="coCallingPanel" role="tabpanel" aria-labelledby="coCallingTab">
+              <div class="co-field">
+                <label for="coPhone">Calling number</label>
+                <input type="tel" id="coPhone" placeholder="e.g. 0803 123 4567" autocomplete="tel" inputmode="tel" aria-describedby="coContactHint">
+                <p class="co-error">Enter a valid calling number (7–15 digits).</p>
+              </div>
+            </div>
+            <div class="co-contact-panel" id="coWhatsAppPanel" role="tabpanel" aria-labelledby="coWhatsAppTab" hidden>
+              <div class="co-field">
+                <label for="coWhatsApp">WhatsApp number</label>
+                <input type="tel" id="coWhatsApp" placeholder="e.g. 0803 123 4567" inputmode="tel" aria-describedby="coContactHint">
+                <p class="co-error">Enter a valid WhatsApp number (7–15 digits).</p>
+              </div>
+            </div>
+            <p id="coContactHint" class="co-contact-hint">Enter at least one number. You can fill both tabs if your calling and WhatsApp numbers are different.</p>
           </div>
           <div class="co-field">
             <label for="coAddress">Delivery Address</label>
@@ -1444,6 +1476,7 @@ body.cart-keyboard-active #orderTray.order-tray{display:none!important;}
       <div class="ok"><i data-lucide="check" aria-hidden="true"></i></div>
       <h4>Order submitted</h4>
       <p>Thank you. We have received your payment details and will confirm your payment shortly.</p>
+      <p class="co-contact-save-notice" id="coContactSaveNotice" hidden role="status"></p>
       <div class="co-order-chip">
         <div><small>Your order number</small><strong id="coSuccessNum"></strong></div>
         <button type="button" class="copy-btn" id="coSuccessCopy" data-copy=""><i data-lucide="copy" aria-hidden="true"></i><span>Copy</span></button>
@@ -1874,22 +1907,59 @@ body.cart-keyboard-active #orderTray.order-tray{display:none!important;}
     coScrollTop();
   }
 
+  function coSelectContactTab(type,focusField=false){
+    const isWhatsApp=type==='whatsapp';
+    const activeTab=coEl(isWhatsApp?'coWhatsAppTab':'coCallingTab');
+    for(const [id,selected] of [['coCallingTab',!isWhatsApp],['coWhatsAppTab',isWhatsApp]]){
+      const tab=coEl(id);
+      tab.classList.toggle('is-active',selected);
+      tab.setAttribute('aria-selected',String(selected));
+      tab.tabIndex=selected?0:-1;
+    }
+    coEl('coCallingPanel').hidden=isWhatsApp;
+    coEl('coWhatsAppPanel').hidden=!isWhatsApp;
+    if(focusField)coEl(isWhatsApp?'coWhatsApp':'coPhone').focus();
+    return activeTab;
+  }
+  coEl('coCallingTab').addEventListener('click',()=>coSelectContactTab('calling'));
+  coEl('coWhatsAppTab').addEventListener('click',()=>coSelectContactTab('whatsapp'));
+  coEl('coCallingTab').parentElement.addEventListener('keydown',event=>{
+    if(!['ArrowLeft','ArrowRight'].includes(event.key))return;
+    event.preventDefault();
+    const next=event.key==='ArrowLeft'?'calling':'whatsapp';
+    coSelectContactTab(next);
+    coEl(next==='calling'?'coCallingTab':'coWhatsAppTab').focus();
+  });
+  function coValidContactNumber(value){
+    const clean=String(value||'').trim();
+    const digits=clean.replace(/\D/g,'');
+    return digits.length>=7 && digits.length<=15 && clean.length<=32 && /^[+\d\s().-]+$/.test(clean);
+  }
   function coValidateDelivery(){
-    let ok = true, first = null;
-    [['coName',2],['coPhone',7],['coAddress',5],['coLoc',2]].forEach(([id,min]) => {
-      const el = coEl(id);
-      const digits = id === 'coPhone' ? el.value.replace(/\D/g,'') : '';
-      const valid = id === 'coPhone'
-        ? digits.length >= 7 && digits.length <= 15 && /^[+\d\s().-]+$/.test(el.value.trim())
-        : el.value.trim().length >= min;
-      el.closest('.co-field')?.classList.toggle('invalid', !valid);
-      if(!valid){ ok = false; first = first || el; }
+    let ok=true,first=null;
+    [['coName',2],['coAddress',5],['coLoc',2]].forEach(([id,min])=>{
+      const el=coEl(id),valid=el.value.trim().length>=min;
+      el.closest('.co-field')?.classList.toggle('invalid',!valid);
+      if(!valid){ok=false;first=first||el;}
     });
-    if(first) first.focus();
+    const calling=coEl('coPhone').value.trim();
+    const whatsApp=coEl('coWhatsApp').value.trim();
+    const missing=!calling&&!whatsApp;
+    const invalidCall=(!!calling&&!coValidContactNumber(calling))||missing;
+    const invalidWhatsApp=!!whatsApp&&!coValidContactNumber(whatsApp);
+    coEl('coPhone').closest('.co-field')?.classList.toggle('invalid',invalidCall);
+    coEl('coWhatsApp').closest('.co-field')?.classList.toggle('invalid',invalidWhatsApp);
+    if(invalidCall||invalidWhatsApp){
+      ok=false;
+      const type=invalidCall?'calling':'whatsapp';
+      coSelectContactTab(type);
+      first=coEl(invalidCall?'coPhone':'coWhatsApp');
+    }
+    if(first)first.focus();
     return ok;
   }
-  ['coName','coPhone','coAddress','coLoc'].forEach(id => {
-    coEl(id).addEventListener('input', () => coEl(id).closest('.co-field')?.classList.remove('invalid'));
+  ['coName','coPhone','coWhatsApp','coAddress','coLoc'].forEach(id=>{
+    coEl(id).addEventListener('input',()=>coEl(id).closest('.co-field')?.classList.remove('invalid'));
   });
 
   // ----- payment step -----
@@ -1981,11 +2051,13 @@ body.cart-keyboard-active #orderTray.order-tray{display:none!important;}
   }
   function closeCheckoutModal(){ coEl('checkoutModal').classList.remove('open'); }
 
-  function coShowSuccess(num){
+  function coShowSuccess(num,contactNotice=''){
     coEl('coTitle').textContent = 'Order submitted';
     coEl('coSteps').classList.add('co-hide');
     coEl('checkoutForm').classList.add('co-hide');
     coEl('coSuccessNum').textContent = num;
+    coEl('coContactSaveNotice').textContent=contactNotice;
+    coEl('coContactSaveNotice').hidden=!contactNotice;
     coEl('coSuccessCopy').dataset.copy = num;
     coEl('coSuccessWa').href = `https://wa.me/${STORE_WHATSAPP}?text=${encodeURIComponent(`Hello Hylar Herbs, I have paid for order ${num}. Please confirm my payment.`)}`;
     coEl('coSuccess').classList.remove('co-hide');
@@ -2048,9 +2120,14 @@ body.cart-keyboard-active #orderTray.order-tray{display:none!important;}
       await checkCurrentStock();
       const fd = new FormData();
       fd.append('name', coEl('coName').value.trim());
-      // The deployed submit-order function still names its contact-number field 'whatsapp'.
-      // Preserve its wire contract: this value is stored as customer_phone and may be a normal calling number.
-      fd.append('whatsapp', coEl('coPhone').value.trim());
+      const callingNumber=coEl('coPhone').value.trim();
+      const whatsAppNumber=coEl('coWhatsApp').value.trim();
+      // The current Edge Function requires the legacy 'whatsapp' multipart key.
+      // Use the calling number first; the new contact RPC records BOTH separately.
+      const primaryContact=callingNumber||whatsAppNumber;
+      fd.append('whatsapp',primaryContact);
+      fd.append('calling_number',callingNumber);
+      fd.append('whatsapp_number',whatsAppNumber);
       fd.append('address', coEl('coAddress').value.trim());
       fd.append('location', coEl('coLoc').value.trim());
       fd.append('reference', coEl('coReference').value.trim() || checkoutOrderNumber);
@@ -2060,7 +2137,26 @@ body.cart-keyboard-active #orderTray.order-tray{display:none!important;}
       const res = await fetch(ORDER_FUNCTION_URL, {method:'POST', headers:{'apikey':SUPABASE_PUBLISHABLE_KEY}, body:fd});
       const data = await res.json().catch(() => ({}));
       if(!res.ok) throw new Error(data.error || 'Could not submit your order.');
-      coShowSuccess(data.order_number || checkoutOrderNumber);
+      const createdOrderNumber=data.order_number||checkoutOrderNumber;
+      let contactNotice='';
+      // The order is already created here. A failed optional-contact save MUST
+      // not repeat the checkout or risk creating a duplicate payment/order.
+      try{
+        if(!supabaseClient)throw new Error('Contacts connection unavailable');
+        const result=await supabaseClient.rpc('hylar_save_order_contacts',{
+          p_order_number:createdOrderNumber,
+          p_contact_number:primaryContact,
+          p_calling_number:callingNumber||null,
+          p_whatsapp_number:whatsAppNumber||null
+        });
+        if(result.error||result.data!==true)throw result.error||new Error('Contacts could not be verified');
+      }catch(err){
+        // The primary contact is still saved in orders.customer_phone by the
+        // existing Edge Function; separate numbers need the one-time SQL setup.
+        contactNotice='Your order was submitted, but we could not save both contact types separately. Please send your order number and preferred contact details to Hylar Herbs.';
+        console.info('Separate contact details could not be saved.');
+      }
+      coShowSuccess(createdOrderNumber,contactNotice);
       order = []; updateTray();
       checkoutOrderNumber = '';
       coEl('checkoutForm').reset();

@@ -555,7 +555,7 @@ const money=n=>'₦'+Number(n||0).toLocaleString('en-NG');
 const esc=v=>String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
 const icons=()=>{if(window.lucide)lucide.createIcons()};
 
-let allProducts=[],allOrders=[],allItems=[],currentView='dashboard',analyticsRange='today',analyticsFrom=null,analyticsTo=null;
+let allProducts=[],allOrders=[],allItems=[],allOrderContacts=new Map(),currentView='dashboard',analyticsRange='today',analyticsFrom=null,analyticsTo=null;
 
 function msg(t,error=false){$('msg').innerHTML=t?`<div class="notice ${error?'error':''}">${esc(t)}</div>`:''}
 function loginMsg(t,error=false){$('loginMsg').innerHTML=t?`<div class="notice ${error?'error':''}">${esc(t)}</div>`:''}
@@ -597,10 +597,11 @@ function imageUrl(v){
 }
 
 async function getAllData(){
-  const [o,i,p]=await Promise.all([
+  const [o,i,p,contacts]=await Promise.all([
     sb.from('orders').select('*').order('created_at',{ascending:false}),
     sb.from('order_items').select('*').order('created_at',{ascending:true}),
-    sb.from('products').select('*').order('sort_order',{ascending:true}).order('created_at',{ascending:true})
+    sb.from('products').select('*').order('sort_order',{ascending:true}).order('created_at',{ascending:true}),
+    sb.from('order_contact_details').select('order_id,calling_number,whatsapp_number')
   ]);
   if(o.error)throw o.error;
   if(i.error)throw i.error;
@@ -608,6 +609,8 @@ async function getAllData(){
   allOrders=o.data||[];
   allItems=i.data||[];
   allProducts=p.data||[];
+  // Allow old orders to remain manageable before the additive SQL is installed.
+  allOrderContacts=contacts.error?new Map():new Map((contacts.data||[]).map(c=>[String(c.order_id),c]));
 }
 function paidOrders(){return allOrders.filter(o=>o.payment_status==='paid')}
 function sumOrders(list){return list.reduce((s,o)=>s+Number(o.total_amount||0),0)}
@@ -678,14 +681,23 @@ async function loadOrders(){
   catch(e){msg(e.message||'Could not load orders.',true)}
 }
 
+function orderContactNumbers(order){
+  const stored=allOrderContacts.get(String(order.id));
+  return stored
+    ? {calling:stored.calling_number||'',whatsapp:stored.whatsapp_number||'',separate:true}
+    : {calling:order.customer_phone||'',whatsapp:order.customer_phone||'',separate:false};
+}
 function renderOrders(){
   const q=$('orderSearch').value.trim().toLowerCase(),pf=$('paymentFilter').value,df=$('deliveryFilter').value;
   const list=allOrders.filter(o=>
-    (!q||`${o.order_number} ${o.customer_name} ${o.customer_phone} ${o.delivery_address} ${o.delivery_location}`.toLowerCase().includes(q))&&
+    (!q||`${o.order_number} ${o.customer_name} ${o.customer_phone} ${orderContactNumbers(o).calling} ${orderContactNumbers(o).whatsapp} ${o.delivery_address} ${o.delivery_location}`.toLowerCase().includes(q))&&
     (!pf||o.payment_status===pf)&&
     (!df||o.delivery_status===df)
   );
-  $('orderRows').innerHTML=list.length?list.map(o=>`<tr><td><strong>${esc(o.order_number)}</strong></td><td data-label="Customer">${esc(o.customer_name)}<br><small class="muted">${esc(o.customer_phone)}</small></td><td data-label="Total"><strong>${money(o.total_amount)}</strong></td><td data-label="Payment"><span class="status ${statusClass(o.payment_status)}">${esc(paymentLabel(o.payment_status))}</span></td><td data-label="Delivery"><span class="status ${statusClass(o.delivery_status)}">${esc(o.delivery_status)}</span></td><td data-label="Date">${new Date(o.created_at).toLocaleDateString('en-NG')}</td><td><button class="btn btn-light btn-block" onclick="viewOrder('${o.id}')">View order</button></td></tr>`).join(''):'<tr><td colspan="7" class="empty">'+emptyBox('package-open','No orders yet','Orders will appear here once customers start purchasing.')+'</td></tr>';icons();
+  $('orderRows').innerHTML=list.length?list.map(o=>`<tr><td><strong>${esc(o.order_number)}</strong></td><td data-label="Customer">${esc(o.customer_name)}<br><small class="muted">${esc(orderContactNumbers(o).separate
+   ? [orderContactNumbers(o).calling?'Call: '+orderContactNumbers(o).calling:'',
+      orderContactNumbers(o).whatsapp?'WA: '+orderContactNumbers(o).whatsapp:''].filter(Boolean).join(' · ')
+   : o.customer_phone)}</small></td><td data-label="Total"><strong>${money(o.total_amount)}</strong></td><td data-label="Payment"><span class="status ${statusClass(o.payment_status)}">${esc(paymentLabel(o.payment_status))}</span></td><td data-label="Delivery"><span class="status ${statusClass(o.delivery_status)}">${esc(o.delivery_status)}</span></td><td data-label="Date">${new Date(o.created_at).toLocaleDateString('en-NG')}</td><td><button class="btn btn-light btn-block" onclick="viewOrder('${o.id}')">View order</button></td></tr>`).join(''):'<tr><td colspan="7" class="empty">'+emptyBox('package-open','No orders yet','Orders will appear here once customers start purchasing.')+'</td></tr>';icons();
 }
 
 async function viewOrder(id){
@@ -699,11 +711,19 @@ async function viewOrder(id){
     if(data?.signedUrl)proof=`<section class="order-proof-section" aria-label="Payment proof"><div class="order-section-title"><strong>Payment proof</strong><span>Tap to view full image</span></div><a class="order-proof-preview" href="${esc(data.signedUrl)}" target="_blank" rel="noopener noreferrer" aria-label="Open full payment proof in new tab"><img src="${esc(data.signedUrl)}" alt="Customer payment proof" loading="lazy"><span class="order-proof-open"><i data-lucide="external-link" aria-hidden="true"></i>View receipt</span></a></section>`;
   }
 
+  const contacts=orderContactNumbers(o);
   const chatType=o.payment_status==='paid'?'confirmed':o.payment_status==='not_received'?'not_received':'awaiting';
-  const wa=whatsappUrl(o,chatType);
-  const deliveryWa=whatsappUrl(o,'dispatch');
+  const wa=contacts.whatsapp?whatsappUrl(o,chatType,contacts.whatsapp):'';
+  const deliveryWa=contacts.whatsapp?whatsappUrl(o,'dispatch',contacts.whatsapp):'';
+  const callingDetails=contacts.separate
+    ? '<div class="detail"><small>Calling number</small><strong>'+(contacts.calling
+      ? '<a class="order-phone-link" href="tel:'+esc(phoneForCall(contacts.calling))+'">'+esc(contacts.calling)+'</a>'
+      : 'Not provided')+'</strong></div>'
+      +'<div class="detail"><small>WhatsApp number</small><strong>'+(contacts.whatsapp
+      ? esc(contacts.whatsapp):'Not provided')+'</strong></div>'
+    : '<div class="detail"><small>Contact number (previous checkout)</small><strong><a class="order-phone-link" href="tel:'+esc(phoneForCall(o.customer_phone))+'">'+esc(o.customer_phone)+'</a></strong></div>';
 
-  $('orderDetail').innerHTML=`<div class="detail-grid"><div class="detail"><small>Order</small><strong>${esc(o.order_number)}</strong></div><div class="detail"><small>Payment</small><strong>${esc(paymentLabel(o.payment_status))}</strong></div><div class="detail"><small>Customer</small><strong>${esc(o.customer_name)}</strong></div><div class="detail"><small>Contact number</small><strong><a class="order-phone-link" href="tel:${esc(phoneForCall(o.customer_phone))}">${esc(o.customer_phone)}</a></strong></div><div class="detail full"><small>Delivery address</small><strong>${esc(o.delivery_address)}</strong></div><div class="detail full"><small>Preferred delivery location</small><strong>${esc(o.delivery_location)}</strong></div><div class="detail"><small>Products total</small><strong>${money(o.subtotal)}</strong></div><div class="detail"><small>Delivery</small><strong>Fee negotiated separately</strong></div></div>
+  $('orderDetail').innerHTML=`<div class="detail-grid"><div class="detail"><small>Order</small><strong>${esc(o.order_number)}</strong></div><div class="detail"><small>Payment</small><strong>${esc(paymentLabel(o.payment_status))}</strong></div><div class="detail"><small>Customer</small><strong>${esc(o.customer_name)}</strong></div>${callingDetails}<div class="detail full"><small>Delivery address</small><strong>${esc(o.delivery_address)}</strong></div><div class="detail full"><small>Preferred delivery location</small><strong>${esc(o.delivery_location)}</strong></div><div class="detail"><small>Products total</small><strong>${money(o.subtotal)}</strong></div><div class="detail"><small>Delivery</small><strong>Fee negotiated separately</strong></div></div>
 <div class="items"><strong>Products ordered</strong>${items.map(i=>`<div class="item-row"><span>${esc(i.product_name)} × ${Number(i.quantity)}</span><strong>${money(i.line_total)}</strong></div>`).join('')}<div class="item-row"><strong>Total</strong><strong>${money(o.total_amount)}</strong></div></div>${proof}
 <section class="order-action-section" aria-label="Payment actions">
 <div class="order-section-title"><strong>Payment verification</strong><span>Choose one action</span></div>
@@ -715,9 +735,15 @@ async function viewOrder(id){
 <section class="order-action-section" aria-label="Customer communication">
 <div class="order-section-title"><strong>Customer communication</strong></div>
 <div class="order-contact-actions">
-<a class="btn btn-light" href="tel:${esc(phoneForCall(o.customer_phone))}" aria-label="Call customer ${esc(o.customer_name)}"><i data-lucide="phone" aria-hidden="true"></i>Call customer</a>
-<button class="btn btn-light" data-wa="${esc(wa)}" onclick="openWhatsApp(this.dataset.wa)"><i data-lucide="message-circle"></i>WhatsApp customer</button>
-<button class="btn btn-light order-contact-dispatch" data-wa="${esc(deliveryWa)}" onclick="openWhatsApp(this.dataset.wa)"><i data-lucide="truck"></i>Dispatch message</button>
+${contacts.calling
+ ? '<a class="btn btn-light" href="tel:'+esc(phoneForCall(contacts.calling))+'" aria-label="Call '+esc(o.customer_name)+'"><i data-lucide="phone" aria-hidden="true"></i>Call customer</a>'
+ : '<button type="button" class="btn btn-light" disabled title="Calling number not provided"><i data-lucide="phone" aria-hidden="true"></i>No calling number</button>'}
+${contacts.whatsapp
+ ? '<button type="button" class="btn btn-light" data-wa="'+esc(wa)+'" onclick="openWhatsApp(this.dataset.wa)"><i data-lucide="message-circle" aria-hidden="true"></i>WhatsApp customer</button>'
+ : '<button type="button" class="btn btn-light" disabled title="WhatsApp number not provided"><i data-lucide="message-circle" aria-hidden="true"></i>No WhatsApp number</button>'}
+${contacts.whatsapp
+ ? '<button type="button" class="btn btn-light order-contact-dispatch" data-wa="'+esc(deliveryWa)+'" onclick="openWhatsApp(this.dataset.wa)"><i data-lucide="truck" aria-hidden="true"></i>Dispatch message</button>'
+ : '<button type="button" class="btn btn-light order-contact-dispatch" disabled title="WhatsApp number not provided"><i data-lucide="truck" aria-hidden="true"></i>Dispatch via call</button>'}
 </div>
 </section>
 <div class="order-delivery-field"><label for="orderDeliveryStatus">Delivery status</label><select id="orderDeliveryStatus" onchange="updateDelivery('${o.id}',this.value)"><option value="pending" ${o.delivery_status==='pending'?'selected':''}>Pending</option><option value="processing" ${o.delivery_status==='processing'?'selected':''}>Processing</option><option value="sent" ${o.delivery_status==='sent'?'selected':''}>Sent</option><option value="delivered" ${o.delivery_status==='delivered'?'selected':''}>Delivered</option><option value="cancelled" ${o.delivery_status==='cancelled'?'selected':''}>Cancelled</option></select></div>`;
@@ -739,7 +765,7 @@ function phoneForWhatsApp(v){
   return n;
 }
 
-function whatsappUrl(o,type){
+function whatsappUrl(o,type,contactNumber=o.customer_phone){
   const items=allItems.filter(i=>i.order_id===o.id);
   const list=items.map(i=>`• ${i.product_name} ×${i.quantity}`).join('\n');
   let text;
@@ -752,7 +778,7 @@ function whatsappUrl(o,type){
   }else{
     text=`Hello ${o.customer_name}, your payment for order ${o.order_number} has been confirmed.\n\nOrder details:\n${list}\n\nTotal paid: ${money(o.total_amount)}\nDelivery location: ${o.delivery_location}\nDelivery address: ${o.delivery_address}\n\nYour order is now being processed.`;
   }
-  return `https://wa.me/${phoneForWhatsApp(o.customer_phone)}?text=${encodeURIComponent(text)}`;
+  return `https://wa.me/${phoneForWhatsApp(contactNumber)}?text=${encodeURIComponent(text)}`;
 }
 window.openWhatsApp=url=>window.open(url,'_blank','noopener,noreferrer');
 
