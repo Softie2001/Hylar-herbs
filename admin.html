@@ -1000,14 +1000,71 @@ function openProductModal(p=null){
   $('desc').value=p?.description||'';
   $('tag').value=p?.tag||'';
   $('sort').value=p?.sort_order??999;
+  $('stockMode').value=inventoryPerProductReady?(p?.stock_limited===true?'limited':'unlimited')
+    :(inventoryLimitsEnabled?'limited':'unlimited');
+  $('stockMode').disabled=!inventoryPerProductReady;
+  $('stockMode').dataset.last=$('stockMode').value;
   $('stockQty').value=p?.stock_quantity==null?'':Number(p.stock_quantity);
+  updateModalInventoryMode();
   $('stock').checked=p?.in_stock!==false;
   $('visible').checked=p?.visible!==false;
   $('best').checked=!!p?.best_seller;
   $('image').value='';
   $('previewWrap').innerHTML=p?.image_url?`<img src="${esc(imageUrl(p.image_url))}" style="width:80px;height:80px;object-fit:cover;border-radius:9px;margin-top:7px" alt="">`:'';
 }
-function closeProductModal(){$('productModal').classList.add('hidden')}
+function closeProductModal(){
+  $('productModal').classList.add('hidden');
+  renderProducts(); // reset a pending table mode choice if the editor was cancelled
+}
+function updateModalInventoryMode(){
+  const limited=$('stockMode').value==='limited';
+  $('stockQtyField').hidden=inventoryPerProductReady&&!limited;
+  $('stockQty').required=inventoryPerProductReady&&limited;
+  $('stockModeHelp').textContent=!inventoryPerProductReady
+    ? 'Run the per-product inventory SQL migration to enable these options.'
+    : limited
+      ? 'Only this product will be quantity-limited; zero means Out of Stock.'
+      : 'No inventory number is shown or deducted. Customers can order normally.';
+}
+$('stockMode').addEventListener('change',()=>{
+  const previous=$('stockMode').dataset.last;
+  if(inventoryPerProductReady && previous!=='limited' && $('stockMode').value==='limited'){
+    $('stockQty').value=''; // fresh count is required when enabling a previously Unlimited product
+  }
+  $('stockMode').dataset.last=$('stockMode').value;
+  updateModalInventoryMode();
+});
+$('productRows').addEventListener('change',event=>{
+  const select=event.target.closest('.stock-mode-select');
+  if(select)changeProductStockMode(select.dataset.id,select.value);
+});
+window.changeProductStockMode=async(id,mode)=>{
+  const product=allProducts.find(p=>String(p.id)===String(id));
+  if(!product||!inventoryPerProductReady){renderProducts();return;}
+  if(mode==='limited'){
+    openProductModal(product);
+    $('stockMode').value='limited';
+    $('stockMode').dataset.last='limited';
+    $('stockQty').value='';
+    updateModalInventoryMode();
+    $('stockQty').focus();
+    return;
+  }
+  if(mode!=='unlimited'){renderProducts();return;}
+  try{
+    const {error}=await sb.from('products').update({
+      stock_limited:false,updated_at:new Date().toISOString()
+    }).eq('id',id);
+    if(error)throw error;
+    pendingStockEdits.delete(String(id));
+    await loadProducts();
+    updateEditedStockButton();
+    msg('Unlimited availability saved for this product.');
+  }catch(err){
+    await loadProducts();
+    msg('Could not change inventory mode: '+err.message,true);
+  }
+};
 
 window.editProduct=id=>openProductModal(allProducts.find(p=>p.id===id));
 window.toggleStock=async(id,v)=>{
@@ -1045,14 +1102,15 @@ $('productForm').addEventListener('submit',async e=>{
     const sale=$('sale').value.trim()===''?null:Number($('sale').value);
     if(sale!==null&&(sale<=0||sale>=regular))throw new Error('Sale price must be greater than 0 and lower than the regular price.');
     const quantityText=$('stockQty').value.trim();
-    let availableQty=null; // NULL means stock not counted yet, not sold out.
+    const limited=inventoryPerProductReady ? $('stockMode').value==='limited' : inventoryLimitsEnabled;
+    let availableQty=null; // NULL = uncounted; zero = sold out for Limited products.
     if(quantityText!==''){
       if(!/^\d+$/.test(quantityText))throw new Error('Available quantity must be a whole number.');
       availableQty=Number(quantityText);
       if(!Number.isSafeInteger(availableQty)||availableQty>2147483647)throw new Error('Enter a valid available quantity.');
     }
-    if(inventoryLimitsEnabled && inventorySettingsReady && availableQty===null){
-      throw new Error('Set an available quantity to save products while stock limits are enabled.');
+    if(limited && (inventoryPerProductReady||inventorySettingsReady) && availableQty===null){
+      throw new Error('Enter the number of available units for this Limited product (use 0 for sold out).');
     }
     const payload={
       id,
@@ -1070,6 +1128,7 @@ $('productForm').addEventListener('submit',async e=>{
       sort_order:Number($('sort').value)||999,
       updated_at:new Date().toISOString()
     };
+    if(inventoryPerProductReady)payload.stock_limited=limited;
     const {error}=await sb.from('products').upsert(payload,{onConflict:'id'});
     if(error)throw error;
     closeProductModal();
