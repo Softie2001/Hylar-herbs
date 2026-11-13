@@ -1683,12 +1683,17 @@ body.cart-keyboard-active #orderTray.order-tray{display:none!important;}
     try{
       if(!supabaseClient) throw new Error("Inventory service unavailable");
       await refreshInventoryPreferences();
-      const { data, error } = await supabaseClient
+      const baseFields="id,name,description,category,tag,image_url,regular_price,sale_price,in_stock,stock_quantity,visible,best_seller,sort_order";
+      let result=await supabaseClient
         .from("products")
-        .select("*")
-        .eq("visible", true)
-        .order("sort_order", { ascending:true });
-
+        .select(baseFields+",stock_limited")
+        .eq("visible",true).order("sort_order",{ascending:true});
+      if(result.error && /stock_limited/i.test(result.error.message||'')){
+        // Do not break the live catalogue while the additive migration is pending.
+        result=await supabaseClient.from("products").select(baseFields)
+          .eq("visible",true).order("sort_order",{ascending:true});
+      }
+      const {data,error}=result;
       if(error) throw error;
 
       products = Array.isArray(data) ? data.map(mapSupabaseProduct) : [];
@@ -1739,9 +1744,14 @@ body.cart-keyboard-active #orderTray.order-tray{display:none!important;}
     if(!order.length)throw new Error('Your order tray is empty.');
     if(!supabaseClient)throw new Error('Live stock is unavailable. Please try again later.');
     await refreshInventoryPreferences();
-    const {data,error}=await supabaseClient.from('products')
-      .select('*')
-      .in('id',order.map(p=>p.id));
+    const baseFields='id,name,regular_price,sale_price,in_stock,stock_quantity,visible';
+    let result=await supabaseClient.from('products')
+      .select(baseFields+',stock_limited').in('id',order.map(p=>p.id));
+    if(result.error && /stock_limited/i.test(result.error.message||'')){
+      result=await supabaseClient.from('products')
+        .select(baseFields).in('id',order.map(p=>p.id));
+    }
+    const {data,error}=result;
     if(error)throw new Error('Could not verify available stock. Please try again.');
     const current=new Map((data||[]).map(p=>[p.id,p]));
     let priceChanged=false;
