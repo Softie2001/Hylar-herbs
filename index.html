@@ -1610,8 +1610,8 @@ body.cart-keyboard-active #orderTray.order-tray{display:none!important;}
     console.warn("Supabase library did not load; checkout is unavailable.", err);
   }
 
-  // Before the new SQL runs, retain the legacy always-limited behavior.
-  // After migration, the admin's two independent switches control enforcement and display.
+  // Until the new SQL runs, preserve the old store-wide settings.
+  // After migration, each product controls limits; show_quantities controls labels only.
   let stockLimitsEnabled=true,showStockQuantities=true,stockControlsReady=false;
   async function refreshInventoryPreferences(){
     if(!supabaseClient)throw new Error('Inventory settings are temporarily unavailable.');
@@ -1676,7 +1676,12 @@ body.cart-keyboard-active #orderTray.order-tray{display:none!important;}
   }
 
   function productCanBuy(p){
-    return !!p && p.inStock!==false && (!productIsLimited(p) || (p.stockQuantity==null?!stockControlsReady:p.stockQuantity>0));
+    if(!p || p.inStock===false)return false;
+    if(!productIsLimited(p))return true;
+    // Explicit Limited products need an actual positive count even if settings
+    // have not loaded; the legacy fallback remains unchanged.
+    if(p.stockQuantity==null)return p.stockLimited===true?false:!stockControlsReady;
+    return p.stockQuantity>0;
   }
 
   async function loadProductsFromSupabase(){
