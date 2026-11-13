@@ -993,6 +993,13 @@ header.hero-cover .hero-inner{padding-top:94px;padding-bottom:104px}
 /* Hide the fixed cart whenever an on-screen keyboard is active.
    Applied by focus and keyboard viewport detection on iOS Safari/Chrome and Android Chrome. */
 body.cart-keyboard-active #orderTray.order-tray{display:none!important;}
+
+/* Order contact number is callable; WhatsApp is optional, not required. */
+#checkoutModal .co-contact-hint{
+  display:block;margin:5px 0 0;font-size:11px;line-height:1.5;
+  color:var(--sub,#58725c);
+}
+@media(max-width:760px){#checkoutModal #coPhone{font-size:16px!important}}
 </style>
   
 <!-- Organization Schema -->
@@ -1357,9 +1364,10 @@ body.cart-keyboard-active #orderTray.order-tray{display:none!important;}
             <p class="co-error">Please enter your name.</p>
           </div>
           <div class="co-field">
-            <label for="coPhone">WhatsApp Number</label>
-            <input type="tel" id="coPhone" placeholder="e.g. 0803 123 4567" autocomplete="tel" inputmode="tel">
-            <p class="co-error">Please enter a valid phone number.</p>
+            <label for="coPhone">Contact phone number</label>
+            <input type="tel" id="coPhone" placeholder="e.g. 0803 123 4567" autocomplete="tel" inputmode="tel" required aria-describedby="coPhoneHint">
+            <p id="coPhoneHint" class="co-contact-hint">A regular calling number is fine. You do not need WhatsApp to order.</p>
+            <p class="co-error">Please enter a valid calling or WhatsApp number (7–15 digits).</p>
           </div>
           <div class="co-field">
             <label for="coAddress">Delivery Address</label>
@@ -1442,7 +1450,7 @@ body.cart-keyboard-active #orderTray.order-tray{display:none!important;}
       </div>
       <ol class="co-next">
         <li><b>1</b><span>We check your transfer.</span></li>
-        <li><b>2</b><span>We confirm your payment on WhatsApp.</span></li>
+        <li><b>2</b><span>We contact you to confirm your payment.</span></li>
         <li><b>3</b><span>Your order is prepared and dispatched.</span></li>
       </ol>
       <a class="btn btn-wa" id="coSuccessWa" href="#" target="_blank" rel="noopener noreferrer"><i data-lucide="message-circle" aria-hidden="true"></i>Chat with us on WhatsApp</a>
@@ -1870,7 +1878,10 @@ body.cart-keyboard-active #orderTray.order-tray{display:none!important;}
     let ok = true, first = null;
     [['coName',2],['coPhone',7],['coAddress',5],['coLoc',2]].forEach(([id,min]) => {
       const el = coEl(id);
-      const valid = el.value.trim().length >= min;
+      const digits = id === 'coPhone' ? el.value.replace(/\D/g,'') : '';
+      const valid = id === 'coPhone'
+        ? digits.length >= 7 && digits.length <= 15 && /^[+\d\s().-]+$/.test(el.value.trim())
+        : el.value.trim().length >= min;
       el.closest('.co-field')?.classList.toggle('invalid', !valid);
       if(!valid){ ok = false; first = first || el; }
     });
@@ -2037,6 +2048,8 @@ body.cart-keyboard-active #orderTray.order-tray{display:none!important;}
       await checkCurrentStock();
       const fd = new FormData();
       fd.append('name', coEl('coName').value.trim());
+      // The deployed submit-order function still names its contact-number field 'whatsapp'.
+      // Preserve its wire contract: this value is stored as customer_phone and may be a normal calling number.
       fd.append('whatsapp', coEl('coPhone').value.trim());
       fd.append('address', coEl('coAddress').value.trim());
       fd.append('location', coEl('coLoc').value.trim());
