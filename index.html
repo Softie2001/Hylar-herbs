@@ -1016,6 +1016,18 @@ body.cart-keyboard-active #orderTray.order-tray{display:none!important;}
 #checkoutModal .co-contact-save-notice[hidden]{display:none!important}
 @media(max-width:760px){#checkoutModal #coPhone,#checkoutModal #coWhatsApp{font-size:16px!important}}
 
+
+/* Both checkout contact tabs are required; surface missing fields visibly. */
+#checkoutModal .co-mandatory-label{font-size:11px;color:#b64621;font-weight:750}
+#checkoutModal .co-contact-tabs button.has-error{border-color:#cf493b;color:#9d342d}
+#checkoutModal .co-contact-tabs button.has-error:not(.is-active):after{
+  content:"";width:7px;height:7px;border-radius:50%;background:#df3d35;margin-left:1px;flex:none
+}
+#checkoutModal .co-contact-prompt{
+  font-size:12px;line-height:1.45;padding:10px 12px;margin:10px 0 0;
+  color:#922e24;background:#fff0ec;border:1px solid #f6c3b7;border-radius:10px
+}
+#checkoutModal .co-contact-prompt[hidden]{display:none!important}
 </style>
   
 <!-- Organization Schema -->
@@ -1380,26 +1392,27 @@ body.cart-keyboard-active #orderTray.order-tray{display:none!important;}
             <p class="co-error">Please enter your name.</p>
           </div>
           <div class="co-contact-choice">
-            <p class="co-contact-label">Contact numbers</p>
+            <p class="co-contact-label">Contact numbers <span class="co-mandatory-label">(both required)</span></p>
             <div class="co-contact-tabs" role="tablist" aria-label="Customer contact numbers">
               <button type="button" id="coCallingTab" role="tab" aria-selected="true" aria-controls="coCallingPanel" class="is-active"><i data-lucide="phone" aria-hidden="true"></i>Calling number</button>
               <button type="button" id="coWhatsAppTab" role="tab" aria-selected="false" aria-controls="coWhatsAppPanel" tabindex="-1"><i data-lucide="message-circle" aria-hidden="true"></i>WhatsApp number</button>
             </div>
             <div class="co-contact-panel" id="coCallingPanel" role="tabpanel" aria-labelledby="coCallingTab">
               <div class="co-field">
-                <label for="coPhone">Calling number</label>
-                <input type="tel" id="coPhone" placeholder="e.g. 0803 123 4567" autocomplete="tel" inputmode="tel" aria-describedby="coContactHint">
-                <p class="co-error">Enter a valid calling number (7–15 digits).</p>
+                <label for="coPhone">Calling number <span aria-hidden="true">*</span></label>
+                <input type="tel" id="coPhone" placeholder="e.g. 0803 123 4567" autocomplete="tel" inputmode="tel" aria-required="true" aria-describedby="coContactHint">
+                <p class="co-error">Calling number is required (7–15 digits).</p>
               </div>
             </div>
             <div class="co-contact-panel" id="coWhatsAppPanel" role="tabpanel" aria-labelledby="coWhatsAppTab" hidden>
               <div class="co-field">
-                <label for="coWhatsApp">WhatsApp number</label>
-                <input type="tel" id="coWhatsApp" placeholder="e.g. 0803 123 4567" inputmode="tel" aria-describedby="coContactHint">
-                <p class="co-error">Enter a valid WhatsApp number (7–15 digits).</p>
+                <label for="coWhatsApp">WhatsApp number <span aria-hidden="true">*</span></label>
+                <input type="tel" id="coWhatsApp" placeholder="e.g. 0803 123 4567" inputmode="tel" aria-required="true" aria-describedby="coContactHint">
+                <p class="co-error">WhatsApp number is required (7–15 digits).</p>
               </div>
             </div>
-            <p id="coContactHint" class="co-contact-hint">Enter at least one number. You can fill both tabs if your calling and WhatsApp numbers are different.</p>
+            <p id="coContactHint" class="co-contact-hint">Both numbers are required to continue. Enter them in their separate tabs; you can use the same number for both if it receives calls and WhatsApp.</p>
+            <p id="coContactPrompt" class="co-contact-prompt" role="alert" hidden></p>
           </div>
           <div class="co-field">
             <label for="coAddress">Delivery Address</label>
@@ -1944,22 +1957,44 @@ body.cart-keyboard-active #orderTray.order-tray{display:none!important;}
     });
     const calling=coEl('coPhone').value.trim();
     const whatsApp=coEl('coWhatsApp').value.trim();
-    const missing=!calling&&!whatsApp;
-    const invalidCall=(!!calling&&!coValidContactNumber(calling))||missing;
-    const invalidWhatsApp=!!whatsApp&&!coValidContactNumber(whatsApp);
+    const invalidCall=!coValidContactNumber(calling);
+    const invalidWhatsApp=!coValidContactNumber(whatsApp);
     coEl('coPhone').closest('.co-field')?.classList.toggle('invalid',invalidCall);
     coEl('coWhatsApp').closest('.co-field')?.classList.toggle('invalid',invalidWhatsApp);
+    coEl('coPhone').setAttribute('aria-invalid',String(invalidCall));
+    coEl('coWhatsApp').setAttribute('aria-invalid',String(invalidWhatsApp));
+    coEl('coCallingTab').classList.toggle('has-error',invalidCall);
+    coEl('coWhatsAppTab').classList.toggle('has-error',invalidWhatsApp);
+    const prompt=coEl('coContactPrompt');
     if(invalidCall||invalidWhatsApp){
       ok=false;
       const type=invalidCall?'calling':'whatsapp';
       coSelectContactTab(type);
       first=coEl(invalidCall?'coPhone':'coWhatsApp');
+      prompt.textContent=!calling?'Please enter your calling number to continue.'
+        :invalidCall?'Please enter a valid calling number to continue.'
+        :!whatsApp?'Please enter your WhatsApp number to continue.'
+        :'Please enter a valid WhatsApp number to continue.';
+      prompt.hidden=false;
+    }else{
+      prompt.textContent='';
+      prompt.hidden=true;
     }
     if(first)first.focus();
     return ok;
   }
   ['coName','coPhone','coWhatsApp','coAddress','coLoc'].forEach(id=>{
-    coEl(id).addEventListener('input',()=>coEl(id).closest('.co-field')?.classList.remove('invalid'));
+    coEl(id).addEventListener('input',()=>{
+      coEl(id).closest('.co-field')?.classList.remove('invalid');
+      if(id==='coPhone'||id==='coWhatsApp'){
+        const tab=coEl(id==='coPhone'?'coCallingTab':'coWhatsAppTab');
+        if(coValidContactNumber(coEl(id).value.trim())){
+          tab.classList.remove('has-error');
+          coEl(id).setAttribute('aria-invalid','false');
+        }
+        coEl('coContactPrompt').hidden=true;
+      }
+    });
   });
 
   // ----- payment step -----
