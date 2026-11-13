@@ -918,10 +918,10 @@ $('saveAllQuantities').addEventListener('click',async()=>{
   try{
     for(const [id,value] of changes){
       const qty=Number(value);
-      const {error}=await sb.from('products').update({
+      const {data,error}=await sb.from('products').update({
         stock_quantity:qty,updated_at:new Date().toISOString()
-      }).eq('id',id);
-      if(error)throw error;
+      }).eq('id',id).select('id,stock_quantity').single();
+      if(error||!data||Number(data.stock_quantity)!==qty)throw error||new Error('Quantity update was not saved.');
       pendingStockEdits.delete(id);
       completed++;
     }
@@ -1052,10 +1052,10 @@ window.changeProductStockMode=async(id,mode)=>{
   }
   if(mode!=='unlimited'){renderProducts();return;}
   try{
-    const {error}=await sb.from('products').update({
+    const {data,error}=await sb.from('products').update({
       stock_limited:false,updated_at:new Date().toISOString()
-    }).eq('id',id);
-    if(error)throw error;
+    }).eq('id',id).select('id,stock_limited').single();
+    if(error||!data||data.stock_limited!==false)throw error||new Error('Inventory change was not saved.');
     pendingStockEdits.delete(String(id));
     await loadProducts();
     updateEditedStockButton();
