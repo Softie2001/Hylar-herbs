@@ -48,6 +48,7 @@ DECLARE
   v_whatsapp text := NULLIF(btrim(p_whatsapp_number), '');
   v_primary text := NULLIF(btrim(p_contact_number), '');
   v_digits text;
+  v_primary_digits text;
   v_input text;
 BEGIN
   IF v_primary IS NULL OR (v_call IS NULL AND v_whatsapp IS NULL) THEN
@@ -69,11 +70,23 @@ BEGIN
     RAISE EXCEPTION 'Invalid order contact details' USING ERRCODE='22023';
   END IF;
 
+  -- The checkout might send 0803... but an existing order handler may
+  -- store it as 234803...; recognise both safely for Nigerian numbers.
+  v_primary_digits := regexp_replace(v_primary, '[^0-9]', '', 'g');
+  IF left(v_primary_digits, 1) = '0' THEN
+    v_primary_digits := '234' || substring(v_primary_digits from 2);
+  END IF;
+
   SELECT o.id INTO v_order_id
   FROM public.orders o
   WHERE o.order_number = btrim(p_order_number)
-    AND regexp_replace(o.customer_phone, '[^0-9]', '', 'g')
-      = regexp_replace(v_primary, '[^0-9]', '', 'g')
+    AND (
+      CASE
+        WHEN left(regexp_replace(o.customer_phone, '[^0-9]', '', 'g'), 1) = '0'
+        THEN '234' || substring(regexp_replace(o.customer_phone, '[^0-9]', '', 'g') from 2)
+        ELSE regexp_replace(o.customer_phone, '[^0-9]', '', 'g')
+      END
+    ) = v_primary_digits
     AND o.created_at >= now() - interval '30 minutes'
   LIMIT 1;
 
