@@ -179,10 +179,18 @@ footer{padding:26px 0 40px;text-align:center;color:var(--muted);font-size:13px}
     try {
       if(!window.supabase) throw new Error('Product service unavailable');
       const client=window.supabase.createClient('https://wstpvrhjhscctekwbkcs.supabase.co','sb_publishable_XHxPBPuaGr1uMRZ8LwC8qw_Odhi8hMP');
+      const baseFields='id,name,description,category,image_url,regular_price,sale_price,in_stock,stock_quantity,visible';
+      const fetchProduct=async()=>{
+        let result=await client.from('products').select(baseFields+',stock_limited')
+          .eq('id',id).eq('visible',true).maybeSingle();
+        if(result.error && /stock_limited/i.test(result.error.message||'')){
+          result=await client.from('products').select(baseFields)
+            .eq('id',id).eq('visible',true).maybeSingle();
+        }
+        return result;
+      };
       const [productsResult,settingsResult]=await Promise.all([
-        client.from('products')
-          .select('*')
-          .eq('id',id).eq('visible',true).maybeSingle(),
+        fetchProduct(),
         client.from('store_settings').select('*').eq('id',1).maybeSingle()
       ]);
       if(productsResult.error)throw productsResult.error;
