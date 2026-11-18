@@ -365,7 +365,7 @@ main.wrap{padding-bottom:118px}
 .sale-scheduler-grid .field{min-width:0}
 .sale-scheduler-grid input[type="datetime-local"],#saleStart,#saleEnd{font-size:16px;max-width:100%;width:100%;min-height:43px}
 .sale-scheduler-panel .btn{margin-top:10px}
-#saleStartField[hidden],#saleEndField[hidden]{display:none!important}
+#saleStartField[hidden],#saleEndField[hidden],#globalSaleDates[hidden]{display:none!important}
 /* Keep sale-scheduling checkbox and its text on the same row. */
 #productForm label.option-check[for="scheduleSale"]{
   display:flex!important;
@@ -528,6 +528,21 @@ main.wrap{padding-bottom:118px}
  <button class="btn btn-green" type="button" id="saveInventorySettings"><i data-lucide="save"></i>Save display setting</button>
  <p id="inventorySettingsMessage" class="setting-note" role="status" aria-live="polite">Choose each product’s inventory mode in the product list or Edit Product.</p>
 </div>
+<div class="panel sale-scheduler-panel" id="percentageSalePanel">
+  <div class="section-head"><h3>Discount all products by percentage</h3><span class="inventory-mode">Bulk sale</span></div>
+  <p class="setting-note">Enter one percentage to automatically calculate a sale price from every product's regular price. The original prices stay saved and automatically return at the end of the sale. This replaces existing individual discounts and sale dates only when you confirm.</p>
+  <div class="sale-scheduler-grid">
+    <div class="field"><label for="globalSalePercent">Discount percentage (%)</label><input id="globalSalePercent" type="number" min="0.01" max="99.99" step="0.01" placeholder="e.g. 20"></div>
+    <div class="field"><label for="globalSaleBanner">Sale period</label><select id="globalSaleBanner"><option value="">Set custom sale dates</option></select></div>
+  </div>
+  <div class="sale-scheduler-grid" id="globalSaleDates">
+    <div class="field"><label for="globalSaleStart">Starts · Lagos time (WAT)</label><input type="datetime-local" id="globalSaleStart"></div>
+    <div class="field"><label for="globalSaleEnd">Ends · Lagos time (WAT)</label><input type="datetime-local" id="globalSaleEnd"></div>
+  </div>
+  <p class="setting-note" id="globalSalePreview" aria-live="polite">Enter a percentage to preview the new prices.</p>
+  <button class="btn btn-green" type="button" id="applyGlobalSale"><i data-lucide="percent"></i>Apply discount to all products</button>
+  <p class="setting-note" id="globalSaleMessage" role="status" aria-live="polite"></p>
+</div>
 <div class="panel sale-scheduler-panel" id="saleSchedulePanel">
   <div class="section-head"><h3>Schedule your sales</h3><span class="inventory-mode" id="saleScheduleStatus">Checking…</span></div>
   <p class="setting-note">Set one start and end time for products with manual sale prices or previously finished sales. Normal prices return automatically when the sale ends. Current and upcoming schedules stay unchanged.</p>
@@ -632,6 +647,12 @@ async function loadSaleBannerOptions(){
     return;
   }
   saleBannerOptions=data||[];
+  const globalBanner=$('globalSaleBanner'), previouslySelected=globalBanner.value;
+  globalBanner.innerHTML='<option value="">Set custom sale dates</option>'+saleBannerOptions.map(c=>
+    '<option value="'+esc(c.id)+'">'+esc(c.name)+' · '+esc(saleTimeFromUtc(c.starts_at).replace('T',' '))+' to '+esc(saleTimeFromUtc(c.ends_at).replace('T',' '))+' WAT</option>'
+  ).join('');
+  if(saleBannerOptions.some(c=>String(c.id)===previouslySelected))globalBanner.value=previouslySelected;
+  updateGlobalSaleDates();
   const productDropdown=$('productSaleBanner'), old=productDropdown.value;
   productDropdown.innerHTML='<option value="">No linked banner — use manual or individual schedule</option>'+
     saleBannerOptions.filter(c=>c.sync_sale_prices).map(c=>'<option value="'+esc(c.id)+'">'+esc(c.name)+'</option>').join('');
@@ -1094,6 +1115,63 @@ function saleTimingLabel(p){
   }
   return p.sale_price!=null&&Number(p.sale_price)>0?'Manual sale (no end time)':'';
 }
+
+/* One-step percentage sale for the entire catalogue; all writes are admin-authorized on the server. */
+function updateGlobalSaleDates(){
+  const campaign=saleBannerOptions.find(c=>String(c.id)===$('globalSaleBanner').value);
+  $('globalSaleDates').hidden=!!campaign;
+  if(campaign){
+    $('globalSaleStart').value=saleTimeFromUtc(campaign.starts_at);
+    $('globalSaleEnd').value=saleTimeFromUtc(campaign.ends_at);
+  }
+  updateGlobalSalePreview();
+}
+function updateGlobalSalePreview(){
+  const value=Number($('globalSalePercent').value);
+  const label=$('globalSalePreview');
+  if(!$('globalSalePercent').value||!Number.isFinite(value)||value<=0||value>=100){
+    label.textContent='Enter a discount between 0% and 100% to preview prices.';return;
+  }
+  const count=allProducts.length;
+  const example=allProducts.find(p=>Number(p.regular_price)>0);
+  label.textContent=count+' products will receive '+value+'% off their regular prices.'
+    +(example?' Example: '+money(example.regular_price)+' → '+money(Math.round(Number(example.regular_price)*(1-value/100)*100)/100)+'.':'')
+    +' Previous discounts and individual sale schedules will be replaced.';
+}
+$('globalSalePercent').addEventListener('input',updateGlobalSalePreview);
+$('globalSaleBanner').addEventListener('change',updateGlobalSaleDates);
+$('applyGlobalSale').addEventListener('click',async()=>{
+  const note=$('globalSaleMessage'),button=$('applyGlobalSale');
+  const percent=Number($('globalSalePercent').value),campaign=saleBannerOptions.find(c=>String(c.id)===$('globalSaleBanner').value);
+  if(!$('globalSalePercent').value||!Number.isFinite(percent)||percent<=0||percent>=100){
+    note.textContent='Enter a percentage greater than 0 and less than 100.';return;
+  }
+  let starts=null,ends=null;
+  if(!campaign){
+    try{
+      const period=checkedSalePeriod($('globalSaleStart').value,$('globalSaleEnd').value);
+      starts=period.starts;ends=period.ends;
+    }catch(e){note.textContent=e.message;return;}
+  }
+  const timeInfo=campaign?'the promotional banner "'+campaign.name+'"':
+    $('globalSaleStart').value.replace('T',' ')+' WAT to '+$('globalSaleEnd').value.replace('T',' ')+' WAT';
+  if(!confirm('Apply '+percent+'% off to ALL '+allProducts.length+' products using '+timeInfo+
+    '? This replaces existing manual and individual scheduled discounts. Regular prices will not change.'))return;
+  button.disabled=true;note.textContent='Applying the percentage discount…';
+  try{
+    const {data,error}=await sb.rpc('hylar_apply_bulk_percentage_discount',{
+      p_percent:percent,p_campaign_id:campaign?.id||null,
+      p_start_at:starts,p_end_at:ends
+    });
+    if(error)throw error;
+    await loadProducts();
+    await loadSaleBannerOptions();
+    note.textContent=Number(data)+' product discounts scheduled successfully. The original prices return automatically when the sale ends.';
+    msg('Percentage discount applied successfully.');
+  }catch(e){note.textContent='Could not apply discount: '+e.message;}
+  finally{button.disabled=false;}
+});
+
 function unscheduledSaleProducts(){
   return saleSchedulingReady?allProducts.filter(p=>
     (p.scheduled_sale_price==null && p.sale_price!=null
@@ -1142,6 +1220,7 @@ async function loadProducts(){
     const {data,error}=await sb.from('products').select('*').order('sort_order',{ascending:true}).order('created_at',{ascending:true});
     if(error)throw error;
     allProducts=data||[];
+    updateGlobalSalePreview();
     saleSchedulingReady=allProducts.length
       ? Object.prototype.hasOwnProperty.call(allProducts[0],'scheduled_sale_price')
       : !(await sb.from('products').select('scheduled_sale_price').limit(1)).error;
