@@ -395,6 +395,55 @@ main.wrap{padding-bottom:118px}
   flex:1 1 auto;
   min-width:0;
 }
+/* Promotional banner price-sync checkbox: consistent mobile alignment. */
+#campaignForm label.option-check[for="campaignSyncSales"]{
+  display:flex!important;
+  flex-direction:row!important;
+  align-items:flex-start!important;
+  justify-content:flex-start!important;
+  flex-wrap:nowrap!important;
+  gap:12px!important;
+  width:100%;
+  min-width:0;
+  margin:0!important;
+  cursor:pointer;
+  text-align:left;
+}
+#campaignForm label.option-check[for="campaignSyncSales"] input[type="checkbox"]{
+  appearance:checkbox!important;
+  -webkit-appearance:checkbox!important;
+  display:block!important;
+  flex:0 0 20px!important;
+  width:20px!important;height:20px!important;
+  min-width:20px!important;min-height:20px!important;
+  max-width:20px!important;max-height:20px!important;
+  margin:1px 0 0!important;
+  padding:0!important;
+  accent-color:var(--brand);
+}
+#campaignForm label.option-check[for="campaignSyncSales"] span{
+  display:flex!important;
+  flex:1 1 0!important;
+  min-width:0;
+  flex-direction:column!important;
+  gap:5px;
+  text-align:left;
+  font-weight:normal;
+  line-height:1.5;
+}
+#campaignForm label.option-check[for="campaignSyncSales"] strong{
+  display:block;
+  font-size:13px;
+  line-height:1.5;
+  font-weight:750;
+}
+#campaignForm label.option-check[for="campaignSyncSales"] small{
+  display:block;
+  font-size:11px;
+  line-height:1.55;
+  font-weight:400;
+  color:var(--sub);
+}
 #scheduleSaleHelp{display:block;margin-top:6px;font-size:11px;line-height:1.5}
 .sale-timing{display:block;margin-top:5px;font-size:11px;line-height:1.5;color:var(--sub)}
 @media(max-width:720px){.sale-scheduler-grid{grid-template-columns:1fr}}
