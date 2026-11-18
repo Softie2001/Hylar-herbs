@@ -565,7 +565,7 @@ main.wrap{padding-bottom:118px}
 
 <div id="productModal" class="modal hidden"><div class="modal-card"><div class="modal-head"><h2 id="productModalTitle">Add product</h2><button id="closeProductModal" type="button">×</button></div><form id="productForm"><input id="pid" type="hidden"><div class="grid2dash"><div class="field"><label>Product name</label><input id="pname" required></div><div class="field"><label>Category</label><select id="pcat"><option value="feminine">Feminine Wellness</option><option value="ttc">Fertility &amp; TTC</option><option value="infection">Infection Care</option><option value="men">Men's Vitality</option><option value="body">Body &amp; Weight</option></select></div><div class="field"><label>Regular price (₦)</label><input id="regular" type="number" min="0" step="0.01" required></div><div class="field"><label for="sale">Sale price (₦)</label><input id="sale" type="number" min="0" step="0.01"><small class="muted">Leave blank for the normal price. Without scheduling, a sale price stays active until removed.</small></div>
 <div class="field full"><label class="option-check" for="scheduleSale"><input type="checkbox" id="scheduleSale"><span>Schedule this product's sale price</span></label><small class="muted" id="scheduleSaleHelp">Set start/end dates to activate and remove the discounted price automatically.</small></div>
-<div class="field" id="saleStartField" hidden><label for="saleStart">Sale starts · Lagos time (WAT)</label><input type="datetime-local" id="saleStart"></div>
+<div class="field full"><label for="productSaleBanner">Link this product's discount to a promotional banner (optional)</label><select id="productSaleBanner"><option value="">No linked banner — use manual or individual schedule</option></select><small class="muted">Choose a banner with price sync enabled. Its countdown dates will automatically control this product's discount.</small></div><div class="field" id="saleStartField" hidden><label for="saleStart">Sale starts · Lagos time (WAT)</label><input type="datetime-local" id="saleStart"></div>
 <div class="field" id="saleEndField" hidden><label for="saleEnd">Sale ends · Lagos time (WAT)</label><input type="datetime-local" id="saleEnd"></div><div class="field"><label>Tag</label><select id="tag"><option value="">None</option><option value="Kit">Kit</option></select></div><div class="field"><label>Sort order</label><input id="sort" type="number" min="0" value="999"></div><div class="field"><label for="stockMode">Inventory type</label><select id="stockMode"><option value="unlimited">Unlimited availability</option><option value="limited">Limited availability</option></select><small class="muted" id="stockModeHelp">Unlimited products receive orders without a quantity cap.</small></div><div class="field" id="stockQtyField"><label for="stockQty">Available units (Limited only)</label><input id="stockQty" type="number" inputmode="numeric" min="0" step="1" placeholder="e.g. 10"><small class="muted">Enter a whole number. Zero means Out of Stock; numbers appear to customers only when enabled globally.</small></div><div class="field admin-checkbox-stack"><label class="option-check" for="stock"><input id="stock" type="checkbox" checked><span>In stock</span></label><label class="option-check" for="visible"><input id="visible" type="checkbox" checked><span>Visible on shop</span></label><label class="option-check" for="best"><input id="best" type="checkbox"><span>Best seller</span></label></div><div class="field"><label>Product image</label><input id="image" type="file" accept="image/*"><div id="previewWrap"></div></div><div class="field full"><label>Description</label><textarea id="desc" placeholder="Describe the size, contents, ingredients (if verified), and label directions or precautions. Avoid unverified cure claims."></textarea><small class="muted">This text appears on the product page and helps search engines and customers understand the product. Keep it accurate, specific and medically responsible.</small></div></div><div style="display:flex;justify-content:flex-end;gap:8px"><button class="btn btn-light" type="button" id="cancelProduct">Cancel</button><button class="btn btn-green" type="submit">Save product</button></div></form></div></div>
 
 <div id="orderModal" class="modal hidden"><div class="modal-card"><div class="modal-head"><h2>Order details</h2><button id="closeOrderModal" type="button">×</button></div><div id="orderDetail"></div></div></div>
@@ -597,7 +597,7 @@ async function loadSaleBannerOptions(){
   const dropdown=$('bulkSaleBanner');
   if(!dropdown)return;
   const {data,error}=await sb.from('hero_campaigns')
-    .select('id,name,kind,starts_at,ends_at,enabled')
+    .select('id,name,kind,starts_at,ends_at,enabled,sync_sale_prices')
     .eq('kind','sale').eq('enabled',true).gt('ends_at',new Date().toISOString())
     .order('starts_at',{ascending:true}).limit(50);
   if(error){
@@ -605,6 +605,10 @@ async function loadSaleBannerOptions(){
     return;
   }
   saleBannerOptions=data||[];
+  const productDropdown=$('productSaleBanner'), old=productDropdown.value;
+  productDropdown.innerHTML='<option value="">No linked banner — use manual or individual schedule</option>'+
+    saleBannerOptions.filter(c=>c.sync_sale_prices).map(c=>'<option value="'+esc(c.id)+'">'+esc(c.name)+'</option>').join('');
+  if(saleBannerOptions.some(c=>String(c.id)===old&&c.sync_sale_prices))productDropdown.value=old;
   dropdown.innerHTML='<option value="">Enter custom sale dates</option>'+saleBannerOptions.map(c=>
     '<option value="'+esc(c.id)+'">'+esc(c.name)+' · '+esc(saleTimeFromUtc(c.starts_at).replace('T',' '))+' to '+esc(saleTimeFromUtc(c.ends_at).replace('T',' '))+' WAT</option>'
   ).join('');
@@ -1021,19 +1025,32 @@ function checkedSalePeriod(start,end){
 function updateSaleScheduleFields(){
   const active=saleSchedulingReady&&$('scheduleSale').checked;
   $('scheduleSale').disabled=!saleSchedulingReady;
-  $('saleStartField').hidden=!active;
-  $('saleEndField').hidden=!active;
-  $('saleStart').required=active;
-  $('saleEnd').required=active;
+  const linked=!!$('productSaleBanner').value;
+  $('saleStartField').hidden=!active||linked;
+  $('saleEndField').hidden=!active||linked;
+  $('saleStart').disabled=linked;
+  $('saleEnd').disabled=linked;
+  $('saleStart').required=active&&!linked;
+  $('saleEnd').required=active&&!linked;
   $('scheduleSaleHelp').textContent=!saleSchedulingReady
     ? 'Apply supabase/scheduled-sale-prices.sql to enable scheduled pricing.'
     : active
       ? 'Sale price will start and expire automatically. All times use Lagos (WAT, UTC+1).'
       : 'Without a schedule, a sale price stays active until removed. Removing an existing schedule clears its old discount.';
 }
+$('productSaleBanner').addEventListener('change',()=>{
+  const campaign=saleBannerOptions.find(c=>String(c.id)===$('productSaleBanner').value&&c.sync_sale_prices);
+  if(campaign){
+    $('scheduleSale').checked=true;
+    $('saleStart').value=saleTimeFromUtc(campaign.starts_at);
+    $('saleEnd').value=saleTimeFromUtc(campaign.ends_at);
+  }
+  updateSaleScheduleFields();
+});
 $('scheduleSale').addEventListener('change',()=>{
   // Removing a pre-existing schedule must not silently revive an expired
   // discounted price as an endless manual sale. Re-enter the price if wanted.
+  if(!$('scheduleSale').checked)$('productSaleBanner').value='';
   if(!$('scheduleSale').checked && $('scheduleSale').dataset.hadSchedule==='1'){
     $('sale').value='';
   }
@@ -1041,6 +1058,7 @@ $('scheduleSale').addEventListener('change',()=>{
 });
 function saleTimingLabel(p){
   if(p.scheduled_sale_price!=null){
+    if(p.sale_campaign_id)return 'Linked to promotional banner';
     const begins=Date.parse(p.sale_starts_at||''),ends=Date.parse(p.sale_ends_at||'');
     if(!Number.isFinite(begins)||!Number.isFinite(ends))return 'Scheduled sale details unavailable';
     const note=new Date() < new Date(begins)
@@ -1163,6 +1181,8 @@ function openProductModal(p=null){
   $('scheduleSale').dataset.hadSchedule=p&&p.scheduled_sale_price!=null?'1':'0';
   $('saleStart').value=saleTimeFromUtc(p?.sale_starts_at);
   $('saleEnd').value=saleTimeFromUtc(p?.sale_ends_at);
+  $('productSaleBanner').value=p?.sale_campaign_id||'';
+  if($('productSaleBanner').value!==String(p?.sale_campaign_id||''))$('productSaleBanner').value='';
   updateSaleScheduleFields();
   $('desc').value=p?.description||'';
   $('tag').value=p?.tag||'';
@@ -1269,7 +1289,8 @@ $('productForm').addEventListener('submit',async e=>{
     const regular=Number($('regular').value);
     const sale=$('sale').value.trim()===''?null:Number($('sale').value);
     if(sale!==null&&(sale<=0||sale>=regular))throw new Error('Sale price must be greater than 0 and lower than the regular price.');
-    const schedule=saleSchedulingReady&&$('scheduleSale').checked;
+    const selectedCampaign=saleBannerOptions.find(c=>String(c.id)===$('productSaleBanner').value&&c.sync_sale_prices);
+    const schedule=saleSchedulingReady&&($('scheduleSale').checked||!!selectedCampaign);
     if(schedule&&sale===null)throw new Error('Enter a sale price before scheduling its dates.');
     const unchangedExpiredSchedule=!!(schedule&&previousProduct
       && previousProduct.scheduled_sale_price!=null
@@ -1277,7 +1298,7 @@ $('productForm').addEventListener('submit',async e=>{
       && Number(previousProduct.scheduled_sale_price)===sale
       && saleTimeFromUtc(previousProduct.sale_starts_at)===$('saleStart').value
       && saleTimeFromUtc(previousProduct.sale_ends_at)===$('saleEnd').value);
-    const period=schedule
+    const period=selectedCampaign?{starts:selectedCampaign.starts_at,ends:selectedCampaign.ends_at}:schedule
       ? unchangedExpiredSchedule
         ? {starts:previousProduct.sale_starts_at,ends:previousProduct.sale_ends_at}
         : checkedSalePeriod($('saleStart').value,$('saleEnd').value)
@@ -1312,11 +1333,7 @@ $('productForm').addEventListener('submit',async e=>{
     if(inventoryPerProductReady)payload.stock_limited=limited;
     if(saleSchedulingReady){
       // Detach a product when its individual schedule is explicitly edited.
-      payload.sale_campaign_id=schedule && previousProduct?.sale_campaign_id
-        && Number(previousProduct.scheduled_sale_price)===sale
-        && saleTimeFromUtc(previousProduct.sale_starts_at)===$('saleStart').value
-        && saleTimeFromUtc(previousProduct.sale_ends_at)===$('saleEnd').value
-          ? previousProduct.sale_campaign_id : null;
+      payload.sale_campaign_id=selectedCampaign?.id||null;
       // A database trigger determines the actual sale_price at the current time.
       // Before the start / after the end, checkout reads NULL and uses regular_price.
       payload.scheduled_sale_price=schedule?sale:null;
@@ -1564,7 +1581,7 @@ async function loadCampaigns(){
      const {data,error}=await sb.rpc('hylar_set_banner_sale_sync',{p_campaign_id:b.dataset.syncCampaign,p_enabled:enable});
      if(error)throw error;
      msg(enable?'Banner price sync enabled. '+Number(data||0)+' discounted product(s) linked.':'Banner price sync disabled; linked discounts return to normal prices.');
-     await loadCampaigns();await loadProducts();
+     await loadCampaigns();await loadProducts();await loadSaleBannerOptions();
    }catch(e){msg('Could not change price sync: '+e.message,true)}
    finally{b.disabled=false}
  });
@@ -1586,7 +1603,7 @@ $('campaignForm').addEventListener('submit',async e=>{
  if($('campaignKind').value==='sale'&&$('campaignSyncSales').checked){
    const {data:count,error:syncError}=await sb.rpc('hylar_set_banner_sale_sync',{p_campaign_id:created.id,p_enabled:true});
    if(syncError){statusText='Banner saved, but price sync could not be enabled: '+syncError.message;}
-   else {statusText='Banner scheduled with price sync enabled. '+Number(count||0)+' discounted product(s) linked.';await loadProducts();}
+   else {statusText='Banner scheduled with price sync enabled. '+Number(count||0)+' discounted product(s) linked.';await loadProducts();await loadSaleBannerOptions();}
  }
  status.textContent=statusText;$('campaignForm').reset();loadCampaigns();
  }catch(err){status.textContent='Could not schedule banner: '+err.message}finally{btn.disabled=false}
