@@ -366,6 +366,8 @@ main.wrap{padding-bottom:118px}
 .sale-scheduler-grid input[type="datetime-local"],#saleStart,#saleEnd{font-size:16px;max-width:100%;width:100%;min-height:43px}
 .sale-scheduler-panel .btn{margin-top:10px}
 #saleStartField[hidden],#saleEndField[hidden],#globalSaleDates[hidden]{display:none!important}
+/* Legacy bulk date scheduler is superseded by the all-products percentage promotion panel. Keep its DOM intact for older JS dependencies. */
+#saleSchedulePanel{display:none!important}
 /* Keep sale-scheduling checkbox and its text on the same row. */
 #productForm label.option-check[for="scheduleSale"]{
   display:flex!important;
