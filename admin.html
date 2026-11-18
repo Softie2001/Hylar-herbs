@@ -504,6 +504,7 @@ main.wrap{padding-bottom:118px}
 <div class="panel sale-scheduler-panel" id="saleSchedulePanel">
   <div class="section-head"><h3>Schedule your sales</h3><span class="inventory-mode" id="saleScheduleStatus">Checking…</span></div>
   <p class="setting-note">Set one start and end time for all products that already have an unscheduled sale price. Their prices return to normal automatically at the end. Existing scheduled promotions are left unchanged.</p>
+  <div class="field"><label for="bulkSaleBanner">Reuse dates from an existing sale banner (optional)</label><select id="bulkSaleBanner"><option value="">Enter custom sale dates</option></select><small class="muted" id="bulkSaleBannerHint">Select a scheduled sale banner to copy its start/end times.</small></div>
   <div class="sale-scheduler-grid">
     <div class="field"><label for="bulkSaleStart">Sale starts · Lagos time (WAT)</label><input type="datetime-local" id="bulkSaleStart"></div>
     <div class="field"><label for="bulkSaleEnd">Sale ends · Lagos time (WAT)</label><input type="datetime-local" id="bulkSaleEnd"></div>
@@ -590,6 +591,38 @@ const money=n=>'₦'+Number(n||0).toLocaleString('en-NG');
 const esc=v=>String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
 const icons=()=>{if(window.lucide)lucide.createIcons()};
 
+
+let saleBannerOptions=[];
+async function loadSaleBannerOptions(){
+  const dropdown=$('bulkSaleBanner');
+  if(!dropdown)return;
+  const {data,error}=await sb.from('hero_campaigns')
+    .select('id,name,kind,starts_at,ends_at,enabled')
+    .eq('kind','sale').eq('enabled',true).gt('ends_at',new Date().toISOString())
+    .order('starts_at',{ascending:true}).limit(50);
+  if(error){
+    $('bulkSaleBannerHint').textContent='Banner dates could not load. Enter your sale dates manually.';
+    return;
+  }
+  saleBannerOptions=data||[];
+  dropdown.innerHTML='<option value="">Enter custom sale dates</option>'+saleBannerOptions.map(c=>
+    '<option value="'+esc(c.id)+'">'+esc(c.name)+' · '+esc(saleTimeFromUtc(c.starts_at).replace('T',' '))+' to '+esc(saleTimeFromUtc(c.ends_at).replace('T',' '))+' WAT</option>'
+  ).join('');
+  $('bulkSaleBannerHint').textContent='Choosing a banner copies its dates. Later changes to that banner do not modify existing price schedules.';
+}
+$('bulkSaleBanner').addEventListener('change',()=>{
+  const selected=saleBannerOptions.find(c=>String(c.id)===$('bulkSaleBanner').value);
+  if(!selected)return;
+  $('bulkSaleStart').value=saleTimeFromUtc(selected.starts_at);
+  $('bulkSaleEnd').value=saleTimeFromUtc(selected.ends_at);
+  $('bulkSaleMessage').textContent='Sale banner dates copied. Click Schedule existing sale prices to apply them.';
+});
+for(const key of ['bulkSaleStart','bulkSaleEnd']){
+  $(key).addEventListener('input',()=>{
+    if($('bulkSaleBanner').value) $('bulkSaleBanner').value='';
+  });
+}
+
 let saleSchedulingReady=false;
 let allProducts=[],allOrders=[],allItems=[],allOrderContacts=new Map(),currentView='dashboard',analyticsRange='today',analyticsFrom=null,analyticsTo=null;
 
@@ -611,7 +644,7 @@ function setView(view){
   msg('');
   if(view==='dashboard')loadDashboard();
   if(view==='orders')loadOrders();
-  if(view==='products'){loadInventorySettings().then(loadProducts);}
+  if(view==='products'){loadInventorySettings().then(loadProducts);loadSaleBannerOptions();}
   if(view==='analytics')loadAnalytics();
   if(view==='reviews')loadReviews();
   if(view==='settings'){loadSettings();loadCampaigns();}
