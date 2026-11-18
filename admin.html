@@ -366,6 +366,33 @@ main.wrap{padding-bottom:118px}
 .sale-scheduler-grid input[type="datetime-local"],#saleStart,#saleEnd{font-size:16px;max-width:100%;width:100%;min-height:43px}
 .sale-scheduler-panel .btn{margin-top:10px}
 #saleStartField[hidden],#saleEndField[hidden]{display:none!important}
+/* Keep sale-scheduling checkbox and its text on the same row. */
+#productForm label.option-check[for="scheduleSale"]{
+  display:flex!important;
+  flex-direction:row!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  gap:9px!important;
+  width:100%;
+  margin:0!important;
+  cursor:pointer;
+}
+#productForm label.option-check[for="scheduleSale"] input[type="checkbox"]{
+  appearance:checkbox!important;
+  -webkit-appearance:checkbox!important;
+  display:block!important;
+  flex:0 0 18px!important;
+  width:18px!important;height:18px!important;
+  min-width:18px!important;min-height:18px!important;
+  max-width:18px!important;max-height:18px!important;
+  margin:0!important;padding:0!important;
+  accent-color:var(--brand);
+}
+#productForm label.option-check[for="scheduleSale"] span{
+  display:inline!important;
+  flex:1 1 auto;
+  min-width:0;
+}
 #scheduleSaleHelp{display:block;margin-top:6px;font-size:11px;line-height:1.5}
 .sale-timing{display:block;margin-top:5px;font-size:11px;line-height:1.5;color:var(--sub)}
 @media(max-width:720px){.sale-scheduler-grid{grid-template-columns:1fr}}
