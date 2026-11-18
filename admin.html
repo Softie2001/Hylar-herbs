@@ -590,6 +590,7 @@ const money=n=>'₦'+Number(n||0).toLocaleString('en-NG');
 const esc=v=>String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
 const icons=()=>{if(window.lucide)lucide.createIcons()};
 
+let saleSchedulingReady=false;
 let allProducts=[],allOrders=[],allItems=[],allOrderContacts=new Map(),currentView='dashboard',analyticsRange='today',analyticsFrom=null,analyticsTo=null;
 
 function msg(t,error=false){$('msg').innerHTML=t?`<div class="notice ${error?'error':''}">${esc(t)}</div>`:''}
@@ -962,11 +963,100 @@ $('saveAllQuantities').addEventListener('click',async()=>{
 /* =========================
    PRODUCTS
 ========================= */
+
+/* WAT is fixed UTC+01:00; do not depend on the administrator's device timezone. */
+function saleTimeToUtc(value){
+  if(!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(String(value||'')))
+    throw new Error('Choose both a sale date and time (Lagos / WAT).');
+  const date=new Date(value+':00+01:00');
+  if(!Number.isFinite(date.getTime()) || saleTimeFromUtc(date.toISOString())!==value)
+    throw new Error('Choose a valid sale date and time.');
+  return date.toISOString();
+}
+function saleTimeFromUtc(value){
+  if(!value)return '';
+  const date=new Date(value);
+  if(!Number.isFinite(date.getTime()))return '';
+  return new Date(date.getTime()+3600000).toISOString().slice(0,16);
+}
+function checkedSalePeriod(start,end){
+  const starts=saleTimeToUtc(start),ends=saleTimeToUtc(end);
+  if(Date.parse(ends)<=Date.parse(starts))throw new Error('Sale end time must be after its start time.');
+  if(Date.parse(ends)<=Date.now())throw new Error('Sale end time must be in the future.');
+  return {starts,ends};
+}
+function updateSaleScheduleFields(){
+  const active=saleSchedulingReady&&$('scheduleSale').checked;
+  $('scheduleSale').disabled=!saleSchedulingReady;
+  $('saleStartField').hidden=!active;
+  $('saleEndField').hidden=!active;
+  $('saleStart').required=active;
+  $('saleEnd').required=active;
+  $('scheduleSaleHelp').textContent=!saleSchedulingReady
+    ? 'Apply supabase/scheduled-sale-prices.sql to enable scheduled pricing.'
+    : active
+      ? 'Sale price will start and expire automatically. All times use Lagos (WAT, UTC+1).'
+      : 'Without a schedule, any sale price stays active until you remove it manually.';
+}
+$('scheduleSale').addEventListener('change',updateSaleScheduleFields);
+function saleTimingLabel(p){
+  if(p.scheduled_sale_price!=null){
+    const begins=Date.parse(p.sale_starts_at||''),ends=Date.parse(p.sale_ends_at||'');
+    if(!Number.isFinite(begins)||!Number.isFinite(ends))return 'Scheduled sale details unavailable';
+    const note=new Date() < new Date(begins)
+      ? 'Starts ' : Date.now()>=ends ? 'Ended ' : 'Ends ';
+    return note+saleTimeFromUtc(Date.now()>=ends?p.sale_ends_at:Date.now()<begins?p.sale_starts_at:p.sale_ends_at).replace('T',' ')+' WAT';
+  }
+  return p.sale_price!=null&&Number(p.sale_price)>0?'Manual sale (no end time)':'';
+}
+function unscheduledSaleProducts(){
+  return saleSchedulingReady?allProducts.filter(p=>
+    p.scheduled_sale_price==null && p.sale_price!=null
+    && Number(p.sale_price)>0 && Number(p.sale_price)<Number(p.regular_price)
+  ):[];
+}
+function refreshBulkSalePanel(){
+  const eligible=unscheduledSaleProducts().length;
+  $('saleScheduleStatus').textContent=saleSchedulingReady?'Scheduler ready':'SQL required';
+  $('saleScheduleStatus').classList.toggle('is-limited',!saleSchedulingReady);
+  $('bulkSaleEligible').textContent=saleSchedulingReady
+    ? eligible+' product'+(eligible===1?'':'s')+' with an unscheduled sale price can use one schedule.'
+    : 'Run supabase/scheduled-sale-prices.sql in the Hylar Supabase project to activate automatic sale dates.';
+  $('applyBulkSale').disabled=!saleSchedulingReady||eligible===0;
+}
+$('applyBulkSale').addEventListener('click',async()=>{
+  const button=$('applyBulkSale'),note=$('bulkSaleMessage'),items=unscheduledSaleProducts();
+  if(!saleSchedulingReady||items.length===0){refreshBulkSalePanel();return;}
+  let period;
+  try{period=checkedSalePeriod($('bulkSaleStart').value,$('bulkSaleEnd').value)}
+  catch(e){note.textContent=e.message;return;}
+  const message='Schedule '+items.length+' currently unscheduled sale price'+(items.length===1?'':'s')
+    +' from '+$('bulkSaleStart').value.replace('T',' ')+' WAT to '+$('bulkSaleEnd').value.replace('T',' ')+' WAT? Other existing schedules stay unchanged.';
+  if(!confirm(message))return;
+  button.disabled=true;note.textContent='Scheduling sale prices…';
+  try{
+    // One atomic, admin-authorized database update, even for 100+ products.
+    const {data,error}=await sb.rpc('hylar_schedule_current_sale_prices',{
+      p_start_at:period.starts,p_end_at:period.ends
+    });
+    if(error)throw error;
+    if(!Number.isInteger(Number(data)))throw new Error('Could not verify scheduled product count.');
+    await loadProducts();
+    note.textContent=Number(data)+' product'+(Number(data)===1?'':'s')+' scheduled. Sale prices activate and revert automatically.';
+    msg('Sale schedule saved successfully.');
+  }catch(err){note.textContent='Could not schedule sales: '+err.message;}
+  finally{refreshBulkSalePanel();}
+});
+
 async function loadProducts(){
   try{
     const {data,error}=await sb.from('products').select('*').order('sort_order',{ascending:true}).order('created_at',{ascending:true});
     if(error)throw error;
     allProducts=data||[];
+    saleSchedulingReady=allProducts.length
+      ? Object.prototype.hasOwnProperty.call(allProducts[0],'scheduled_sale_price')
+      : !(await sb.from('products').select('scheduled_sale_price').limit(1)).error;
+    refreshBulkSalePanel();
     inventoryPerProductReady=allProducts.length
       ? Object.prototype.hasOwnProperty.call(allProducts[0],'stock_limited')
       : !(await sb.from('products').select('stock_limited').limit(1)).error;
@@ -1007,12 +1097,13 @@ function renderProducts(){
   $('productCount').textContent=`${list.length} product${list.length===1?'':'s'}`;
   $('productRows').innerHTML=list.length?list.map(p=>{
     const sale=p.sale_price!=null&&Number(p.sale_price)>0;
+    const saleInfo=saleTimingLabel(p);
     const img=imageUrl(p.image_url);
     const availableQty=p.stock_quantity==null?null:Number(p.stock_quantity);
     const limited=productModeIsLimited(p);
     const canBuy=p.in_stock!==false && (!limited || (availableQty===null?!inventorySettingsReady:availableQty>0));
     const qtyLabel=!limited?'Unlimited (no stock count)':availableQty===null?'Set available units':`${availableQty.toLocaleString('en-NG')} available`;
-    return `<tr><td><div style="display:flex;align-items:center;gap:9px">${img?`<img src="${esc(img)}" style="width:42px;height:42px;border-radius:8px;object-fit:cover;background:#eee" alt="">`:''}<div><strong>${esc(p.name)}</strong><br><small class="muted">${esc(p.tag||'')}</small></div></div></td><td data-label="Category">${esc(p.category)}</td><td data-label="Price">${sale?`<del class="muted">${money(p.regular_price)}</del><br><strong>${money(p.sale_price)}</strong>`:money(p.regular_price)}</td><td data-label="Stock">${renderAvailabilityCell(p,canBuy,qtyLabel,availableQty)}</td><td data-label="Visible">${p.visible?'Yes':'No'}</td><td><div class="actions"><button class="btn btn-light" onclick="editProduct('${p.id}')">Edit</button><button class="btn btn-light" onclick="toggleStock('${p.id}',${!p.in_stock})">${p.in_stock?'Out of stock':'In stock'}</button><button class="btn btn-light" onclick="toggleVisible('${p.id}',${!p.visible})">${p.visible?'Hide':'Show'}</button><button class="btn btn-danger" onclick="deleteProduct('${p.id}')">Delete</button></div></td></tr>`;
+    return `<tr><td><div style="display:flex;align-items:center;gap:9px">${img?`<img src="${esc(img)}" style="width:42px;height:42px;border-radius:8px;object-fit:cover;background:#eee" alt="">`:''}<div><strong>${esc(p.name)}</strong><br><small class="muted">${esc(p.tag||'')}</small></div></div></td><td data-label="Category">${esc(p.category)}</td><td data-label="Price">${sale?`<del class="muted">${money(p.regular_price)}</del><br><strong>${money(p.sale_price)}</strong>`:money(p.regular_price)}${saleInfo?`<small class="sale-timing">${esc(saleInfo)}</small>`:''}</td><td data-label="Stock">${renderAvailabilityCell(p,canBuy,qtyLabel,availableQty)}</td><td data-label="Visible">${p.visible?'Yes':'No'}</td><td><div class="actions"><button class="btn btn-light" onclick="editProduct('${p.id}')">Edit</button><button class="btn btn-light" onclick="toggleStock('${p.id}',${!p.in_stock})">${p.in_stock?'Out of stock':'In stock'}</button><button class="btn btn-light" onclick="toggleVisible('${p.id}',${!p.visible})">${p.visible?'Hide':'Show'}</button><button class="btn btn-danger" onclick="deleteProduct('${p.id}')">Delete</button></div></td></tr>`;
   }).join(''):'<tr><td colspan="6" class="empty">No products found.</td></tr>';
 }
 
@@ -1023,7 +1114,11 @@ function openProductModal(p=null){
   $('pname').value=p?.name||'';
   $('pcat').value=p?.category||'body';
   $('regular').value=p?.regular_price??'';
-  $('sale').value=p?.sale_price??'';
+  $('sale').value=p?.scheduled_sale_price??p?.sale_price??'';
+  $('scheduleSale').checked=!!(p&&p.scheduled_sale_price!=null);
+  $('saleStart').value=saleTimeFromUtc(p?.sale_starts_at);
+  $('saleEnd').value=saleTimeFromUtc(p?.sale_ends_at);
+  updateSaleScheduleFields();
   $('desc').value=p?.description||'';
   $('tag').value=p?.tag||'';
   $('sort').value=p?.sort_order??999;
@@ -1128,6 +1223,9 @@ $('productForm').addEventListener('submit',async e=>{
     const regular=Number($('regular').value);
     const sale=$('sale').value.trim()===''?null:Number($('sale').value);
     if(sale!==null&&(sale<=0||sale>=regular))throw new Error('Sale price must be greater than 0 and lower than the regular price.');
+    const schedule=saleSchedulingReady&&$('scheduleSale').checked;
+    if(schedule&&sale===null)throw new Error('Enter a sale price before scheduling its dates.');
+    const period=schedule?checkedSalePeriod($('saleStart').value,$('saleEnd').value):null;
     const quantityText=$('stockQty').value.trim();
     const limited=inventoryPerProductReady ? $('stockMode').value==='limited' : inventoryLimitsEnabled;
     let availableQty=null; // NULL = uncounted; zero = sold out for Limited products.
@@ -1156,6 +1254,14 @@ $('productForm').addEventListener('submit',async e=>{
       updated_at:new Date().toISOString()
     };
     if(inventoryPerProductReady)payload.stock_limited=limited;
+    if(saleSchedulingReady){
+      // A database trigger determines the actual sale_price at the current time.
+      // Before the start / after the end, checkout reads NULL and uses regular_price.
+      payload.scheduled_sale_price=schedule?sale:null;
+      payload.sale_starts_at=period?period.starts:null;
+      payload.sale_ends_at=period?period.ends:null;
+      payload.sale_price=schedule?null:sale;
+    }
     const {error}=await sb.from('products').upsert(payload,{onConflict:'id'});
     if(error)throw error;
     closeProductModal();
