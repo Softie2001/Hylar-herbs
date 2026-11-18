@@ -357,6 +357,19 @@ main.wrap{padding-bottom:118px}
 #stockQtyField[hidden]{display:none!important}
 #stockModeHelp{display:block;line-height:1.5}
 @media(max-width:720px){.stock-mode-select{font-size:13px;width:145px}.stock-availability-cell{min-width:130px}}
+
+/* Sale price scheduling: independent from product stock settings. */
+.sale-scheduler-panel{margin-bottom:17px;border:1px solid #dde8e0}
+.sale-scheduler-panel .section-head{align-items:center;gap:9px}
+.sale-scheduler-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:15px 0 8px}
+.sale-scheduler-grid .field{min-width:0}
+.sale-scheduler-grid input[type="datetime-local"],#saleStart,#saleEnd{font-size:16px;max-width:100%;width:100%;min-height:43px}
+.sale-scheduler-panel .btn{margin-top:10px}
+#saleStartField[hidden],#saleEndField[hidden]{display:none!important}
+#scheduleSaleHelp{display:block;margin-top:6px;font-size:11px;line-height:1.5}
+.sale-timing{display:block;margin-top:5px;font-size:11px;line-height:1.5;color:var(--sub)}
+@media(max-width:720px){.sale-scheduler-grid{grid-template-columns:1fr}}
+
 </style>
 </head>
 <body>
@@ -488,6 +501,18 @@ main.wrap{padding-bottom:118px}
  <button class="btn btn-green" type="button" id="saveInventorySettings"><i data-lucide="save"></i>Save display setting</button>
  <p id="inventorySettingsMessage" class="setting-note" role="status" aria-live="polite">Choose each product’s inventory mode in the product list or Edit Product.</p>
 </div>
+<div class="panel sale-scheduler-panel" id="saleSchedulePanel">
+  <div class="section-head"><h3>Schedule your sales</h3><span class="inventory-mode" id="saleScheduleStatus">Checking…</span></div>
+  <p class="setting-note">Set one start and end time for products with manual sale prices or previously finished sales. Normal prices return automatically when the sale ends. Current and upcoming schedules stay unchanged.</p>
+  <div class="field"><label for="bulkSaleBanner">Reuse dates from an existing sale banner (optional)</label><select id="bulkSaleBanner"><option value="">Enter custom sale dates</option></select><small class="muted" id="bulkSaleBannerHint">Select a scheduled sale banner to copy its start/end times.</small></div>
+  <div class="sale-scheduler-grid">
+    <div class="field"><label for="bulkSaleStart">Sale starts · Lagos time (WAT)</label><input type="datetime-local" id="bulkSaleStart"></div>
+    <div class="field"><label for="bulkSaleEnd">Sale ends · Lagos time (WAT)</label><input type="datetime-local" id="bulkSaleEnd"></div>
+  </div>
+  <p class="setting-note" id="bulkSaleEligible" aria-live="polite">Checking existing sale prices…</p>
+  <button class="btn btn-green" type="button" id="applyBulkSale" disabled><i data-lucide="calendar-clock"></i>Schedule existing sale prices</button>
+  <p class="setting-note" id="bulkSaleMessage" role="status" aria-live="polite"></p>
+</div>
 <div class="panel">
  <div class="inventory-bulk-head"><div><h3>Limited product quantities</h3><p class="setting-note">Set or update available units for Limited products here. Unlimited products have no counted stock on the storefront.</p></div><button class="btn btn-green" type="button" id="saveAllQuantities" disabled><i data-lucide="save"></i>Save edited quantities</button></div>
  <div class="toolbar"><input id="productSearch" placeholder="Search products…"><span class="muted" id="productCount"></span></div><div class="table-wrap"><table class="table"><thead><tr><th>Product</th><th>Category</th><th>Price</th><th>Availability</th><th>Visible</th><th>Actions</th></tr></thead><tbody id="productRows"></tbody></table></div></div></section>
@@ -538,7 +563,10 @@ main.wrap{padding-bottom:118px}
 <nav class="tabbar" aria-label="Main"><button class="tab active" data-view="dashboard"><i data-lucide="layout-dashboard"></i><span>Home</span></button><button class="tab" data-view="products"><i data-lucide="package"></i><span>Products</span></button><button class="tab" data-view="orders"><i data-lucide="shopping-bag"></i><span>Orders</span></button><button class="tab" data-view="analytics"><i data-lucide="trending-up"></i><span>Analytics</span></button><button class="tab" data-view="reviews"><i data-lucide="star"></i><span>Reviews</span></button><button class="tab" data-view="settings"><i data-lucide="settings"></i><span>Settings</span></button></nav>
 </div>
 
-<div id="productModal" class="modal hidden"><div class="modal-card"><div class="modal-head"><h2 id="productModalTitle">Add product</h2><button id="closeProductModal" type="button">×</button></div><form id="productForm"><input id="pid" type="hidden"><div class="grid2dash"><div class="field"><label>Product name</label><input id="pname" required></div><div class="field"><label>Category</label><select id="pcat"><option value="feminine">Feminine Wellness</option><option value="ttc">Fertility &amp; TTC</option><option value="infection">Infection Care</option><option value="men">Men's Vitality</option><option value="body">Body &amp; Weight</option></select></div><div class="field"><label>Regular price (₦)</label><input id="regular" type="number" min="0" step="0.01" required></div><div class="field"><label>Sale price (₦)</label><input id="sale" type="number" min="0" step="0.01"></div><div class="field"><label>Tag</label><select id="tag"><option value="">None</option><option value="Kit">Kit</option></select></div><div class="field"><label>Sort order</label><input id="sort" type="number" min="0" value="999"></div><div class="field"><label for="stockMode">Inventory type</label><select id="stockMode"><option value="unlimited">Unlimited availability</option><option value="limited">Limited availability</option></select><small class="muted" id="stockModeHelp">Unlimited products receive orders without a quantity cap.</small></div><div class="field" id="stockQtyField"><label for="stockQty">Available units (Limited only)</label><input id="stockQty" type="number" inputmode="numeric" min="0" step="1" placeholder="e.g. 10"><small class="muted">Enter a whole number. Zero means Out of Stock; numbers appear to customers only when enabled globally.</small></div><div class="field admin-checkbox-stack"><label class="option-check" for="stock"><input id="stock" type="checkbox" checked><span>In stock</span></label><label class="option-check" for="visible"><input id="visible" type="checkbox" checked><span>Visible on shop</span></label><label class="option-check" for="best"><input id="best" type="checkbox"><span>Best seller</span></label></div><div class="field"><label>Product image</label><input id="image" type="file" accept="image/*"><div id="previewWrap"></div></div><div class="field full"><label>Description</label><textarea id="desc" placeholder="Describe the size, contents, ingredients (if verified), and label directions or precautions. Avoid unverified cure claims."></textarea><small class="muted">This text appears on the product page and helps search engines and customers understand the product. Keep it accurate, specific and medically responsible.</small></div></div><div style="display:flex;justify-content:flex-end;gap:8px"><button class="btn btn-light" type="button" id="cancelProduct">Cancel</button><button class="btn btn-green" type="submit">Save product</button></div></form></div></div>
+<div id="productModal" class="modal hidden"><div class="modal-card"><div class="modal-head"><h2 id="productModalTitle">Add product</h2><button id="closeProductModal" type="button">×</button></div><form id="productForm"><input id="pid" type="hidden"><div class="grid2dash"><div class="field"><label>Product name</label><input id="pname" required></div><div class="field"><label>Category</label><select id="pcat"><option value="feminine">Feminine Wellness</option><option value="ttc">Fertility &amp; TTC</option><option value="infection">Infection Care</option><option value="men">Men's Vitality</option><option value="body">Body &amp; Weight</option></select></div><div class="field"><label>Regular price (₦)</label><input id="regular" type="number" min="0" step="0.01" required></div><div class="field"><label for="sale">Sale price (₦)</label><input id="sale" type="number" min="0" step="0.01"><small class="muted">Leave blank for the normal price. Without scheduling, a sale price stays active until removed.</small></div>
+<div class="field full"><label class="option-check" for="scheduleSale"><input type="checkbox" id="scheduleSale"><span>Schedule this product's sale price</span></label><small class="muted" id="scheduleSaleHelp">Set start/end dates to activate and remove the discounted price automatically.</small></div>
+<div class="field" id="saleStartField" hidden><label for="saleStart">Sale starts · Lagos time (WAT)</label><input type="datetime-local" id="saleStart"></div>
+<div class="field" id="saleEndField" hidden><label for="saleEnd">Sale ends · Lagos time (WAT)</label><input type="datetime-local" id="saleEnd"></div><div class="field"><label>Tag</label><select id="tag"><option value="">None</option><option value="Kit">Kit</option></select></div><div class="field"><label>Sort order</label><input id="sort" type="number" min="0" value="999"></div><div class="field"><label for="stockMode">Inventory type</label><select id="stockMode"><option value="unlimited">Unlimited availability</option><option value="limited">Limited availability</option></select><small class="muted" id="stockModeHelp">Unlimited products receive orders without a quantity cap.</small></div><div class="field" id="stockQtyField"><label for="stockQty">Available units (Limited only)</label><input id="stockQty" type="number" inputmode="numeric" min="0" step="1" placeholder="e.g. 10"><small class="muted">Enter a whole number. Zero means Out of Stock; numbers appear to customers only when enabled globally.</small></div><div class="field admin-checkbox-stack"><label class="option-check" for="stock"><input id="stock" type="checkbox" checked><span>In stock</span></label><label class="option-check" for="visible"><input id="visible" type="checkbox" checked><span>Visible on shop</span></label><label class="option-check" for="best"><input id="best" type="checkbox"><span>Best seller</span></label></div><div class="field"><label>Product image</label><input id="image" type="file" accept="image/*"><div id="previewWrap"></div></div><div class="field full"><label>Description</label><textarea id="desc" placeholder="Describe the size, contents, ingredients (if verified), and label directions or precautions. Avoid unverified cure claims."></textarea><small class="muted">This text appears on the product page and helps search engines and customers understand the product. Keep it accurate, specific and medically responsible.</small></div></div><div style="display:flex;justify-content:flex-end;gap:8px"><button class="btn btn-light" type="button" id="cancelProduct">Cancel</button><button class="btn btn-green" type="submit">Save product</button></div></form></div></div>
 
 <div id="orderModal" class="modal hidden"><div class="modal-card"><div class="modal-head"><h2>Order details</h2><button id="closeOrderModal" type="button">×</button></div><div id="orderDetail"></div></div></div>
 
@@ -563,6 +591,39 @@ const money=n=>'₦'+Number(n||0).toLocaleString('en-NG');
 const esc=v=>String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
 const icons=()=>{if(window.lucide)lucide.createIcons()};
 
+
+let saleBannerOptions=[];
+async function loadSaleBannerOptions(){
+  const dropdown=$('bulkSaleBanner');
+  if(!dropdown)return;
+  const {data,error}=await sb.from('hero_campaigns')
+    .select('id,name,kind,starts_at,ends_at,enabled')
+    .eq('kind','sale').eq('enabled',true).gt('ends_at',new Date().toISOString())
+    .order('starts_at',{ascending:true}).limit(50);
+  if(error){
+    $('bulkSaleBannerHint').textContent='Banner dates could not load. Enter your sale dates manually.';
+    return;
+  }
+  saleBannerOptions=data||[];
+  dropdown.innerHTML='<option value="">Enter custom sale dates</option>'+saleBannerOptions.map(c=>
+    '<option value="'+esc(c.id)+'">'+esc(c.name)+' · '+esc(saleTimeFromUtc(c.starts_at).replace('T',' '))+' to '+esc(saleTimeFromUtc(c.ends_at).replace('T',' '))+' WAT</option>'
+  ).join('');
+  $('bulkSaleBannerHint').textContent='Choosing a banner copies its dates. Later changes to that banner do not modify existing price schedules.';
+}
+$('bulkSaleBanner').addEventListener('change',()=>{
+  const selected=saleBannerOptions.find(c=>String(c.id)===$('bulkSaleBanner').value);
+  if(!selected)return;
+  $('bulkSaleStart').value=saleTimeFromUtc(selected.starts_at);
+  $('bulkSaleEnd').value=saleTimeFromUtc(selected.ends_at);
+  $('bulkSaleMessage').textContent='Sale banner dates copied. Click Schedule existing sale prices to apply them.';
+});
+for(const key of ['bulkSaleStart','bulkSaleEnd']){
+  $(key).addEventListener('input',()=>{
+    if($('bulkSaleBanner').value) $('bulkSaleBanner').value='';
+  });
+}
+
+let saleSchedulingReady=false;
 let allProducts=[],allOrders=[],allItems=[],allOrderContacts=new Map(),currentView='dashboard',analyticsRange='today',analyticsFrom=null,analyticsTo=null;
 
 function msg(t,error=false){$('msg').innerHTML=t?`<div class="notice ${error?'error':''}">${esc(t)}</div>`:''}
@@ -583,7 +644,7 @@ function setView(view){
   msg('');
   if(view==='dashboard')loadDashboard();
   if(view==='orders')loadOrders();
-  if(view==='products'){loadInventorySettings().then(loadProducts);}
+  if(view==='products'){loadInventorySettings().then(loadProducts);loadSaleBannerOptions();}
   if(view==='analytics')loadAnalytics();
   if(view==='reviews')loadReviews();
   if(view==='settings'){loadSettings();loadCampaigns();}
@@ -935,11 +996,111 @@ $('saveAllQuantities').addEventListener('click',async()=>{
 /* =========================
    PRODUCTS
 ========================= */
+
+/* WAT is fixed UTC+01:00; do not depend on the administrator's device timezone. */
+function saleTimeToUtc(value){
+  if(!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(String(value||'')))
+    throw new Error('Choose both a sale date and time (Lagos / WAT).');
+  const date=new Date(value+':00+01:00');
+  if(!Number.isFinite(date.getTime()) || saleTimeFromUtc(date.toISOString())!==value)
+    throw new Error('Choose a valid sale date and time.');
+  return date.toISOString();
+}
+function saleTimeFromUtc(value){
+  if(!value)return '';
+  const date=new Date(value);
+  if(!Number.isFinite(date.getTime()))return '';
+  return new Date(date.getTime()+3600000).toISOString().slice(0,16);
+}
+function checkedSalePeriod(start,end){
+  const starts=saleTimeToUtc(start),ends=saleTimeToUtc(end);
+  if(Date.parse(ends)<=Date.parse(starts))throw new Error('Sale end time must be after its start time.');
+  if(Date.parse(ends)<=Date.now())throw new Error('Sale end time must be in the future.');
+  return {starts,ends};
+}
+function updateSaleScheduleFields(){
+  const active=saleSchedulingReady&&$('scheduleSale').checked;
+  $('scheduleSale').disabled=!saleSchedulingReady;
+  $('saleStartField').hidden=!active;
+  $('saleEndField').hidden=!active;
+  $('saleStart').required=active;
+  $('saleEnd').required=active;
+  $('scheduleSaleHelp').textContent=!saleSchedulingReady
+    ? 'Apply supabase/scheduled-sale-prices.sql to enable scheduled pricing.'
+    : active
+      ? 'Sale price will start and expire automatically. All times use Lagos (WAT, UTC+1).'
+      : 'Without a schedule, a sale price stays active until removed. Removing an existing schedule clears its old discount.';
+}
+$('scheduleSale').addEventListener('change',()=>{
+  // Removing a pre-existing schedule must not silently revive an expired
+  // discounted price as an endless manual sale. Re-enter the price if wanted.
+  if(!$('scheduleSale').checked && $('scheduleSale').dataset.hadSchedule==='1'){
+    $('sale').value='';
+  }
+  updateSaleScheduleFields();
+});
+function saleTimingLabel(p){
+  if(p.scheduled_sale_price!=null){
+    const begins=Date.parse(p.sale_starts_at||''),ends=Date.parse(p.sale_ends_at||'');
+    if(!Number.isFinite(begins)||!Number.isFinite(ends))return 'Scheduled sale details unavailable';
+    const note=new Date() < new Date(begins)
+      ? 'Starts ' : Date.now()>=ends ? 'Ended ' : 'Ends ';
+    return note+saleTimeFromUtc(Date.now()>=ends?p.sale_ends_at:Date.now()<begins?p.sale_starts_at:p.sale_ends_at).replace('T',' ')+' WAT';
+  }
+  return p.sale_price!=null&&Number(p.sale_price)>0?'Manual sale (no end time)':'';
+}
+function unscheduledSaleProducts(){
+  return saleSchedulingReady?allProducts.filter(p=>
+    (p.scheduled_sale_price==null && p.sale_price!=null
+      && Number(p.sale_price)>0 && Number(p.sale_price)<Number(p.regular_price))
+    || (p.scheduled_sale_price!=null && p.sale_ends_at
+      && Date.parse(p.sale_ends_at)<=Date.now()
+      && Number(p.scheduled_sale_price)>0
+      && Number(p.scheduled_sale_price)<Number(p.regular_price))
+  ):[];
+}
+function refreshBulkSalePanel(){
+  const eligible=unscheduledSaleProducts().length;
+  $('saleScheduleStatus').textContent=saleSchedulingReady?'Scheduler ready':'SQL required';
+  $('saleScheduleStatus').classList.toggle('is-limited',!saleSchedulingReady);
+  $('bulkSaleEligible').textContent=saleSchedulingReady
+    ? eligible+' product'+(eligible===1?'':'s')+' with manual or previously finished sale prices can use one schedule.'
+    : 'Run supabase/scheduled-sale-prices.sql in the Hylar Supabase project to activate automatic sale dates.';
+  $('applyBulkSale').disabled=!saleSchedulingReady||eligible===0;
+}
+$('applyBulkSale').addEventListener('click',async()=>{
+  const button=$('applyBulkSale'),note=$('bulkSaleMessage'),items=unscheduledSaleProducts();
+  if(!saleSchedulingReady||items.length===0){refreshBulkSalePanel();return;}
+  let period;
+  try{period=checkedSalePeriod($('bulkSaleStart').value,$('bulkSaleEnd').value)}
+  catch(e){note.textContent=e.message;return;}
+  const message='Schedule '+items.length+' manual or previously completed sale price'+(items.length===1?'':'s')
+    +' from '+$('bulkSaleStart').value.replace('T',' ')+' WAT to '+$('bulkSaleEnd').value.replace('T',' ')+' WAT? Other existing schedules stay unchanged.';
+  if(!confirm(message))return;
+  button.disabled=true;note.textContent='Scheduling sale prices…';
+  try{
+    // One atomic, admin-authorized database update, even for 100+ products.
+    const {data,error}=await sb.rpc('hylar_schedule_current_sale_prices',{
+      p_start_at:period.starts,p_end_at:period.ends
+    });
+    if(error)throw error;
+    if(!Number.isInteger(Number(data)))throw new Error('Could not verify scheduled product count.');
+    await loadProducts();
+    note.textContent=Number(data)+' product'+(Number(data)===1?'':'s')+' scheduled. Sale prices activate and revert automatically.';
+    msg('Sale schedule saved successfully.');
+  }catch(err){note.textContent='Could not schedule sales: '+err.message;}
+  finally{refreshBulkSalePanel();}
+});
+
 async function loadProducts(){
   try{
     const {data,error}=await sb.from('products').select('*').order('sort_order',{ascending:true}).order('created_at',{ascending:true});
     if(error)throw error;
     allProducts=data||[];
+    saleSchedulingReady=allProducts.length
+      ? Object.prototype.hasOwnProperty.call(allProducts[0],'scheduled_sale_price')
+      : !(await sb.from('products').select('scheduled_sale_price').limit(1)).error;
+    refreshBulkSalePanel();
     inventoryPerProductReady=allProducts.length
       ? Object.prototype.hasOwnProperty.call(allProducts[0],'stock_limited')
       : !(await sb.from('products').select('stock_limited').limit(1)).error;
@@ -980,12 +1141,13 @@ function renderProducts(){
   $('productCount').textContent=`${list.length} product${list.length===1?'':'s'}`;
   $('productRows').innerHTML=list.length?list.map(p=>{
     const sale=p.sale_price!=null&&Number(p.sale_price)>0;
+    const saleInfo=saleTimingLabel(p);
     const img=imageUrl(p.image_url);
     const availableQty=p.stock_quantity==null?null:Number(p.stock_quantity);
     const limited=productModeIsLimited(p);
     const canBuy=p.in_stock!==false && (!limited || (availableQty===null?!inventorySettingsReady:availableQty>0));
     const qtyLabel=!limited?'Unlimited (no stock count)':availableQty===null?'Set available units':`${availableQty.toLocaleString('en-NG')} available`;
-    return `<tr><td><div style="display:flex;align-items:center;gap:9px">${img?`<img src="${esc(img)}" style="width:42px;height:42px;border-radius:8px;object-fit:cover;background:#eee" alt="">`:''}<div><strong>${esc(p.name)}</strong><br><small class="muted">${esc(p.tag||'')}</small></div></div></td><td data-label="Category">${esc(p.category)}</td><td data-label="Price">${sale?`<del class="muted">${money(p.regular_price)}</del><br><strong>${money(p.sale_price)}</strong>`:money(p.regular_price)}</td><td data-label="Stock">${renderAvailabilityCell(p,canBuy,qtyLabel,availableQty)}</td><td data-label="Visible">${p.visible?'Yes':'No'}</td><td><div class="actions"><button class="btn btn-light" onclick="editProduct('${p.id}')">Edit</button><button class="btn btn-light" onclick="toggleStock('${p.id}',${!p.in_stock})">${p.in_stock?'Out of stock':'In stock'}</button><button class="btn btn-light" onclick="toggleVisible('${p.id}',${!p.visible})">${p.visible?'Hide':'Show'}</button><button class="btn btn-danger" onclick="deleteProduct('${p.id}')">Delete</button></div></td></tr>`;
+    return `<tr><td><div style="display:flex;align-items:center;gap:9px">${img?`<img src="${esc(img)}" style="width:42px;height:42px;border-radius:8px;object-fit:cover;background:#eee" alt="">`:''}<div><strong>${esc(p.name)}</strong><br><small class="muted">${esc(p.tag||'')}</small></div></div></td><td data-label="Category">${esc(p.category)}</td><td data-label="Price">${sale?`<del class="muted">${money(p.regular_price)}</del><br><strong>${money(p.sale_price)}</strong>`:money(p.regular_price)}${saleInfo?`<small class="sale-timing">${esc(saleInfo)}</small>`:''}</td><td data-label="Stock">${renderAvailabilityCell(p,canBuy,qtyLabel,availableQty)}</td><td data-label="Visible">${p.visible?'Yes':'No'}</td><td><div class="actions"><button class="btn btn-light" onclick="editProduct('${p.id}')">Edit</button><button class="btn btn-light" onclick="toggleStock('${p.id}',${!p.in_stock})">${p.in_stock?'Out of stock':'In stock'}</button><button class="btn btn-light" onclick="toggleVisible('${p.id}',${!p.visible})">${p.visible?'Hide':'Show'}</button><button class="btn btn-danger" onclick="deleteProduct('${p.id}')">Delete</button></div></td></tr>`;
   }).join(''):'<tr><td colspan="6" class="empty">No products found.</td></tr>';
 }
 
@@ -996,7 +1158,12 @@ function openProductModal(p=null){
   $('pname').value=p?.name||'';
   $('pcat').value=p?.category||'body';
   $('regular').value=p?.regular_price??'';
-  $('sale').value=p?.sale_price??'';
+  $('sale').value=p?.scheduled_sale_price??p?.sale_price??'';
+  $('scheduleSale').checked=!!(p&&p.scheduled_sale_price!=null);
+  $('scheduleSale').dataset.hadSchedule=p&&p.scheduled_sale_price!=null?'1':'0';
+  $('saleStart').value=saleTimeFromUtc(p?.sale_starts_at);
+  $('saleEnd').value=saleTimeFromUtc(p?.sale_ends_at);
+  updateSaleScheduleFields();
   $('desc').value=p?.description||'';
   $('tag').value=p?.tag||'';
   $('sort').value=p?.sort_order??999;
@@ -1095,12 +1262,26 @@ $('productForm').addEventListener('submit',async e=>{
   e.preventDefault();
   try{
     const id=$('pid').value||`p_${crypto.randomUUID()}`;
+    const previousProduct=allProducts.find(p=>String(p.id)===String(id));
     let image=allProducts.find(p=>p.id===id)?.image_url||'';
     const file=$('image').files[0];
     if(file)image=await uploadImage(file);
     const regular=Number($('regular').value);
     const sale=$('sale').value.trim()===''?null:Number($('sale').value);
     if(sale!==null&&(sale<=0||sale>=regular))throw new Error('Sale price must be greater than 0 and lower than the regular price.');
+    const schedule=saleSchedulingReady&&$('scheduleSale').checked;
+    if(schedule&&sale===null)throw new Error('Enter a sale price before scheduling its dates.');
+    const unchangedExpiredSchedule=!!(schedule&&previousProduct
+      && previousProduct.scheduled_sale_price!=null
+      && Date.parse(previousProduct.sale_ends_at)<=Date.now()
+      && Number(previousProduct.scheduled_sale_price)===sale
+      && saleTimeFromUtc(previousProduct.sale_starts_at)===$('saleStart').value
+      && saleTimeFromUtc(previousProduct.sale_ends_at)===$('saleEnd').value);
+    const period=schedule
+      ? unchangedExpiredSchedule
+        ? {starts:previousProduct.sale_starts_at,ends:previousProduct.sale_ends_at}
+        : checkedSalePeriod($('saleStart').value,$('saleEnd').value)
+      : null;
     const quantityText=$('stockQty').value.trim();
     const limited=inventoryPerProductReady ? $('stockMode').value==='limited' : inventoryLimitsEnabled;
     let availableQty=null; // NULL = uncounted; zero = sold out for Limited products.
@@ -1129,6 +1310,14 @@ $('productForm').addEventListener('submit',async e=>{
       updated_at:new Date().toISOString()
     };
     if(inventoryPerProductReady)payload.stock_limited=limited;
+    if(saleSchedulingReady){
+      // A database trigger determines the actual sale_price at the current time.
+      // Before the start / after the end, checkout reads NULL and uses regular_price.
+      payload.scheduled_sale_price=schedule?sale:null;
+      payload.sale_starts_at=period?period.starts:null;
+      payload.sale_ends_at=period?period.ends:null;
+      payload.sale_price=schedule?null:sale;
+    }
     const {error}=await sb.from('products').upsert(payload,{onConflict:'id'});
     if(error)throw error;
     closeProductModal();
