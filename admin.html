@@ -558,7 +558,7 @@ main.wrap{padding-bottom:118px}
   </form>
 </div>
 </div>
-<div class="panel" style="margin-top:18px"><div class="section-head"><h3>Scheduled promotional banners</h3></div><p class="setting-note">Upload a sale or anniversary flyer and choose start/end times in Nigeria time. Active promotions temporarily replace your default hero image, then the default returns automatically when the promotion ends.</p><form id="campaignForm"><div class="grid2dash"><div class="field"><label>Campaign name</label><input id="campaignName" required maxlength="100" placeholder="e.g. November sales"></div><div class="field"><label>Banner type</label><select id="campaignKind"><option value="sale">Sale (show countdown)</option><option value="occasion">Anniversary / general (no countdown)</option></select></div><div class="field"><label>Starts (Nigeria time)</label><input id="campaignStart" type="datetime-local" required></div><div class="field"><label>Ends (Nigeria time)</label><input id="campaignEnd" type="datetime-local" required></div><div class="field"><label>Upload flyer / image</label><input id="campaignImage" type="file" accept="image/jpeg,image/png,image/webp" required><small class="setting-note">JPEG, PNG or WebP, maximum 5 MB.</small></div></div><button type="submit" class="btn btn-green" id="campaignSave">Schedule banner</button></form><div id="campaignStatus" class="setting-note" role="status"></div><div id="campaignList" style="margin-top:14px"></div></div></section>
+<div class="panel" style="margin-top:18px"><div class="section-head"><h3>Scheduled promotional banners</h3></div><p class="setting-note">Upload a sale or anniversary flyer and choose start/end times in Nigeria time. Active promotions temporarily replace your default hero image, then the default returns automatically when the promotion ends.</p><form id="campaignForm"><div class="grid2dash"><div class="field"><label>Campaign name</label><input id="campaignName" required maxlength="100" placeholder="e.g. November sales"></div><div class="field"><label>Banner type</label><select id="campaignKind"><option value="sale">Sale (show countdown)</option><option value="occasion">Anniversary / general (no countdown)</option></select></div><div class="field"><label>Starts (Nigeria time)</label><input id="campaignStart" type="datetime-local" required></div><div class="field"><label>Ends (Nigeria time)</label><input id="campaignEnd" type="datetime-local" required></div><div class="field"><label class="option-check" for="campaignSyncSales"><input type="checkbox" id="campaignSyncSales"><span><strong>Sync product sale prices with this promotional banner</strong><small>Enabled sale prices start with the banner countdown and return to normal when it ends. Only products with an existing discount are included; individual product schedules remain available.</small></span></label></div><div class="field"><label>Upload flyer / image</label><input id="campaignImage" type="file" accept="image/jpeg,image/png,image/webp" required><small class="setting-note">JPEG, PNG or WebP, maximum 5 MB.</small></div></div><button type="submit" class="btn btn-green" id="campaignSave">Schedule banner</button></form><div id="campaignStatus" class="setting-note" role="status"></div><div id="campaignList" style="margin-top:14px"></div></div></section>
 </main>
 <nav class="tabbar" aria-label="Main"><button class="tab active" data-view="dashboard"><i data-lucide="layout-dashboard"></i><span>Home</span></button><button class="tab" data-view="products"><i data-lucide="package"></i><span>Products</span></button><button class="tab" data-view="orders"><i data-lucide="shopping-bag"></i><span>Orders</span></button><button class="tab" data-view="analytics"><i data-lucide="trending-up"></i><span>Analytics</span></button><button class="tab" data-view="reviews"><i data-lucide="star"></i><span>Reviews</span></button><button class="tab" data-view="settings"><i data-lucide="settings"></i><span>Settings</span></button></nav>
 </div>
@@ -1311,6 +1311,12 @@ $('productForm').addEventListener('submit',async e=>{
     };
     if(inventoryPerProductReady)payload.stock_limited=limited;
     if(saleSchedulingReady){
+      // Detach a product when its individual schedule is explicitly edited.
+      payload.sale_campaign_id=schedule && previousProduct?.sale_campaign_id
+        && Number(previousProduct.scheduled_sale_price)===sale
+        && saleTimeFromUtc(previousProduct.sale_starts_at)===$('saleStart').value
+        && saleTimeFromUtc(previousProduct.sale_ends_at)===$('saleEnd').value
+          ? previousProduct.sale_campaign_id : null;
       // A database trigger determines the actual sale_price at the current time.
       // Before the start / after the end, checkout reads NULL and uses regular_price.
       payload.scheduled_sale_price=schedule?sale:null;
@@ -1547,12 +1553,25 @@ $('defaultHeroReset').addEventListener('click',async()=>{
 function nigeriaTimeToISO(value){return new Date(value+':00+01:00').toISOString()}
 async function loadCampaigns(){
  const target=$('campaignList');if(!target)return;
- const {data,error}=await sb.from('hero_campaigns').select('id,name,kind,starts_at,ends_at,image_url,enabled').order('starts_at',{ascending:false}).limit(30);
+ const {data,error}=await sb.from('hero_campaigns').select('id,name,kind,starts_at,ends_at,image_url,enabled,sync_sale_prices').order('starts_at',{ascending:false}).limit(30);
  if(error){target.textContent='Unable to load banners: '+error.message;return}
- target.innerHTML=(data||[]).map(c=>`<div style="display:flex;align-items:center;gap:12px;border-top:1px solid var(--line);padding:12px 0;flex-wrap:wrap"><img src="${esc(c.image_url)}" alt="" style="width:75px;height:65px;object-fit:cover;border-radius:9px"><div style="flex:1;min-width:160px"><strong>${esc(c.name)}</strong><div class="setting-note">${esc(c.kind)} · ${new Date(c.starts_at).toLocaleString('en-NG',{timeZone:'Africa/Lagos'})} – ${new Date(c.ends_at).toLocaleString('en-NG',{timeZone:'Africa/Lagos'})}</div><small>${c.enabled?'Enabled':'Disabled'}</small></div><button type="button" class="btn btn-light" data-toggle-campaign="${esc(c.id)}" data-enabled="${c.enabled}">${c.enabled?'Disable':'Enable'}</button><button type="button" class="btn btn-danger" data-delete-campaign="${esc(c.id)}">Delete</button></div>`).join('')||'<p class="muted">No scheduled banners yet.</p>';
+ target.innerHTML=(data||[]).map(c=>`<div style="display:flex;align-items:center;gap:12px;border-top:1px solid var(--line);padding:12px 0;flex-wrap:wrap"><img src="${esc(c.image_url)}" alt="" style="width:75px;height:65px;object-fit:cover;border-radius:9px"><div style="flex:1;min-width:160px"><strong>${esc(c.name)}</strong><div class="setting-note">${esc(c.kind)} · ${new Date(c.starts_at).toLocaleString('en-NG',{timeZone:'Africa/Lagos'})} – ${new Date(c.ends_at).toLocaleString('en-NG',{timeZone:'Africa/Lagos'})}</div><small>${c.enabled?'Enabled':'Disabled'}${c.kind==='sale'?' · Price sync '+(c.sync_sale_prices?'ON':'OFF'):''}</small></div>${c.kind==='sale'?`<button type="button" class="btn btn-light" data-sync-campaign="${esc(c.id)}" data-synced="${c.sync_sale_prices}">${c.sync_sale_prices?'Disable price sync':'Enable price sync'}</button>`:''}<button type="button" class="btn btn-light" data-toggle-campaign="${esc(c.id)}" data-enabled="${c.enabled}">${c.enabled?'Disable':'Enable'}</button><button type="button" class="btn btn-danger" data-delete-campaign="${esc(c.id)}">Delete</button></div>`).join('')||'<p class="muted">No scheduled banners yet.</p>';
+ target.querySelectorAll('[data-sync-campaign]').forEach(b=>b.onclick=async()=>{
+   b.disabled=true;
+   const enable=b.dataset.synced!=='true';
+   try{
+     if(enable&&!confirm('Sync existing discounted products with this banner? The discounts will start when its countdown starts and return to normal when the banner ends. Individual active schedules will not be overwritten.'))return;
+     const {data,error}=await sb.rpc('hylar_set_banner_sale_sync',{p_campaign_id:b.dataset.syncCampaign,p_enabled:enable});
+     if(error)throw error;
+     msg(enable?'Banner price sync enabled. '+Number(data||0)+' discounted product(s) linked.':'Banner price sync disabled; linked discounts return to normal prices.');
+     await loadCampaigns();await loadProducts();
+   }catch(e){msg('Could not change price sync: '+e.message,true)}
+   finally{b.disabled=false}
+ });
  target.querySelectorAll('[data-toggle-campaign]').forEach(b=>b.onclick=async()=>{const {error}=await sb.from('hero_campaigns').update({enabled:b.dataset.enabled!=='true'}).eq('id',b.dataset.toggleCampaign);if(error)msg(error.message,true);else loadCampaigns()});
  target.querySelectorAll('[data-delete-campaign]').forEach(b=>b.onclick=async()=>{if(!confirm('Delete this scheduled banner?'))return;const {error}=await sb.from('hero_campaigns').delete().eq('id',b.dataset.deleteCampaign);if(error)msg(error.message,true);else loadCampaigns()});
 }
+$('campaignKind').addEventListener('change',()=>{const sale=$('campaignKind').value==='sale';$('campaignSyncSales').disabled=!sale;if(!sale)$('campaignSyncSales').checked=false;});
 $('campaignForm').addEventListener('submit',async e=>{
  e.preventDefault();const status=$('campaignStatus'),btn=$('campaignSave'),file=$('campaignImage').files[0];
  if(!file||!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>5*1024*1024){status.textContent='Choose a JPEG, PNG or WebP image under 5 MB.';return}
@@ -1562,8 +1581,14 @@ $('campaignForm').addEventListener('submit',async e=>{
  try{const ext={'image/jpeg':'jpg','image/png':'png','image/webp':'webp'}[file.type];const path=crypto.randomUUID()+'.'+ext;
  const uploaded=await sb.storage.from('hero-banners').upload(path,file,{contentType:file.type,upsert:false});if(uploaded.error)throw uploaded.error;
  const url=sb.storage.from('hero-banners').getPublicUrl(path).data.publicUrl;
- const {error}=await sb.from('hero_campaigns').insert({name:$('campaignName').value.trim(),kind:$('campaignKind').value,starts_at:start,ends_at:end,image_url:url,enabled:true});if(error)throw error;
- status.textContent='Banner scheduled successfully.';$('campaignForm').reset();loadCampaigns();
+ const {data:created,error}=await sb.from('hero_campaigns').insert({name:$('campaignName').value.trim(),kind:$('campaignKind').value,starts_at:start,ends_at:end,image_url:url,enabled:true}).select('id').single();if(error)throw error;
+ let statusText='Banner scheduled successfully.';
+ if($('campaignKind').value==='sale'&&$('campaignSyncSales').checked){
+   const {data:count,error:syncError}=await sb.rpc('hylar_set_banner_sale_sync',{p_campaign_id:created.id,p_enabled:true});
+   if(syncError){statusText='Banner saved, but price sync could not be enabled: '+syncError.message;}
+   else {statusText='Banner scheduled with price sync enabled. '+Number(count||0)+' discounted product(s) linked.';await loadProducts();}
+ }
+ status.textContent=statusText;$('campaignForm').reset();loadCampaigns();
  }catch(err){status.textContent='Could not schedule banner: '+err.message}finally{btn.disabled=false}
 });
 
