@@ -26,7 +26,8 @@ BEGIN
           AND sale_starts_at IS NULL
           AND sale_ends_at IS NULL
         ) OR (
-          scheduled_sale_price > 0
+          regular_price IS NOT NULL
+          AND scheduled_sale_price > 0
           AND scheduled_sale_price < regular_price
           AND sale_starts_at IS NOT NULL
           AND sale_ends_at IS NOT NULL
@@ -94,8 +95,9 @@ REVOKE ALL ON FUNCTION public.hylar_apply_sale_schedule()
 REVOKE ALL ON FUNCTION public.hylar_sync_scheduled_sales()
   FROM PUBLIC,anon,authenticated;
 
--- Bulk scheduling for the admin: all products that have a valid MANUAL sale
--- price and no prior schedule. Existing scheduled sales are not overwritten.
+-- Bulk scheduling for the admin: valid MANUAL sale prices and completed
+-- scheduled sales can be reused. Upcoming / currently active schedules stay
+-- untouched, so the next 100-product sale never needs manual cleanup.
 CREATE OR REPLACE FUNCTION public.hylar_schedule_current_sale_prices(
   p_start_at timestamptz,
   p_end_at timestamptz
@@ -118,13 +120,18 @@ BEGIN
       USING ERRCODE='22023';
   END IF;
   UPDATE public.products p
-    SET scheduled_sale_price=p.sale_price,
+    SET scheduled_sale_price=coalesce(p.scheduled_sale_price,p.sale_price),
         sale_starts_at=p_start_at,
         sale_ends_at=p_end_at,
         updated_at=now()
-  WHERE p.scheduled_sale_price IS NULL
-    AND p.sale_price > 0
-    AND p.sale_price < p.regular_price;
+  WHERE (
+      (p.scheduled_sale_price IS NULL AND p.sale_price > 0
+       AND p.sale_price < p.regular_price)
+      OR
+      (p.scheduled_sale_price IS NOT NULL AND p.sale_ends_at <= now()
+       AND p.scheduled_sale_price > 0
+       AND p.scheduled_sale_price < p.regular_price)
+    );
   GET DIAGNOSTICS v_count=ROW_COUNT;
   RETURN v_count;
 END;
