@@ -1029,9 +1029,16 @@ function updateSaleScheduleFields(){
     ? 'Apply supabase/scheduled-sale-prices.sql to enable scheduled pricing.'
     : active
       ? 'Sale price will start and expire automatically. All times use Lagos (WAT, UTC+1).'
-      : 'Without a schedule, any sale price stays active until you remove it manually.';
+      : 'Without a schedule, a sale price stays active until removed. Removing an existing schedule clears its old discount.';
 }
-$('scheduleSale').addEventListener('change',updateSaleScheduleFields);
+$('scheduleSale').addEventListener('change',()=>{
+  // Removing a pre-existing schedule must not silently revive an expired
+  // discounted price as an endless manual sale. Re-enter the price if wanted.
+  if(!$('scheduleSale').checked && $('scheduleSale').dataset.hadSchedule==='1'){
+    $('sale').value='';
+  }
+  updateSaleScheduleFields();
+});
 function saleTimingLabel(p){
   if(p.scheduled_sale_price!=null){
     const begins=Date.parse(p.sale_starts_at||''),ends=Date.parse(p.sale_ends_at||'');
@@ -1153,6 +1160,7 @@ function openProductModal(p=null){
   $('regular').value=p?.regular_price??'';
   $('sale').value=p?.scheduled_sale_price??p?.sale_price??'';
   $('scheduleSale').checked=!!(p&&p.scheduled_sale_price!=null);
+  $('scheduleSale').dataset.hadSchedule=p&&p.scheduled_sale_price!=null?'1':'0';
   $('saleStart').value=saleTimeFromUtc(p?.sale_starts_at);
   $('saleEnd').value=saleTimeFromUtc(p?.sale_ends_at);
   updateSaleScheduleFields();
