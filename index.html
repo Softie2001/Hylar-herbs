@@ -2673,14 +2673,15 @@ document.getElementById('contactForm')?.addEventListener('submit', async (e) => 
 </script>
 
 <script>
-/* Default banner can be edited independently; active scheduled promotions take precedence. */
+/* Default hero remains independent. Upcoming promotions show a start countdown;
+   active promotions use their own optional copy and display the ending countdown. */
 (function(){
  const image=document.getElementById('heroImage'),heading=document.getElementById('heroHeading');
  const subtitle=document.getElementById('heroSubtitle'),timer=document.getElementById('heroCountdown');
  if(!image||!heading||!subtitle||!timer)return;
  const fallback='/hero-default.jpg', initialHeading=heading.innerHTML, initialSubtitle=subtitle.textContent;
  const sb=window.supabase?.createClient('https://wstpvrhjhscctekwbkcs.supabase.co','sb_publishable_XHxPBPuaGr1uMRZ8LwC8qw_Odhi8hMP');
- let current=fallback,version=0,expiry=0;
+ let current=fallback,version=0,deadline=0,timerLabel='',nextTransition=0,refreshing=false;
  function safeUrl(value){
   if(!value||typeof value!=='string')return fallback;
   try{const u=new URL(value,location.origin);return u.protocol==='https:'?u.href:fallback}catch(e){return fallback}
@@ -2694,34 +2695,57 @@ document.getElementById('contactForm')?.addEventListener('submit', async (e) => 
  }
  image.addEventListener('error',()=>{if(!image.src.endsWith('/hero-default.jpg')){image.src=fallback;current=fallback}});
  function countdown(){
-  if(!expiry){timer.hidden=true;return}
-  let t=Math.max(0,Math.floor((expiry-Date.now())/1000));
-  if(!t){expiry=0;timer.hidden=true;refresh();return}
+  if(!deadline||!Number.isFinite(deadline)){timer.hidden=true;return}
+  let t=Math.max(0,Math.ceil((deadline-Date.now())/1000));
+  if(!t){
+   timer.hidden=true;
+   if(!refreshing)refresh();
+   return;
+  }
   const d=Math.floor(t/86400);t%=86400;
   const h=String(Math.floor(t/3600)).padStart(2,'0');t%=3600;
   const m=String(Math.floor(t/60)).padStart(2,'0'),seconds=String(t%60).padStart(2,'0');
-  timer.innerHTML='<strong>SALE ENDS IN</strong><span>'+(d?d+'d ':'')+h+'h '+m+'m '+seconds+'s</span>';
+  timer.replaceChildren();
+  const title=document.createElement('strong');title.textContent=timerLabel;
+  const digits=document.createElement('span');digits.textContent=(d?d+'d ':'')+h+'h '+m+'m '+seconds+'s';
+  timer.append(title,digits);
   timer.hidden=false;
  }
  async function refresh(){
-  if(!sb)return;
-  const now=new Date().toISOString();
-  const [settingsResult,promotionResult]=await Promise.allSettled([
+  if(!sb||refreshing)return;
+  refreshing=true;
+  try{
+   const now=new Date().toISOString();
+   const [settingsResult,activeResult,upcomingResult]=await Promise.allSettled([
     sb.from('store_settings').select('hero_image_url,hero_heading,hero_subtitle').eq('id',1).maybeSingle(),
-    sb.from('hero_campaigns').select('image_url,kind,ends_at').eq('enabled',true)
-      .lte('starts_at',now).gt('ends_at',now).order('starts_at',{ascending:false}).limit(1)
-  ]);
-  const settings=settingsResult.status==='fulfilled'&&!settingsResult.value.error?settingsResult.value.data:null;
-  const promotion=promotionResult.status==='fulfilled'&&!promotionResult.value.error?promotionResult.value.data?.[0]:null;
-  chooseImage(safeUrl(promotion?.image_url||settings?.hero_image_url||fallback));
-  const headline=String(settings?.hero_heading||'').trim(),sub=String(settings?.hero_subtitle||'').trim();
-  if(headline){heading.textContent=headline}else{heading.innerHTML=initialHeading}
-  subtitle.textContent=sub||initialSubtitle;
-  expiry=promotion?.kind==='sale'?new Date(promotion.ends_at).getTime():0;
-  countdown();
+    sb.from('hero_campaigns').select('id,name,kind,image_url,starts_at,ends_at,headline,subtitle')
+      .eq('enabled',true).lte('starts_at',now).gt('ends_at',now).order('starts_at',{ascending:false}).limit(1),
+    sb.from('hero_campaigns').select('id,name,kind,image_url,starts_at,ends_at,headline,subtitle')
+      .eq('enabled',true).eq('kind','sale').gt('starts_at',now).gt('ends_at',now).order('starts_at',{ascending:true}).limit(1)
+   ]);
+   const settings=settingsResult.status==='fulfilled'&&!settingsResult.value.error?settingsResult.value.data:null;
+   const active=activeResult.status==='fulfilled'&&!activeResult.value.error?activeResult.value.data?.[0]:null;
+   const upcoming=upcomingResult.status==='fulfilled'&&!upcomingResult.value.error?upcomingResult.value.data?.[0]:null;
+   chooseImage(safeUrl(active?.image_url||settings?.hero_image_url||fallback));
+   const title=String(active?.headline||settings?.hero_heading||'').trim();
+   const sub=String(active?.subtitle||settings?.hero_subtitle||'').trim();
+   if(title){heading.textContent=title}else{heading.innerHTML=initialHeading}
+   subtitle.textContent=sub||initialSubtitle;
+   deadline=0;timerLabel='';
+   if(active?.kind==='sale'){
+    deadline=new Date(active.ends_at).getTime();
+    timerLabel=String(active.name||'Sale').trim()+' ends in';
+   }else if(upcoming){
+    deadline=new Date(upcoming.starts_at).getTime();
+    timerLabel=String(upcoming.name||'Sale').trim()+' starts in';
+   }
+   countdown();
+  }catch(err){console.info('Campaign refresh unavailable:',err)}
+  finally{refreshing=false}
  }
  refresh();
- setInterval(countdown,1000);setInterval(refresh,60000);
+ setInterval(countdown,1000);
+ setInterval(refresh,60000);
 })();
 </script>
 </body>
