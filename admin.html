@@ -147,8 +147,9 @@ main.wrap{padding-bottom:118px}
 .orders-export-grid .field{min-width:0;margin-bottom:8px}
 .orders-export-grid .field input,.orders-export-grid .field select{max-width:100%;min-width:0;min-height:44px}
 .orders-export-grid input:disabled{opacity:.6;background:#f5f7f4}
+.orders-export-grid .field[hidden]{display:none!important}
 .orders-export-actions{display:flex;flex-wrap:wrap;gap:9px;margin:10px 0}
-@media(max-width:700px){.orders-export-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.orders-export-grid .field:first-child{grid-column:1/-1}.orders-export-actions .btn{flex:1 1 calc(50% - 5px);font-size:12px;padding:10px 7px}}
+@media(max-width:700px){.orders-export-grid{grid-template-columns:minmax(0,1fr);gap:10px}.orders-export-grid .field{width:100%;min-width:0}.orders-export-grid .field:first-child{grid-column:auto}.orders-export-grid .field input[type="date"]{display:block;width:100%;min-width:0;max-width:100%;box-sizing:border-box;min-height:46px;-webkit-appearance:none;appearance:none}.orders-export-actions .btn{flex:1 1 calc(50% - 5px);font-size:12px;padding:10px 7px}}
 @media(max-width:350px){.orders-export-grid{grid-template-columns:1fr}.orders-export-grid .field:first-child{grid-column:auto}}
 /* Mobile-first login, centered independently of the dashboard layout. */
 #loginView.wrap{
@@ -1039,10 +1040,13 @@ function exportSelection(){
 function updateOrderExportControls(){
  const custom=$('orderExportRange').value==='custom';
  $('orderExportFrom').disabled=!custom;$('orderExportTo').disabled=!custom;
+ $('orderExportFrom').closest('.field').hidden=!custom;
+ $('orderExportTo').closest('.field').hidden=!custom;
  try{const {range,orders}=exportSelection();$('orderExportStatus').textContent=orders.length+' orders found for '+range.label+'.';}
  catch(e){$('orderExportStatus').textContent=e.message;}
 }
 for(const id of ['orderExportRange','orderExportFrom','orderExportTo'])$(id).addEventListener('change',updateOrderExportControls);
+updateOrderExportControls();
 function exportRows(orders){
  return orders.map(o=>{
   const contacts=orderContactNumbers(o);
