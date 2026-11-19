@@ -925,6 +925,32 @@ header.hero-cover .hero-inner{padding-top:94px;padding-bottom:104px}
   .hero-cover .hero-actions .btn-accent{font-size:12.5px;padding:12px 18px;min-height:45px;}
   .hero-cover .hero-discovery{bottom:-29px;}
 }
+/* Centre the hero content, with a promotional countdown integrated into the main stack. */
+header.hero-cover .hero-inner{justify-content:center!important;align-items:center!important;padding-bottom:105px!important}
+.hero-cover .hero-copy{width:min(100%,860px)!important;max-width:860px!important;margin-inline:auto!important;text-align:center!important;transform:none!important}
+.hero-cover #heroHeading{max-width:820px!important;margin:0 auto 16px!important;text-align:center!important;text-wrap:balance}
+.hero-cover #heroSubtitle{max-width:620px!important;margin:0 auto 22px!important;text-align:center!important}
+.hero-cover .hero-actions{display:flex!important;justify-content:center!important;align-items:center!important;margin-top:22px!important}
+.hero-cover .hero-promo-countdown{position:static!important;inset:auto!important;z-index:auto!important;width:fit-content;max-width:100%;margin:0 auto!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;display:flex;flex-direction:row;justify-content:center;gap:9px}
+.hero-cover .hero-promo-countdown[hidden]{display:none!important}
+.hero-cover .hero-promo-countdown .countdown-unit{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:67px;min-height:72px;padding:9px 9px 7px;background:#fff6d2;color:#183f28;border:1px solid rgba(255,222,117,.7);border-radius:12px;box-shadow:0 3px 13px rgba(0,0,0,.12)}
+.hero-cover .hero-promo-countdown .countdown-unit strong{color:#183f28;font:800 23px/1.1 'Sora',sans-serif;letter-spacing:-.035em}
+.hero-cover .hero-promo-countdown .countdown-unit small{color:#244b31;font:700 9px/1.3 'Manrope',sans-serif;text-transform:uppercase;letter-spacing:.055em}
+@media(max-width:760px){
+ header.hero-cover .hero-inner{min-height:500px!important;padding:65px 19px 82px!important;align-items:center!important}
+ .hero-cover .hero-copy{width:100%!important}
+ .hero-cover #heroHeading{max-width:100%!important;font-size:clamp(29px,8vw,42px)!important;line-height:1.13!important}
+ .hero-cover #heroSubtitle{max-width:100%!important;font-size:13px!important;line-height:1.55!important}
+ .hero-cover .hero-promo-countdown{gap:7px}
+ .hero-cover .hero-promo-countdown .countdown-unit{min-width:57px;min-height:65px;padding:8px 6px 6px;border-radius:10px}
+ .hero-cover .hero-promo-countdown .countdown-unit strong{font-size:19px}
+ .hero-cover .hero-promo-countdown .countdown-unit small{font-size:8px}
+ .hero-cover .hero-actions{margin-top:20px!important}
+}
+@media(max-width:360px){
+ .hero-cover .hero-promo-countdown .countdown-unit{min-width:53px;min-height:61px}
+ .hero-cover .hero-promo-countdown .countdown-unit strong{font-size:17px}
+}
 /* Search field replaces the category selector; value is used to filter the real product list. */
 .hero-discovery-choose{gap:7px;min-width:0;}
 .hero-discovery-choose>svg{left:17px!important;right:auto!important;flex:none;width:18px;height:18px;}
@@ -1153,12 +1179,12 @@ body.cart-keyboard-active #orderTray.order-tray{display:none!important;}
     <div class="hero-copy">
       <h1 id="heroHeading">Natural wellness, <span>made easy.</span></h1>
       <p id="heroSubtitle">Explore herbal essentials for everyday care.</p>
+      <div id="heroCountdown" class="hero-promo-countdown" hidden aria-live="off"></div>
       <div class="hero-actions">
         <a href="#shop" class="btn btn-accent"><i data-lucide="shopping-bag" aria-hidden="true"></i> Shop All Products</a>
       </div>
     </div>
   </div>
-  <div id="heroCountdown" class="hero-promo-countdown" hidden aria-live="off"></div>
   <form id="heroSearchForm" class="hero-discovery" role="search" aria-label="Search Hylar Herbs products">
     <div class="hero-discovery-prompt"><span>FIND SOMETHING SPECIFIC</span><strong>Search our catalogue</strong></div>
     <label class="hero-discovery-choose" for="heroSearchInput">
@@ -2681,7 +2707,7 @@ document.getElementById('contactForm')?.addEventListener('submit', async (e) => 
  if(!image||!heading||!subtitle||!timer)return;
  const fallback='/hero-default.jpg', initialHeading=heading.innerHTML, initialSubtitle=subtitle.textContent;
  const sb=window.supabase?.createClient('https://wstpvrhjhscctekwbkcs.supabase.co','sb_publishable_XHxPBPuaGr1uMRZ8LwC8qw_Odhi8hMP');
- let current=fallback,version=0,deadline=0,timerLabel='',nextTransition=0,refreshing=false;
+ let current=fallback,version=0,deadline=0,refreshing=false;
  function safeUrl(value){
   if(!value||typeof value!=='string')return fallback;
   try{const u=new URL(value,location.origin);return u.protocol==='https:'?u.href:fallback}catch(e){return fallback}
@@ -2697,18 +2723,20 @@ document.getElementById('contactForm')?.addEventListener('submit', async (e) => 
  function countdown(){
   if(!deadline||!Number.isFinite(deadline)){timer.hidden=true;return}
   let t=Math.max(0,Math.ceil((deadline-Date.now())/1000));
-  if(!t){
-   timer.hidden=true;
-   if(!refreshing)refresh();
-   return;
-  }
-  const d=Math.floor(t/86400);t%=86400;
-  const h=String(Math.floor(t/3600)).padStart(2,'0');t%=3600;
-  const m=String(Math.floor(t/60)).padStart(2,'0'),seconds=String(t%60).padStart(2,'0');
+  if(!t){timer.hidden=true;if(!refreshing)refresh();return}
+  const values=[
+    [Math.floor(t/86400),'DAYS'],
+    [Math.floor((t%86400)/3600),'HOURS'],
+    [Math.floor((t%3600)/60),'MIN'],
+    [t%60,'SEC']
+  ];
   timer.replaceChildren();
-  const title=document.createElement('strong');title.textContent=timerLabel;
-  const digits=document.createElement('span');digits.textContent=(d?d+'d ':'')+h+'h '+m+'m '+seconds+'s';
-  timer.append(title,digits);
+  for(const [value,label] of values){
+   const unit=document.createElement('div');unit.className='countdown-unit';
+   const digits=document.createElement('strong');digits.textContent=String(value).padStart(2,'0');
+   const caption=document.createElement('small');caption.textContent=label;
+   unit.append(digits,caption);timer.append(unit);
+  }
   timer.hidden=false;
  }
  async function refresh(){
@@ -2727,18 +2755,16 @@ document.getElementById('contactForm')?.addEventListener('submit', async (e) => 
    const active=activeResult.status==='fulfilled'&&!activeResult.value.error?activeResult.value.data?.[0]:null;
    const upcoming=upcomingResult.status==='fulfilled'&&!upcomingResult.value.error?upcomingResult.value.data?.[0]:null;
    chooseImage(safeUrl(active?.image_url||settings?.hero_image_url||fallback));
-   const title=String(active?.headline||settings?.hero_heading||'').trim();
+   const title=active
+     ? String(active.headline||((active.name||'Promotion')+(active.kind==='sale'?' is here':''))).trim()
+     : upcoming?String(upcoming.name||'Sale').trim()+' starts in'
+       : String(settings?.hero_heading||'').trim();
    const sub=String(active?.subtitle||settings?.hero_subtitle||'').trim();
    if(title){heading.textContent=title}else{heading.innerHTML=initialHeading}
    subtitle.textContent=sub||initialSubtitle;
-   deadline=0;timerLabel='';
-   if(active?.kind==='sale'){
-    deadline=new Date(active.ends_at).getTime();
-    timerLabel=String(active.name||'Sale').trim()+' ends in';
-   }else if(upcoming){
-    deadline=new Date(upcoming.starts_at).getTime();
-    timerLabel=String(upcoming.name||'Sale').trim()+' starts in';
-   }
+   deadline=active?.kind==='sale'
+     ? new Date(active.ends_at).getTime()
+     : upcoming?new Date(upcoming.starts_at).getTime():0;
    countdown();
   }catch(err){console.info('Campaign refresh unavailable:',err)}
   finally{refreshing=false}
