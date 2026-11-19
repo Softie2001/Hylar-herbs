@@ -8,6 +8,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.4/dist/jspdf.plugin.autotable.min.js"></script>
 <style>
 :root{--brand:#1E8E3E;--deep:#073E2D;--bg:#F6F7F3;--surface:#fff;--ink:#132018;--sub:#68736C;--line:#E5E9E5;--danger:#C62828;--warn:#8A6500;--blue:#2B63A7;--shadow:0 8px 28px rgba(14,34,24,.055)}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:'Manrope',Arial,sans-serif;background:var(--bg);color:var(--ink)}button,input,textarea,select{font:inherit}.hidden{display:none!important}.wrap{max-width:1260px;margin:auto;padding:24px}.muted{color:var(--sub)}
@@ -140,6 +142,14 @@ main.wrap{padding-bottom:118px}
 .review-admin-row .actions{margin-top:10px}
 @media(max-width:650px){.tabbar{gap:0}.tab{font-size:10px;padding:7px 1px}.tab svg{width:19px;height:19px}.reviews-admin-list{gap:9px}}
 
+.orders-export-panel{margin-bottom:16px}
+.orders-export-grid{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:12px;margin-top:15px}
+.orders-export-grid .field{min-width:0;margin-bottom:8px}
+.orders-export-grid .field input,.orders-export-grid .field select{max-width:100%;min-width:0;min-height:44px}
+.orders-export-grid input:disabled{opacity:.6;background:#f5f7f4}
+.orders-export-actions{display:flex;flex-wrap:wrap;gap:9px;margin:10px 0}
+@media(max-width:700px){.orders-export-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.orders-export-grid .field:first-child{grid-column:1/-1}.orders-export-actions .btn{flex:1 1 calc(50% - 5px);font-size:12px;padding:10px 7px}}
+@media(max-width:350px){.orders-export-grid{grid-template-columns:1fr}.orders-export-grid .field:first-child{grid-column:auto}}
 /* Mobile-first login, centered independently of the dashboard layout. */
 #loginView.wrap{
   max-width:none;width:100%;min-height:100vh;min-height:100dvh;
@@ -567,7 +577,21 @@ main.wrap{padding-bottom:118px}
   </details>
 </section>
 
-<section id="ordersView" class="hidden"><div class="view-title"><div><h2>Orders</h2><small class="muted">Review submitted payments, products and delivery details.</small></div><button class="btn btn-light" id="downloadCsv"><i data-lucide="download"></i>Download CSV</button></div><div class="panel"><div class="toolbar"><div class="toolbar-left"><input id="orderSearch" placeholder="Search order or customer…"><select id="paymentFilter"><option value="">All payment</option><option value="awaiting_confirmation">Awaiting confirmation</option><option value="paid">Paid</option><option value="not_received">Not received</option></select><select id="deliveryFilter"><option value="">All delivery</option><option value="pending">Pending</option><option value="processing">Processing</option><option value="sent">Sent</option><option value="delivered">Delivered</option><option value="cancelled">Cancelled</option></select></div><button class="btn btn-light" id="refreshOrders"><i data-lucide="refresh-cw"></i>Refresh</button></div><div class="table-wrap"><table class="table"><thead><tr><th>Order</th><th>Customer</th><th>Total</th><th>Payment</th><th>Delivery</th><th>Date</th><th></th></tr></thead><tbody id="orderRows"></tbody></table></div></div></section>
+<section id="ordersView" class="hidden"><div class="view-title"><div><h2>Orders</h2><small class="muted">Review submitted payments, products and delivery details.</small></div></div>
+<div class="panel orders-export-panel">
+ <div class="section-head"><h3>Download order report</h3></div>
+ <p class="setting-note">Choose the dates orders were placed in Nigeria time, then download CSV or PDF. All orders in the chosen period are included.</p>
+ <div class="orders-export-grid">
+  <div class="field"><label for="orderExportRange">Date filter</label><select id="orderExportRange"><option value="all">All dates</option><option value="today">Today</option><option value="seven">Last 7 days</option><option value="month">This month</option><option value="custom">Custom date range</option></select></div>
+  <div class="field"><label for="orderExportFrom">From date</label><input type="date" id="orderExportFrom" disabled></div>
+  <div class="field"><label for="orderExportTo">To date</label><input type="date" id="orderExportTo" disabled></div>
+ </div>
+ <div class="orders-export-actions">
+  <button class="btn btn-green" type="button" id="downloadCsv"><i data-lucide="file-spreadsheet"></i>Download CSV</button>
+  <button class="btn btn-light" type="button" id="downloadPdf"><i data-lucide="file-text"></i>Download PDF</button>
+ </div>
+ <p id="orderExportStatus" class="setting-note" role="status" aria-live="polite">All dates selected.</p>
+</div><div class="panel"><div class="toolbar"><div class="toolbar-left"><input id="orderSearch" placeholder="Search order or customer…"><select id="paymentFilter"><option value="">All payment</option><option value="awaiting_confirmation">Awaiting confirmation</option><option value="paid">Paid</option><option value="not_received">Not received</option></select><select id="deliveryFilter"><option value="">All delivery</option><option value="pending">Pending</option><option value="processing">Processing</option><option value="sent">Sent</option><option value="delivered">Delivered</option><option value="cancelled">Cancelled</option></select></div><button class="btn btn-light" id="refreshOrders"><i data-lucide="refresh-cw"></i>Refresh</button></div><div class="table-wrap"><table class="table"><thead><tr><th>Order</th><th>Customer</th><th>Total</th><th>Payment</th><th>Delivery</th><th>Date</th><th></th></tr></thead><tbody id="orderRows"></tbody></table></div></div></section>
 
 <section id="productsView" class="hidden"><div class="view-title"><div><h2>Products</h2><small class="muted">Choose Unlimited or Limited for each product. Only Limited products use stock counts.</small></div><button class="btn btn-green" id="addProduct"><i data-lucide="plus"></i>Add product</button></div>
 <div class="panel inventory-control-panel">
@@ -849,7 +873,7 @@ function renderTopProducts(){
    ORDERS
 ========================= */
 async function loadOrders(){
-  try{await getAllData();renderOrders()}
+  try{await getAllData();renderOrders();updateOrderExportControls()}
   catch(e){msg(e.message||'Could not load orders.',true)}
 }
 
@@ -987,19 +1011,95 @@ $('refreshOrders').onclick=loadOrders;
 $('closeOrderModal').onclick=()=>$('orderModal').classList.add('hidden');
 $('orderModal').onclick=e=>{if(e.target===$('orderModal'))$('orderModal').classList.add('hidden')};
 
+/* Export report dates always use West Africa Time rather than the browser timezone. */
+const orderDateWAT=value=>new Intl.DateTimeFormat('sv-SE',{timeZone:'Africa/Lagos',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(value));
+const orderTimeWAT=value=>new Intl.DateTimeFormat('en-GB',{timeZone:'Africa/Lagos',year:'numeric',month:'short',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date(value));
+function exportPeriod(){
+ const mode=$('orderExportRange').value,today=orderDateWAT(Date.now());
+ if(mode==='all')return {from:'',to:'',label:'All dates'};
+ if(mode==='today')return {from:today,to:today,label:'Today'};
+ if(mode==='month')return {from:today.slice(0,7)+'-01',to:today,label:'This month'};
+ if(mode==='seven'){
+  const d=new Date(today+'T00:00:00Z');d.setUTCDate(d.getUTCDate()-6);
+  return {from:d.toISOString().slice(0,10),to:today,label:'Last 7 days'};
+ }
+ const from=$('orderExportFrom').value,to=$('orderExportTo').value;
+ if(!from||!to)throw Error('Choose From and To dates.');
+ if(from>to)throw Error('From date must not be after To date.');
+ return {from,to,label:from+' to '+to};
+}
+function exportSelection(){
+ const range=exportPeriod();
+ const orders=allOrders.filter(o=>{
+  if(!range.from)return true;
+  const date=orderDateWAT(o.created_at);return date>=range.from&&date<=range.to;
+ });
+ return {range,orders};
+}
+function updateOrderExportControls(){
+ const custom=$('orderExportRange').value==='custom';
+ $('orderExportFrom').disabled=!custom;$('orderExportTo').disabled=!custom;
+ try{const {range,orders}=exportSelection();$('orderExportStatus').textContent=orders.length+' orders found for '+range.label+'.';}
+ catch(e){$('orderExportStatus').textContent=e.message;}
+}
+for(const id of ['orderExportRange','orderExportFrom','orderExportTo'])$(id).addEventListener('change',updateOrderExportControls);
+function exportRows(orders){
+ return orders.map(o=>{
+  const contacts=orderContactNumbers(o);
+  return [o.order_number,o.customer_name,contacts.calling,contacts.whatsapp,o.delivery_address,
+   o.delivery_location,o.subtotal,o.delivery_fee,o.total_amount,o.payment_status,o.delivery_status,orderTimeWAT(o.created_at)];
+ });
+}
+function reportFilename(period,extension){
+ return 'hylar-orders-'+(period.from?period.from+'-to-'+period.to:'all-dates')+'.'+extension;
+}
 $('downloadCsv').onclick=()=>{
-  const rows=[
-    ['Order','Customer','WhatsApp','Delivery Address','Location','Subtotal','Total','Payment Status','Delivery Status','Date'],
-    ...allOrders.map(o=>[o.order_number,o.customer_name,o.customer_phone,o.delivery_address,o.delivery_location,o.subtotal,o.total_amount,o.payment_status,o.delivery_status,o.created_at])
-  ];
-  const csv=rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\n');
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
-  a.download='hylar-orders.csv';
-  a.click();
-  setTimeout(()=>URL.revokeObjectURL(a.href),500);
+ let selection;
+ try{selection=exportSelection()}catch(e){$('orderExportStatus').textContent=e.message;return}
+ if(!selection.orders.length){$('orderExportStatus').textContent='No orders in the selected dates.';return}
+ const columns=['Order','Customer','Call number','WhatsApp','Delivery address','Location','Subtotal (NGN)','Delivery fee (NGN)','Total (NGN)','Payment status','Delivery status','Placed (WAT)'];
+ const csvCell=value=>{
+  let text=String(value??'');
+  if(/^\s*[=+@-]/.test(text))text="'"+text;
+  return '"'+text.replace(/"/g,'""')+'"';
+ };
+ const csv='\uFEFF'+[columns,...exportRows(selection.orders)].map(row=>row.map(csvCell).join(',')).join('\r\n');
+ const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+ const link=document.createElement('a');link.href=url;link.download=reportFilename(selection.range,'csv');
+ document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),15000);
+ $('orderExportStatus').textContent='CSV prepared: '+selection.orders.length+' orders.';
 };
-
+$('downloadPdf').onclick=()=>{
+ let selection;
+ try{selection=exportSelection()}catch(e){$('orderExportStatus').textContent=e.message;return}
+ if(!selection.orders.length){$('orderExportStatus').textContent='No orders in the selected dates.';return}
+ const Pdf=window.jspdf?.jsPDF;
+ if(!Pdf){$('orderExportStatus').textContent='PDF generator unavailable. Check internet access and refresh.';return}
+ const pdf=new Pdf({orientation:'landscape',unit:'mm',format:'a4'});
+ if(typeof pdf.autoTable!=='function'){$('orderExportStatus').textContent='PDF table generator unavailable. Refresh and try again.';return}
+ const sum=selection.orders.reduce((n,o)=>n+Number(o.total_amount||0),0);
+ pdf.setFont('helvetica','bold');pdf.setFontSize(17);pdf.text('HYLAR HERBS - ORDER REPORT',12,17);
+ pdf.setFont('helvetica','normal');pdf.setFontSize(9);
+ pdf.text('Period: '+selection.range.label+' (Nigeria time, WAT)',12,25);
+ pdf.text('Orders: '+selection.orders.length+' | Total order value: NGN '+sum.toLocaleString('en-NG',{minimumFractionDigits:2,maximumFractionDigits:2}),12,31);
+ const safe=value=>String(value??'').normalize('NFKD').replace(/[^\x20-\x7E]/g,'?');
+ const body=selection.orders.map(o=>{
+  const contacts=orderContactNumbers(o);
+  return [o.order_number,o.customer_name,contacts.calling,contacts.whatsapp,
+    [o.delivery_address,o.delivery_location].filter(Boolean).join(', '),
+    Number(o.total_amount||0).toLocaleString('en-NG',{minimumFractionDigits:2,maximumFractionDigits:2}),
+    o.payment_status,o.delivery_status,orderTimeWAT(o.created_at)].map(safe);
+ });
+ pdf.autoTable({
+  startY:37,head:[['Order','Customer','Phone','WhatsApp','Address / location','Total (NGN)','Payment','Delivery','Placed (WAT)']],
+  body,theme:'grid',styles:{font:'helvetica',fontSize:7,cellPadding:2,overflow:'linebreak'},
+  headStyles:{fillColor:[7,62,45],textColor:255},margin:{left:11,right:11,bottom:16},
+  columnStyles:{4:{cellWidth:53}},
+  didDrawPage:data=>{pdf.setFontSize(8);pdf.setTextColor(90);pdf.text('Hylar Herbs - Page '+data.pageNumber,11,pdf.internal.pageSize.getHeight()-7);}
+ });
+ pdf.save(reportFilename(selection.range,'pdf'));
+ $('orderExportStatus').textContent='PDF prepared: '+selection.orders.length+' orders.';
+};
 
 /* Product-level inventory enforcement; store-wide switch controls number display ONLY. */
 let inventoryLimitsEnabled=false, inventoryShowQuantities=false, inventorySettingsReady=false;
