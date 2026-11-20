@@ -832,9 +832,11 @@
 
 
 /* Clickable product cards, without extra visible detail links. */
-#productGrid .card.card-clickable{cursor:pointer}
-#productGrid .card.card-clickable:focus-visible{outline:3px solid var(--brand);outline-offset:3px}
-#productGrid .card.card-clickable .add-btn{cursor:pointer}
+#productGrid .card{cursor:default}
+#productGrid .card .card-image-link:focus-visible,#productGrid .card .card-product-link:focus-visible{outline:3px solid var(--brand);outline-offset:3px}
+#productGrid .card .add-btn{cursor:pointer}
+#productGrid .card .card-image-link{display:block;width:100%;height:100%;color:inherit;text-decoration:none}
+#productGrid .card .card-image-link img{display:block;width:100%;height:100%;object-fit:cover}
 
 /* Full-bleed photo layout inspired by editorial nature hero reference */
 header.hero-cover{position:relative;isolation:isolate;background:#15482b;min-height:570px;overflow:visible;margin-bottom:57px}
@@ -2343,14 +2345,13 @@ body.cart-keyboard-active #orderTray.order-tray{display:none!important;}
       const outOfStock = !productCanBuy(p);
       const card = document.createElement('div');
       const productLink = productDetailsUrl(p.id);
-      card.className = 'card card-clickable';
+      card.className = 'card';
       card.dataset.productId=String(p.id);
-      card.setAttribute('role','link');
-      card.tabIndex=0;
-      card.setAttribute('aria-label','View details for '+p.name);
       card.innerHTML = `
         <div class="card-media">
+          <a class="card-image-link" href="${productLink}" aria-label="View details for ${escapeCatalogHtml(p.name)}">
           ${imgSrc ? `<img src="${imgSrc}" alt="${escapeCatalogHtml(p.name)} — Hylar Herbs" loading="lazy" onerror="this.style.display='none';">` : `<div class="no-photo"><i data-lucide="image-off" aria-hidden="true"></i><span>Photo coming soon</span></div>`}
+          </a>
           <div class="badge-row">
             <span class="badge ${outOfStock ? 'badge-cat' : (p.tag === 'Kit' ? 'badge-kit' : (p.best ? 'badge-best' : 'badge-cat'))}">${outOfStock ? 'Out of Stock' : (p.tag === 'Kit' ? 'Kit Deal' : (p.best ? 'Best Seller' : label))}</span>
           </div>
@@ -2369,19 +2370,15 @@ body.cart-keyboard-active #orderTray.order-tray{display:none!important;}
             </button>
           </div>
         </div>`;
-      card.addEventListener('click',(event)=>{
-        if(event.target.closest('button'))return;
-        rememberCatalogueProduct(p,card);
-        if(!event.target.closest('a'))location.assign(productLink);
-      });
-      card.addEventListener('keydown',(event)=>{
-        if(event.target!==card || !['Enter',' '].includes(event.key))return;
-        event.preventDefault();
-        rememberCatalogueProduct(p,card);
-        location.assign(productLink);
+      card.querySelectorAll('.card-image-link, .card-product-link').forEach(link=>{
+        link.addEventListener('click',()=>rememberCatalogueProduct(p,card));
       });
       if(!outOfStock){
-        card.querySelector('.add-btn').addEventListener('click', (e) => addToOrder(p, e.currentTarget));
+        card.querySelector('.add-btn').addEventListener('click',(event)=>{
+          event.preventDefault();
+          event.stopPropagation();
+          addToOrder(p,event.currentTarget);
+        });
       }
       grid.appendChild(card);
     });
