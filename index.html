@@ -2249,7 +2249,12 @@ body.cart-keyboard-active #orderTray.order-tray{display:none!important;}
       coClearProof(); coShowProofError('');
       await loadProductsFromSupabase();
     }catch(err){
-      errBox.textContent = (err && err.message) || 'Could not submit your order. Please check your connection and try again.';
+      const rawMessage=String(err?.message||'');
+      const networkFailed=/^(load failed|failed to fetch|networkerror|network request failed|fetch failed)$/i.test(rawMessage.trim())
+        ||err instanceof TypeError;
+      errBox.textContent=networkFailed
+        ? 'Could not connect to order submission. Your payment screenshot is still selected. Check your connection and contact Hylar Herbs with your order number before trying again, to avoid a duplicate order.'
+        : rawMessage||'Could not submit your order. Please check your connection and try again.';
       errBox.classList.add('show');
     }finally{
       submitBtn.classList.remove('co-loading');
