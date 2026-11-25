@@ -1531,7 +1531,28 @@ window.deleteProduct=async id=>{
   if(error)msg(error.message,true);else loadProducts();
 };
 
+/* Keep new public uploads compact so a single storefront visit does not transfer
+   multi-megabyte originals through Supabase Storage. Preserve original on failure. */
+async function optimizePublicImage(file,maxWidth=1200,maxHeight=1600){
+  if(!file || !/^image\/(jpeg|png|webp)$/.test(file.type))return file;
+  let bitmap;
+  try{
+    bitmap=await createImageBitmap(file);
+    const scale=Math.min(1,maxWidth/bitmap.width,maxHeight/bitmap.height);
+    const width=Math.max(1,Math.round(bitmap.width*scale));
+    const height=Math.max(1,Math.round(bitmap.height*scale));
+    const canvas=document.createElement('canvas');
+    canvas.width=width;canvas.height=height;
+    canvas.getContext('2d',{alpha:true}).drawImage(bitmap,0,0,width,height);
+    const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/webp',0.78));
+    if(!blob || blob.size>=file.size)return file;
+    return new File([blob],file.name.replace(/\.[^.]+$/,'')+'.webp',{type:'image/webp'});
+  }catch(err){console.warn('Image compression unavailable; using original.',err);return file}
+  finally{bitmap?.close?.()}
+}
+
 async function uploadImage(file){
+  file=await optimizePublicImage(file,1000,1400);
   const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'');
   const path=`${crypto.randomUUID()}.${ext}`;
   const {error}=await sb.storage.from('product-images').upload(path,file,{upsert:false,contentType:file.type});
@@ -1788,9 +1809,10 @@ $('defaultHeroForm').addEventListener('submit',async event=>{
    if(preflight.error)throw new Error('Run the one-time default-hero SQL migration first. '+preflight.error.message);
    let imageUrl=savedDefaultHeroImage||null;
    if(file){
-     const ext={'image/jpeg':'jpg','image/png':'png','image/webp':'webp'}[file.type];
+     const optimized=await optimizePublicImage(file,1600,1100);
+     const ext={'image/jpeg':'jpg','image/png':'png','image/webp':'webp'}[optimized.type];
      const path=crypto.randomUUID()+'.'+ext;
-     const uploaded=await sb.storage.from('hero-banners').upload(path,file,{contentType:file.type,upsert:false});
+     const uploaded=await sb.storage.from('hero-banners').upload(path,optimized,{contentType:optimized.type,upsert:false});
      if(uploaded.error)throw uploaded.error;
      imageUrl=sb.storage.from('hero-banners').getPublicUrl(path).data.publicUrl;
    }
@@ -1870,8 +1892,8 @@ $('campaignForm').addEventListener('submit',async e=>{
  const start=nigeriaTimeToISO($('campaignStart').value),end=nigeriaTimeToISO($('campaignEnd').value);
  if(new Date(end)<=new Date(start)){status.textContent='End must be later than start.';return}
  btn.disabled=true;status.textContent='Uploading banner…';
- try{const ext={'image/jpeg':'jpg','image/png':'png','image/webp':'webp'}[file.type];const path=crypto.randomUUID()+'.'+ext;
- const uploaded=await sb.storage.from('hero-banners').upload(path,file,{contentType:file.type,upsert:false});if(uploaded.error)throw uploaded.error;
+ try{const optimized=await optimizePublicImage(file,1600,1100);const ext={'image/jpeg':'jpg','image/png':'png','image/webp':'webp'}[optimized.type];const path=crypto.randomUUID()+'.'+ext;
+ const uploaded=await sb.storage.from('hero-banners').upload(path,optimized,{contentType:optimized.type,upsert:false});if(uploaded.error)throw uploaded.error;
  const url=sb.storage.from('hero-banners').getPublicUrl(path).data.publicUrl;
  const {data:created,error}=await sb.from('hero_campaigns').insert({name:$('campaignName').value.trim(),kind:$('campaignKind').value,starts_at:start,ends_at:end,image_url:url,enabled:true,headline:$('campaignHeadline').value.trim()||null,subtitle:$('campaignSubtitle').value.trim()||null}).select('id').single();if(error)throw error;
  let statusText='Banner scheduled successfully.';
