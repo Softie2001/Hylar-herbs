@@ -120,7 +120,7 @@ footer{padding:26px 0 40px;text-align:center;color:var(--muted);font-size:13px}
       }
       const url=new URL(src,baseUrl);
       if(!['https:','http:'].includes(url.protocol)) return null;
-      return url.href;
+      return url.hostname==='res.cloudinary.com' && url.pathname.includes('/image/upload/') ? url.href.replace('/image/upload/','/image/upload/f_auto,q_auto,w_1200,c_limit/') : url.href;
     }catch{return null;}
   };
   function renderProduct(p,settings){
