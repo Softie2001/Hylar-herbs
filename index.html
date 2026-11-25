@@ -1811,7 +1811,9 @@ body.cart-keyboard-active #orderTray.order-tray{display:none!important;}
   function resolveImage(src){
     if(!src) return '';
     if(IMAGES[src]) return IMAGES[src];
-    if(/^https?:\/\//.test(src) || /^data:/.test(src)) return src;
+    if(/^https?:\/\//.test(src) || /^data:/.test(src)) {
+      return /^https:\/\/res\.cloudinary\.com\//.test(src) ? src.replace('/image/upload/','/image/upload/f_auto,q_auto,w_1000,c_limit/') : src;
+    }
     // Images uploaded through the admin page are named <uuid>.jpg and stored in Supabase Storage
     if(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.[a-z0-9]+$/i.test(src))
       return `${SUPABASE_URL}/storage/v1/object/public/product-images/${src}`;
@@ -2725,7 +2727,7 @@ document.getElementById('contactForm')?.addEventListener('submit', async (e) => 
  function countdown(){
   if(!deadline||!Number.isFinite(deadline)){timer.hidden=true;return}
   let t=Math.max(0,Math.ceil((deadline-Date.now())/1000));
-  if(!t){timer.hidden=true;if(!refreshing)refresh();return}
+  if(!t){timer.hidden=true;deadline=0;if(!refreshing)refresh();return}
   const values=[
     [Math.floor(t/86400),'DAYS'],
     [Math.floor((t%86400)/3600),'HOURS'],
@@ -2756,7 +2758,8 @@ document.getElementById('contactForm')?.addEventListener('submit', async (e) => 
    const settings=settingsResult.status==='fulfilled'&&!settingsResult.value.error?settingsResult.value.data:null;
    const active=activeResult.status==='fulfilled'&&!activeResult.value.error?activeResult.value.data?.[0]:null;
    const upcoming=upcomingResult.status==='fulfilled'&&!upcomingResult.value.error?upcomingResult.value.data?.[0]:null;
-   chooseImage(safeUrl(active?.image_url||settings?.hero_image_url||fallback));
+   const heroUrl=safeUrl(active?.image_url||settings?.hero_image_url||fallback);
+   chooseImage(heroUrl.startsWith('https://res.cloudinary.com/')?heroUrl.replace('/image/upload/','/image/upload/f_auto,q_auto,w_1600,c_limit/'):heroUrl);
    const title=active
      ? String(active.headline||((active.name||'Promotion')+(active.kind==='sale'?' is here':''))).trim()
      : upcoming?String(upcoming.name||'Sale').trim()+' starts in'
@@ -2773,7 +2776,8 @@ document.getElementById('contactForm')?.addEventListener('submit', async (e) => 
  }
  refresh();
  setInterval(countdown,1000);
- setInterval(refresh,60000);
+ setInterval(()=>{if(!document.hidden)refresh()},300000);
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh()});
 })();
 </script>
 </body>
